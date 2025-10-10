@@ -1,0 +1,27 @@
+services:
+  interactivedb:
+    image: "pgvector/pgvector:pg18"
+    container_name: interactivedb
+    restart: always
+    ports:
+    - "5432:5432"
+    volumes:
+    - interactive_data:/var/lib/postgresql/data
+    networks:
+      interactive_net:
+        ipv4_address: 172.19.0.4
+    environment:
+    - POSTGRES_PASSWORD=@Inter#123
+    - POSTGRES_USER=postgres
+    - POSTGRES_DB=InteractiveLeads
+
+networks:
+  interactive_net:
+    name: interactive_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+
+volumes:
+  interactive_data:
