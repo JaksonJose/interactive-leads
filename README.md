@@ -83,8 +83,6 @@ interactive-leads/
 │   ├── src/
 │   └── Dockerfile
 │
-├── shared/                    # Shared DTOs, utilities, models
-│
 ├── docker/                    # Compose and environment setup
 │   ├── docker-compose.yml
 │   └── README.md
