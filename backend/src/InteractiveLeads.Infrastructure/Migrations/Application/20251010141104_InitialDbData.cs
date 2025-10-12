@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InteractiveLeads.Infrastructure.Migrations.Application
 {
     /// <inheritdoc />
-    public partial class ApplicationDb : Migration
+    public partial class InitialDbData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -104,7 +104,7 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    ExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpirationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsRevoked = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     DeviceInfo = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     IpAddress = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: true),
@@ -225,10 +225,10 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshTokens_ExpiryTime",
+                name: "IX_RefreshTokens_ExpirationTime",
                 schema: "Identity",
                 table: "RefreshTokens",
-                column: "ExpiryTime");
+                column: "ExpirationTime");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_Token",

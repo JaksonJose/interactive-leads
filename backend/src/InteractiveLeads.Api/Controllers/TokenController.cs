@@ -27,11 +27,10 @@ namespace InteractiveLeads.Api.Controllers
         /// <returns>Returns Ok with JWT tokens if authentication is successful, otherwise BadRequest.</returns>
         /// <remarks>
         /// This endpoint allows anonymous access for initial login.
-        /// Requires a tenant identifier in the request header.
+        /// The tenant is automatically resolved from the user's email address.
         /// </remarks>
         [HttpPost("login")]
         [AllowAnonymous]
-        [TenantHeader]
         [OpenApiOperation("Used to obtain jwt for login")]
         public async Task<IActionResult> GetTokenAsync([FromBody] TokenRequest tokenRequest)
         {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InteractiveLeads.Infrastructure.Migrations.Tenant
 {
     /// <inheritdoc />
-    public partial class InitialTenantDb : Migration
+    public partial class InitialDbData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

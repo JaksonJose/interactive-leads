@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InteractiveLeads.Infrastructure.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251004165335_ApplicationDb")]
-    partial class ApplicationDb
+    [Migration("20251010141104_InitialDbData")]
+    partial class InitialDbData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,7 +235,7 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime>("ExpiryTime")
+                    b.Property<DateTime>("ExpirationTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("IpAddress")
@@ -270,7 +270,7 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExpiryTime");
+                    b.HasIndex("ExpirationTime");
 
                     b.HasIndex("Token");
 

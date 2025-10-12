@@ -13,6 +13,7 @@ using InteractiveLeads.Infrastructure.Identity.Tokens;
 using InteractiveLeads.Infrastructure.OpenApi;
 using InteractiveLeads.Infrastructure.Tenancy;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
+using InteractiveLeads.Infrastructure.Tenancy.Strategies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -51,6 +52,7 @@ namespace InteractiveLeads.Infrastructure
                 npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()));
 
             services.AddMultiTenant<InteractiveTenantInfo>()
+                .WithStrategy<EmailLookupStrategy>(ServiceLifetime.Scoped)
                 .WithHeaderStrategy("tenant")
                 .WithClaimStrategy("tenant")
                 .WithEFCoreStore<TenantDbContext, InteractiveTenantInfo>();
