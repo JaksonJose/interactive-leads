@@ -1,1 +1,39 @@
 
+@use 'primeflex/primeflex' as *;
+@use "primeicons/primeicons.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  --font-family: 'Poppins', sans-serif;
+
+  /*
+  --surface-0: #ffffff;
+  --surface-50: #f9fafb;
+  --surface-100: #f3f4f6;
+  --surface-200: #e5e7eb;
+  --surface-300: #d1d5db;
+  --surface-400: #9ca3af;
+  --surface-500: #6b7280;
+  --surface-600: #4b5563;
+  --surface-700: #374151;
+  --surface-800: #3a474d;
+  --surface-900: #111827;
+  */
+
+  //--sidebar-menu-item-active: rgba(0, 0, 0, 0.4);
+  //--sidebar-menu-item-holver: rgba(0, 0, 0, 0.3);
+  .error-field-message {
+    color: var(--p-red-600)
+  }
+}

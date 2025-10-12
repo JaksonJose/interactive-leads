@@ -1,0 +1,18 @@
+<p-menubar>
+    <ng-template pTemplate="start">
+      <div class="flex flex-column font-semibold">
+        Interactive <span>Leads</span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="end">
+      <p-avatar
+        image="https://www.gravatar.com/avatar?d=mp"
+        shape="circle"
+        class="p-mr-2 cursor-pointer"
+        size="large"
+        (click)="menu.toggle($event)">
+      </p-avatar>
+
+      <p-menu #menu [popup]="true" [model]="userMenuItems"></p-menu>
+    </ng-template>
+  </p-menubar>
