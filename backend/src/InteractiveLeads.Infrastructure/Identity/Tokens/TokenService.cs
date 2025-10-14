@@ -40,20 +40,21 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
             var response = new Response();
 
             #region validations
-            if (!_multiTenantContextAccessor.MultiTenantContext.TenantInfo!.IsActive)
+            // Check if tenant was found
+            if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo == null)
+            {
+                response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
+                throw new UnauthorizedException(response);
+            }
+
+            if (!_multiTenantContextAccessor.MultiTenantContext.TenantInfo.IsActive)
             {
                 response.AddErrorMessage("Tenant subscription is not active. Contact administrator.", "tenant.subscription_not_active");
                 throw new UnauthorizedException(response);
             }
 
             var userInDb = await _userManager.FindByNameAsync(request.UserName);
-            if (userInDb is null) 
-            {
-                response.AddErrorMessage("Authentication not successful.", "auth.authentication_not_successful");
-                throw new UnauthorizedException(response);
-            }                
-
-            if (!await _userManager.CheckPasswordAsync(userInDb, request.Password)) 
+            if (userInDb is null || !await _userManager.CheckPasswordAsync(userInDb, request.Password)) 
             {
                 response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
                 throw new UnauthorizedException(response);
