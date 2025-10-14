@@ -2,6 +2,7 @@
 using InteractiveLeads.Application;
 using InteractiveLeads.Application.Exceptions;
 using InteractiveLeads.Application.Feature.Identity.Tokens;
+using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Identity.Models;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
@@ -36,30 +37,40 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
 
         public async Task<TokenResponse> LoginAsync(TokenRequest request)
         {
+            var response = new Response();
+
             #region validations
             if (!_multiTenantContextAccessor.MultiTenantContext.TenantInfo!.IsActive)
             {
-               throw new UnauthorizedException(["Tenant Subscription is not Active. Contact adminitrator."]);
+                response.AddErrorMessage("Tenant subscription is not active. Contact administrator.", "tenant.subscription_not_active");
+                throw new UnauthorizedException(response);
             }
 
-            var userInDb = await _userManager.FindByNameAsync(request.UserName) 
-                ?? throw new UnauthorizedException(["Authentication not successful."]);
+            var userInDb = await _userManager.FindByNameAsync(request.UserName);
+            if (userInDb is null) 
+            {
+                response.AddErrorMessage("Authentication not successful.", "auth.authentication_not_successful");
+                throw new UnauthorizedException(response);
+            }                
 
             if (!await _userManager.CheckPasswordAsync(userInDb, request.Password)) 
             {
-                throw new UnauthorizedException(["Incorrect Username or Password"]);
+                response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
+                throw new UnauthorizedException(response);
             }
 
             if (!userInDb.IsActive)
             {
-                throw new UnauthorizedException(["User Not Active. Contact Administrator."]);
+                response.AddErrorMessage("User not active. Contact administrator.", "auth.user_not_active");
+                throw new UnauthorizedException(response);
             }
 
             if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo.Id is not TenancyConstants.Root.Id)
             {
                 if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo.ExpirationDate < DateTime.UtcNow)
                 {
-                    throw new UnauthorizedException(["Subscription has expired. Contact Administrator."]);
+                    response.AddErrorMessage("Subscription has expired. Contact administrator.", "auth.subscription_expired");
+                    throw new UnauthorizedException(response);
                 }
             }
             #endregion
@@ -69,11 +80,17 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
 
         public async Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
         {
+            Response response = new();
+
             var userPrincipal = GetClaimsPrincipalFromExpiringToken(request.CurrentJwt);
             var userEmail = userPrincipal.GetEmail();
 
-            var userInDb = await _userManager.FindByEmailAsync(userEmail)
-                ?? throw new UnauthorizedException(["Authentication failed."]);
+            var userInDb = await _userManager.FindByEmailAsync(userEmail);
+            if (userInDb is null)
+            {
+                response.AddErrorMessage("Authentication failed.", "auth.authentication_failed");
+                throw new UnauthorizedException(response);
+            }
 
             //if (userInDb.RefreshToken != request.CurrentRefreshToken || userInDb.RefreshTokenExpiryTime < DateTime.UtcNow)
             //{
@@ -85,6 +102,8 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
 
         private ClaimsPrincipal GetClaimsPrincipalFromExpiringToken(string expiringToken)
         {
+            Response response = new();
+
             var tokenValidationParams = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -102,7 +121,8 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
             if (securitytoken is not JwtSecurityToken jwtSecurityToken 
                 || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)) 
             {
-                throw new UnauthorizedException(["Invalid token provided. Failed to generate new token."]);
+                response.AddErrorMessage("Invalid token provided. Failed to generate new token.", "auth.invalid_token");
+                throw new UnauthorizedException(response);
             }
 
             return principal;

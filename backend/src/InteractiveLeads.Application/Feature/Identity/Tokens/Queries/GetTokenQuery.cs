@@ -1,4 +1,4 @@
-﻿using InteractiveLeads.Application.Wrappers;
+﻿using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
@@ -9,7 +9,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
     /// <remarks>
     /// This query implements the CQRS pattern for user login operations.
     /// </remarks>
-    public class GetTokenQuery : IRequest<IResponseWrapper>
+    public class GetTokenQuery : IRequest<IResponse>
     {
         /// <summary>
         /// Gets or sets the token request containing login credentials.
@@ -23,7 +23,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
     /// <remarks>
     /// Authenticates the user via ITokenService and returns wrapped token response.
     /// </remarks>
-    public class GetTokenQueryHandler : IRequestHandler<GetTokenQuery, IResponseWrapper>
+    public class GetTokenQueryHandler : IRequestHandler<GetTokenQuery, IResponse>
     {
         private readonly ITokenService _tokenService;
 
@@ -42,11 +42,12 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
         /// <param name="request">The query containing authentication credentials.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns>A wrapped response containing the JWT tokens if authentication succeeds.</returns>
-        public async Task<IResponseWrapper> Handle(GetTokenQuery request, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(GetTokenQuery request, CancellationToken cancellationToken)
         {
             var token = await _tokenService.LoginAsync(request.TokenRequest);
 
-            return await ResponseWrapper<TokenResponse>.SuccessAsync(data: token);
+            return new Response<TokenResponse>(token)
+                .AddSuccessMessage("Authentication successful", "auth.login_successful");
         }
     }
 }

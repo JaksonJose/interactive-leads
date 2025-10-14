@@ -1,4 +1,5 @@
-﻿using InteractiveLeads.Application.Wrappers;
+﻿using InteractiveLeads.Application.Exceptions;
+using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Tenancy.Queries
@@ -9,7 +10,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
     /// <remarks>
     /// This query implements the CQRS pattern for tenant retrieval operations.
     /// </remarks>
-    public sealed class GetTenantByIdQuery : IRequest<IResponseWrapper>
+    public sealed class GetTenantByIdQuery : IRequest<IResponse>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the tenant to retrieve.
@@ -23,7 +24,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
     /// <remarks>
     /// Retrieves the specified tenant via ITenantService and validates its existence.
     /// </remarks>
-    public sealed class GetTenantByIdQueryHandler : IRequestHandler<GetTenantByIdQuery, IResponseWrapper>
+    public sealed class GetTenantByIdQueryHandler : IRequestHandler<GetTenantByIdQuery, IResponse>
     { 
         private readonly ITenantService _tenantService;
 
@@ -42,15 +43,19 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
         /// <param name="request">The query containing the tenant identifier.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns>A wrapped response containing the tenant data if found, otherwise a failure response.</returns>
-        public async Task<IResponseWrapper> Handle(GetTenantByIdQuery request, CancellationToken cancellationToken) 
+        public async Task<IResponse> Handle(GetTenantByIdQuery request, CancellationToken cancellationToken) 
         {
             var tenantInDb = await _tenantService.GetTenantsByIdAsync(request.TenantId);
             if (tenantInDb is not null)
             {
-                return await ResponseWrapper<TenantResponse>.SuccessAsync(tenantInDb);
+                var response = new Response<TenantResponse>(tenantInDb);
+                response.AddSuccessMessage("Tenant retrieved successfully", "tenant.retrieved_successfully");
+                return (IResponse)response;
             }
 
-            return await ResponseWrapper<TenantResponse>.FailAsync(message: "Tenant does not exist.");
+            var errorResponse = new Response();
+            errorResponse.AddErrorMessage("Tenant does not exist", "tenant.not_found");
+            throw new NotFoundException(errorResponse);
         }
     }
 }

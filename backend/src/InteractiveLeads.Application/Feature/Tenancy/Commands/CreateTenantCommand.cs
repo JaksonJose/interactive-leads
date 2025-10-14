@@ -1,5 +1,4 @@
-﻿using InteractiveLeads.Application.Feature.Tenancy;
-using InteractiveLeads.Application.Wrappers;
+﻿using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Tenancy.Commands
@@ -10,7 +9,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// <remarks>
     /// This command implements the CQRS pattern for tenant creation operations.
     /// </remarks>
-    public sealed class CreateTenantCommand : IRequest<IResponseWrapper>
+    public sealed class CreateTenantCommand : IRequest<IResponse>
     {
         /// <summary>
         /// Gets or sets the tenant creation request containing tenant details.
@@ -24,7 +23,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// <remarks>
     /// Creates a new tenant via ITenantService and returns the tenant identifier.
     /// </remarks>
-    public sealed class CreateTeanantCommandHandler : IRequestHandler<CreateTenantCommand, IResponseWrapper>
+    public sealed class CreateTeanantCommandHandler : IRequestHandler<CreateTenantCommand, IResponse>
     {
         private readonly ITenantService _tenantService;
 
@@ -43,11 +42,12 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         /// <param name="request">The command containing tenant creation details.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns>A wrapped response containing the new tenant identifier if creation succeeds.</returns>
-        public async Task<IResponseWrapper> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
         {
             var tenantId = await _tenantService.CreateTenantAsync(request.CreateTenant, cancellationToken);
 
-            return await ResponseWrapper<string>.SuccessAsync(data: tenantId, "Tenant created successfuly");
+            return new Response<string>(tenantId)
+                .AddSuccessMessage("Tenant created successfully", "tenant.created_successfully");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using InteractiveLeads.Application.Wrappers;
+﻿using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
@@ -10,7 +10,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
     /// This query implements the CQRS pattern for token refresh operations,
     /// allowing users to obtain new tokens without re-authenticating.
     /// </remarks>
-    public class GetRefreshTokenQuery : IRequest<IResponseWrapper>
+    public class GetRefreshTokenQuery : IRequest<IResponse>
     {
         /// <summary>
         /// Gets or sets the refresh token request containing current tokens.
@@ -24,7 +24,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
     /// <remarks>
     /// Validates the refresh token via ITokenService and returns new JWT tokens.
     /// </remarks>
-    public class GetRefreshTokenQueryHandler : IRequestHandler<GetRefreshTokenQuery, IResponseWrapper>
+    public class GetRefreshTokenQueryHandler : IRequestHandler<GetRefreshTokenQuery, IResponse>
     {
         private readonly ITokenService _tokenService;
 
@@ -43,11 +43,12 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
         /// <param name="request">The query containing the refresh token information.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns>A wrapped response containing the new JWT tokens if refresh succeeds.</returns>
-        public async Task<IResponseWrapper> Handle(GetRefreshTokenQuery request, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(GetRefreshTokenQuery request, CancellationToken cancellationToken)
         {
             var refreshToken = await _tokenService.RefreshTokenAsync(request.RefreshToken);
 
-            return await ResponseWrapper<TokenResponse>.SuccessAsync(refreshToken);
+            return new Response<TokenResponse>(refreshToken)
+                .AddSuccessMessage("Token refreshed successfully", "auth.token_refreshed_successfully");
         }
     }
 }

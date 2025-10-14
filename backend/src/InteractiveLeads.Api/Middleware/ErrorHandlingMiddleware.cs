@@ -1,5 +1,5 @@
 ﻿using InteractiveLeads.Application.Exceptions;
-using InteractiveLeads.Application.Wrappers;
+using InteractiveLeads.Application.Responses;
 using System.Net;
 using System.Text.Json;
 
@@ -45,40 +45,59 @@ namespace InteractiveLeads.Api.Middleware
                 var response = context.Response;
                 response.ContentType = "application/json";
 
-                var responseWrapper = ResponseWrapper.Fail();
-
-                switch (ex)
-                {
-                    case ConflictException ce:
-                        response.StatusCode = (int)ce.StatusCode;
-                        responseWrapper.Messages = ce.ErrorMessages;
-                        break;
-                    case NotFoundException nfe:
-                        response.StatusCode = (int)nfe.StatusCode;
-                        responseWrapper.Messages = nfe.ErrorMessages;
-                        break;
-                    case ForbiddenException fe:
-                        response.StatusCode = (int)fe.StatusCode;
-                        responseWrapper.Messages = fe.ErrorMessages;
-                        break;
-                    case IdentityException ie:
-                        response.StatusCode = (int)ie.StatusCode;
-                        responseWrapper.Messages = ie.ErrorMessages;
-                        break;
-                    case UnauthorizedException ue:
-                        response.StatusCode = (int)ue.StatusCode;
-                        responseWrapper.Messages = ue.ErrorMessages;
-                        break;
-                    default:
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        responseWrapper.Messages = ["Something went wrong"];
-                        break;
-                }
+                var responseWrapper = HandleException(ex);
+                response.StatusCode = (int)GetStatusCode(ex);
 
                 var result = JsonSerializer.Serialize(responseWrapper);
 
                 await response.WriteAsync(result);
             }
+        }
+
+        /// <summary>
+        /// Handles the exception and returns an appropriate ResponseWrapper.
+        /// </summary>
+        /// <param name="ex">The exception to handle.</param>
+        /// <returns>A ResponseWrapper with error information.</returns>
+        private static IResponse HandleException(Exception ex)
+        {
+            return ex switch
+            {
+                ConflictException ce when ce.Response != null => ce.Response,
+                ConflictException => new Response().AddErrorMessage("Conflict detected", "general.conflict"),
+                
+                NotFoundException nfe when nfe.Response != null => nfe.Response,
+                NotFoundException => new Response().AddErrorMessage("Resource not found", "general.resource_not_found"),
+                
+                ForbiddenException fe when fe.Response != null => fe.Response,
+                ForbiddenException => new Response().AddErrorMessage("Access denied", "general.access_denied"),
+                
+                IdentityException ie when ie.Response != null => ie.Response,
+                IdentityException => new Response().AddErrorMessage("Identity error", "identity.permission_denied"),
+                
+                UnauthorizedException ue when ue.Response != null => ue.Response,
+                UnauthorizedException => new Response().AddErrorMessage("Unauthorized", "general.unauthorized"),
+                
+                _ => new Response().AddErrorMessage("Something went wrong", "general.something_went_wrong")
+            };
+        }
+
+        /// <summary>
+        /// Gets the appropriate HTTP status code for the exception.
+        /// </summary>
+        /// <param name="ex">The exception.</param>
+        /// <returns>The HTTP status code.</returns>
+        private static HttpStatusCode GetStatusCode(Exception ex)
+        {
+            return ex switch
+            {
+                ConflictException ce => ce.StatusCode,
+                NotFoundException nfe => nfe.StatusCode,
+                ForbiddenException fe => fe.StatusCode,
+                IdentityException ie => ie.StatusCode,
+                UnauthorizedException ue => ue.StatusCode,
+                _ => HttpStatusCode.InternalServerError
+            };
         }
     }
 }

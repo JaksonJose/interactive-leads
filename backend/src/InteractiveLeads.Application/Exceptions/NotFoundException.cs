@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using InteractiveLeads.Application.Responses;
+using System.Net;
 
 namespace InteractiveLeads.Application.Exceptions
 {
@@ -12,24 +13,24 @@ namespace InteractiveLeads.Application.Exceptions
     public class NotFoundException : Exception
     {
         /// <summary>
-        /// Gets or sets the list of error messages describing what was not found.
-        /// </summary>
-        public List<string> ErrorMessages { get; set; }
-
-        /// <summary>
         /// Gets or sets the HTTP status code associated with this exception.
         /// </summary>
         public HttpStatusCode StatusCode { get; set; }
 
         /// <summary>
+        /// Gets or sets the response wrapper containing error information.
+        /// </summary>
+        public Response Response { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the NotFoundException class.
         /// </summary>
-        /// <param name="errorMessages">The list of error messages describing what was not found.</param>
+        /// <param name="response">The response wrapper containing error information.</param>
         /// <param name="statusCode">The HTTP status code (defaults to NotFound).</param>
-        public NotFoundException(List<string> errorMessages = default!, HttpStatusCode statusCode = HttpStatusCode.NotFound) 
+        public NotFoundException(Response response = default!, HttpStatusCode statusCode = HttpStatusCode.NotFound) 
         {
-            ErrorMessages = errorMessages;
             StatusCode = statusCode;
+            Response = response;
         }
     }
 }

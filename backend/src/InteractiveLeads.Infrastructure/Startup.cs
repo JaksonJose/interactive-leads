@@ -2,7 +2,7 @@
 using InteractiveLeads.Application;
 using InteractiveLeads.Application.Feature.Identity.Tokens;
 using InteractiveLeads.Application.Feature.Tenancy;
-using InteractiveLeads.Application.Wrappers;
+using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Context.Application;
 using InteractiveLeads.Infrastructure.Context.Tenancy;
@@ -23,7 +23,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Net;
@@ -107,7 +106,8 @@ namespace InteractiveLeads.Infrastructure
                                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 context.Response.ContentType = "application/json";
 
-                                var result = JsonSerializer.Serialize(ResponseWrapper.Fail("Token has expired."));
+                                var response = new Response().AddErrorMessage("Token has expired", "auth.token_expired");
+                                var result = JsonSerializer.Serialize(response);
                                 return context.Response.WriteAsync(result);
                             }
 
@@ -120,7 +120,8 @@ namespace InteractiveLeads.Infrastructure
                                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                                 context.Response.ContentType = "application/json";
 
-                                var result = JsonSerializer.Serialize(ResponseWrapper.Fail("An unahandled error has occured."));
+                                var response = new Response().AddErrorMessage("An unhandled error has occurred", "general.something_went_wrong");
+                                var result = JsonSerializer.Serialize(response);
                                 return context.Response.WriteAsync(result);
                             }
 
@@ -135,7 +136,8 @@ namespace InteractiveLeads.Infrastructure
                             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                             context.Response.ContentType = "application/json";
 
-                            var result = JsonSerializer.Serialize(ResponseWrapper.Fail("You are not authorized."));
+                            var response = new Response().AddErrorMessage("You are not authorized", "general.unauthorized");
+                            var result = JsonSerializer.Serialize(response);
                             return context.Response.WriteAsync(result);
                         }
 
@@ -146,7 +148,8 @@ namespace InteractiveLeads.Infrastructure
                         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         context.Response.ContentType = "application/json";
 
-                        var result = JsonSerializer.Serialize(ResponseWrapper.Fail("You are not authorized to access this resource."));
+                        var response = new Response().AddErrorMessage("You are not authorized to access this resource", "general.access_denied");
+                        var result = JsonSerializer.Serialize(response);
                         return context.Response.WriteAsync(result);
                     }
                 };

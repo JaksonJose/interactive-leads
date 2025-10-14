@@ -1,5 +1,4 @@
-﻿using InteractiveLeads.Application.Feature.Tenancy;
-using InteractiveLeads.Application.Wrappers;
+﻿using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Tenancy.Commands
@@ -11,7 +10,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// This command implements the CQRS pattern for tenant deactivation operations.
     /// Deactivating a tenant disables their access to the system.
     /// </remarks>
-    public sealed class DeactivateTenantCommand : IRequest<IResponseWrapper>
+    public sealed class DeactivateTenantCommand : IRequest<IResponse>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the tenant to deactivate.
@@ -25,7 +24,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// <remarks>
     /// Deactivates the specified tenant via ITenantService.
     /// </remarks>
-    public sealed class DeactivateTenantCommandHandler : IRequestHandler<DeactivateTenantCommand, IResponseWrapper>
+    public sealed class DeactivateTenantCommandHandler : IRequestHandler<DeactivateTenantCommand, IResponse>
     {
         private readonly ITenantService _tenantService;
 
@@ -44,11 +43,12 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         /// <param name="request">The command containing the tenant identifier.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns>A wrapped response containing the deactivated tenant identifier if deactivation succeeds.</returns>
-        public async Task<IResponseWrapper> Handle(DeactivateTenantCommand request, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(DeactivateTenantCommand request, CancellationToken cancellationToken)
         {
             var tenantId = await _tenantService.DeactivateAsync(request.TenantId);
 
-            return await ResponseWrapper<string>.SuccessAsync(tenantId);
+            return new Response<string>(tenantId)
+                .AddSuccessMessage("Tenant deactivated successfully", "tenant.deactivated_successfully");
         }
     }
 }

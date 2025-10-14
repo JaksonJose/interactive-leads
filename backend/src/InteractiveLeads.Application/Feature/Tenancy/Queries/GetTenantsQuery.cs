@@ -1,4 +1,4 @@
-﻿using InteractiveLeads.Application.Wrappers;
+﻿using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Tenancy.Queries
@@ -9,7 +9,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
     /// <remarks>
     /// This query implements the CQRS pattern for retrieving all tenant records.
     /// </remarks>
-    public sealed class GetTenantsQuery : IRequest<IResponseWrapper>
+    public sealed class GetTenantsQuery : IRequest<IResponse>
     {
     }
 
@@ -19,7 +19,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
     /// <remarks>
     /// Retrieves all tenants via ITenantService and returns them as a list.
     /// </remarks>
-    public sealed class GetTenantsQueryHandler : IRequestHandler<GetTenantsQuery, IResponseWrapper>
+    public sealed class GetTenantsQueryHandler : IRequestHandler<GetTenantsQuery, IResponse>
     {
         private readonly ITenantService _tenantService;
 
@@ -38,11 +38,12 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
         /// <param name="request">The query request (contains no parameters).</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns>A wrapped response containing a list of all tenants.</returns>
-        public async Task<IResponseWrapper> Handle(GetTenantsQuery request, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(GetTenantsQuery request, CancellationToken cancellationToken)
         {
             var tenantInDb = await _tenantService.GetTenantsAsync();
 
-            return await ResponseWrapper<List<TenantResponse>>.SuccessAsync(data: tenantInDb);
+            return new Response<List<TenantResponse>>(tenantInDb)
+                .AddSuccessMessage("Tenants retrieved successfully", "tenants.retrieved_successfully");
         }
     }
 }
