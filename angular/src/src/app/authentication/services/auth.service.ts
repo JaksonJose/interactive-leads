@@ -6,38 +6,41 @@ interface ExtendedJwtPayload extends JwtPayload {
   role?: string | string[];
 }
 
-import { LoginModel } from '../models/loginModel';
+import { LoginModel, TokenResponse, LoginResponseWrapper, RefreshTokenResponseWrapper, RegisterModel } from '../models';
 import { isPlatformBrowser } from '@angular/common';
-import { RegisterModel } from '../models';
-import { environment } from '@environments/environment';
+import { environment } from '@environment/environment';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = `${environment.apiUrl}/${environment.apiVersion}/auth`;
+  private baseUrl = `${environment.apiUrl}/${environment.apiVersion}/token`;
 
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
 
-  public async AuthenticateUser(login: LoginModel) : Promise<unknown> {
-    return this.http.post(`${this.baseUrl}/login`, login, { withCredentials: true });
+  public async AuthenticateUser(login: LoginModel): Promise<Observable<LoginResponseWrapper>> {
+    return this.http.post<LoginResponseWrapper>(`${this.baseUrl}/login`, login, { withCredentials: true });
   }
 
   public createAuthenticationAsync(registerModel: RegisterModel) : Observable<unknown>  {
     return this.http.post(`${this.baseUrl}/register`, registerModel);
   }
 
-  public updateCuthenticationAndConsultant(registerModel: RegisterModel) : Observable<unknown>  {
+  public updateCuthenticationAndConsultant(registerModel: RegisterModel): Observable<unknown> {
     return this.http.post(`${this.baseUrl}/update`, registerModel);
   }
 
-   /**
-   * Obtain the jwt token of the user logged
-   * @returns Get the Token stored in local storage
+  public refreshToken(refreshToken: string): Observable<RefreshTokenResponseWrapper> {
+    return this.http.post<RefreshTokenResponseWrapper>(`${this.baseUrl}/refresh-token`, { currentJwt: refreshToken });
+  }
+
+  /**
+   * Obtain the JWT token of the logged user
+   * @returns Get the token stored in local storage
    */
-   public getAuthorizationToken(): string | null {
+  public getAuthorizationToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem('token');
     }
@@ -45,8 +48,45 @@ export class AuthService {
     return null;
   }
 
-   /**
-   * Get roles from token
+  /**
+   * Get refresh token from local storage
+   * @returns The refresh token stored in local storage
+   */
+  public getRefreshToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('refreshToken');
+    }
+
+    return null;
+  }
+
+  /**
+   * Store tokens in local storage
+   * @param tokenResponse Token response containing JWT and refresh token
+   */
+  public storeTokens(tokenResponse: TokenResponse): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('token', tokenResponse.jwt);
+      localStorage.setItem('refreshToken', tokenResponse.refreshToken);
+      localStorage.setItem('refreshTokenExpiry', tokenResponse.refreshTokenExpirationDate.toString());
+    }
+  }
+
+  /**
+   * Clear all authentication tokens from local storage
+   */
+  public clearTokens(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('refreshTokenExpiry');
+      localStorage.removeItem('interactiveUser');
+    }
+  }
+
+  /**
+   * Get roles from JWT token
+   * @returns Array of user roles
    */
    public getUserRoles(): string[] {
     const token = this.getAuthorizationToken();
@@ -59,15 +99,17 @@ export class AuthService {
 
   /**
    * Check if user has a specific role
+   * @param role The role to check
+   * @returns True if user has the role
    */
     public hasRole(role: string): boolean {
       return this.getUserRoles().includes(role);
     }
 
-      /**
-  * Verify if user is authenticated
-  * @returns boolean
-  */
+  /**
+   * Verify if user is authenticated
+   * @returns True if user is logged in and token is valid
+   */
   public isUserLoggedIn(): boolean {
     const token = this.getAuthorizationToken();
 
@@ -78,53 +120,53 @@ export class AuthService {
 
   /**
    * Verify if the user is a consultant
-   * @returns true or false
+   * @returns True if user has consultant role
    */
   public isConsultant() : boolean {
     const roles = this.getUserRoles();
     return roles.includes('Consultant');
   }
 
-    /**
-   * Verify if the user is a consultant
-   * @returns true or false
+  /**
+   * Verify if the user is a manager
+   * @returns True if user has manager role
    */
-    public isManager() : boolean {
+  public isManager() : boolean {
       const roles = this.getUserRoles();
       return roles.includes('Manager');
     }
 
-    /**
-   * Verify if the user is a owner
-   * @returns true or false
+  /**
+   * Verify if the user is an owner
+   * @returns True if user has owner role
    */
   public isOwner(): boolean {
     const roles = this.getUserRoles();
     return roles.includes('Owner');
   }
 
-    /**
-   * Verify if the user is a support role
-   * @returns true or false
+  /**
+   * Verify if the user has support role
+   * @returns True if user has support role
    */
   public isSupport() : boolean {
     const roles = this.getUserRoles();
     return roles.includes('Support');
   }
 
-    /**
-   * Verify if the user is a sysadmin
-   * @returns true or false
+  /**
+   * Verify if the user is a system administrator
+   * @returns True if user has sysadmin role
    */
   public isSysAdmin() : boolean {
     const roles = this.getUserRoles();
     return roles.includes('SysAdmin');
   }
 
-   /**
-   * Verify is token is valid and not expirated
-   * @param token
-   * @returns Date
+  /**
+   * Get token expiration date
+   * @param token The JWT token to decode
+   * @returns Expiration date or null if invalid
    */
    private getTokenExpirationDate(token: string): Date | null {
     try {
@@ -143,9 +185,9 @@ export class AuthService {
   }
 
   /**
-   * Verify if token is valid
-   * @param token
-   * @returns boolean
+   * Verify if token is valid and not expired
+   * @param token The JWT token to validate
+   * @returns True if token is valid and not expired
    */
   private isTokenExpired(token?: string): boolean {
     if (!token) return true;

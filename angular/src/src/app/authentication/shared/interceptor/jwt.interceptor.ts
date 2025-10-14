@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 
 import { AuthService } from '../../services/auth.service';
-import { Message } from '@core/models/message';
+import { BaseResponseWrapper, GenericResponseWrapper } from '../../models/response-wrapper';
 
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
@@ -35,7 +35,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 };
 
 const handleError = (error: HttpErrorResponse, messageService: MessageService, translateService: TranslateService) => {
-  // api conection issue
+  // API connection issue
   if (error.status === 0) {
     messageService.add({
       key: 'app-toast',
@@ -81,8 +81,9 @@ const handleError = (error: HttpErrorResponse, messageService: MessageService, t
     })
   }
   else {
-    const errorMessages: Array<Message>  = error.error?.messages;
-    if (!errorMessages) {
+    const errorResponse: BaseResponseWrapper = error.error;
+    
+    if (!errorResponse || !errorResponse.messages) {
       messageService.add({
         key: 'app-toast',
         severity: 'error',
@@ -93,19 +94,19 @@ const handleError = (error: HttpErrorResponse, messageService: MessageService, t
       return throwError(() => error);
     }
 
-    if (errorMessages) {
-
-      if (errorMessages[0].messageText === 'authenticationInvalid'
-        || errorMessages[0].messageText === 'authenticationBlocked') {
+    if (errorResponse.messages.length > 0) {
+      // Check if it's an authentication error to avoid showing toast
+      if (errorResponse.messages[0] === 'authenticationInvalid'
+        || errorResponse.messages[0] === 'authenticationBlocked') {
           return throwError(() => error);
         }
 
       messageService.addAll(
-        errorMessages.map(e => ({
+        errorResponse.messages.map(message => ({
           key: 'app-toast',
           severity: 'error',
           summary: translateService.instant('api.error.title'),
-          detail: translateService.instant(`api.error.${e.messageText}`),
+          detail: translateService.instant(`api.error.${message}`),
         })
       ));
     }
@@ -114,17 +115,17 @@ const handleError = (error: HttpErrorResponse, messageService: MessageService, t
   return throwError(() => error);
 }
 
-const handleSuccess = (event: HttpResponse<any>, messageService: MessageService, translateService: TranslateService)  => {
-    const messages: Array<Message> = event.body?.messages ?? new Array<Message>();
+const handleSuccess = (event: HttpResponse<unknown>, messageService: MessageService, translateService: TranslateService)  => {
+    const response: BaseResponseWrapper = event.body as BaseResponseWrapper;
 
-    if (messages.length === 0) return;
+    if (!response || !response.messages || response.messages.length === 0) return;
 
     messageService.addAll(
-      messages.map(m => ({
+      response.messages.map(message => ({
         key: 'app-toast',
         severity: 'success',
         summary: translateService.instant('api.success.title'),
-        detail: translateService.instant(`api.success.${m.messageText}`),
+        detail: translateService.instant(`api.success.${message}`),
       }))
     );
 }

@@ -4,10 +4,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-//import { Message as MessageModel } from '@core/models/message'
 import { AuthService } from '../services/auth.service';
-import { LoginModel } from '../models/loginModel';
-//import { TokenResponse } from '@core/responses/tokenResponse';
+import { LoginModel, LoginResponseWrapper } from '../models';
 import { PRIME_NG_MODULES } from '../../shared/primeng-imports';
 
 @Component({
@@ -27,7 +25,7 @@ export class LoginComponent {
 
   loginForm: FormGroup;
   //messages: Message[] = [];
-  messages = signal<{ severity: string; content: string }[]>([]);
+  messages = signal<{ severity: 'error' | 'success' | 'info' | 'warn' | 'secondary' | 'contrast'; content: string }[]>([]);
   showRemainingAttempts = false;
   attemptsRemaining = 0;
 
@@ -54,33 +52,44 @@ export class LoginComponent {
       const response = await this.authService.AuthenticateUser(login);
 
       response.subscribe({
-        next: (response: TokenResponse) => {
-          if (response.model?.token) {
-            const interactiveUser = JSON.stringify(response.model.consultant);
+        next: (response: LoginResponseWrapper) => {
+          if (response.isSuccessful && response.data) {
+            // Store tokens using AuthService method
+            this.authService.storeTokens(response.data);
 
-            localStorage.setItem('token', response.model.token);
-
-            if (response.model?.consultant?.id)
-              localStorage.setItem('interactiveUser', interactiveUser);
-
+            // Navigate to main page
             this.router.navigate(['/leads']);
+          } else {
+            // Show error messages from response
+            this.messages.set([
+              {
+                severity: "error",
+                content: response.messages.join(', ')
+              }
+            ]);
           }
         },
-        error: (error: any) => {
-          const errorMessages: Array<MessageModel>  = error.error?.messages;
+        error: (error: { error: LoginResponseWrapper }) => {
+          // Clear previous messages
+          this.messages.set([]);
 
-          if(error.error.model.attemptsRemaining > 0) {
-            this.attemptsRemaining = Number(error.error.model.attemptsRemaining);
-            this.showRemainingAttempts = true;
+          const errorResponse: LoginResponseWrapper = error.error;
+          
+          if (errorResponse && errorResponse.messages) {
+            this.messages.set([
+              {
+                severity: "error",
+                content: this.translate.instant(`api.error.${errorResponse.messages[0]}`)
+              }
+            ]);
+          } else {
+            this.messages.set([
+              {
+                severity: "error",
+                content: this.translate.instant('login.error.generic')
+              }
+            ]);
           }
-
-          this.messages.set([
-            {
-              severity: "error",
-              content: this.translate.instant(`api.error.${errorMessages[0].messageText}`,
-                { remaining: error.error.model.attemptsRemaining })
-            }
-          ]);
         }
       });
     }

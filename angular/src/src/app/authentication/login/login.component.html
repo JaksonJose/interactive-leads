@@ -1,4 +1,4 @@
-<ng-container *ngIf="isBrowser">
+<ng-container>
 <div class="login-container">
 	<p-card [header]="'login.title' | translate" >
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -51,7 +51,9 @@
 
 	    <!-- Login button -->
       <div class="actions">
-      	<button pButton type="submit" [label]="'login.title' | translate" [disabled]="loginForm.invalid"></button>
+		<button pButton type="submit" [label]="'login.title' | translate" [disabled]="loginForm.invalid">
+			{{ 'login.title' | translate }}
+		</button>
     	</div>
   	</form>
 	</p-card>
