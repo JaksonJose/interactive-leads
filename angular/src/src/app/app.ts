@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ...PRIME_NG_MODULES],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

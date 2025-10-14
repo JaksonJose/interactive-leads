@@ -6,10 +6,12 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
+import { jwtInterceptor } from '@authentication/shared';
 
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeuix/themes';
 import Lara from '@primeuix/themes/aura';
+import { MessageService } from 'primeng/api';
 
 const MyPreset = definePreset(Lara, {
   semantic: {
@@ -82,7 +84,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideAnimationsAsync(),
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([])),
+    MessageService,
+    provideHttpClient(withFetch(), withInterceptors([jwtInterceptor])),
     provideTranslateService({
       lang: 'pt-BR',
       fallbackLang: 'pt-BR',

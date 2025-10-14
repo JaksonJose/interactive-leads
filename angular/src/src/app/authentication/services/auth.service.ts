@@ -20,8 +20,8 @@ export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
 
-  public async AuthenticateUser(login: LoginModel): Promise<Observable<LoginResponseWrapper>> {
-    return this.http.post<LoginResponseWrapper>(`${this.baseUrl}/login`, login, { withCredentials: true });
+  public AuthenticateUser(login: LoginModel): Observable<LoginResponseWrapper> {
+    return this.http.post<LoginResponseWrapper>(`${this.baseUrl}/login`, login, { withCredentials: false });
   }
 
   public createAuthenticationAsync(registerModel: RegisterModel) : Observable<unknown>  {

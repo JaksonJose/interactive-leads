@@ -4,8 +4,15 @@ using InteractiveLeads.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader());
+});
+
 builder.Services.AddControllers();
-//builder.Services.AddOpenApi();
 
 builder.Services.AddInfraestructureServices(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Services.GetJwtSettings(builder.Configuration));
@@ -21,6 +28,8 @@ if (app.Environment.IsDevelopment())
 {
     //app.MapOpenApi();
 }
+
+app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 

@@ -42,25 +42,20 @@ export class LoginComponent {
     });
   }
 
-  async onSubmit(): Promise<void> {
+  onSubmit(): void {
     if (this.loginForm.valid) {
       const login = new LoginModel();
 
       login.userName = this.loginForm.get('username')?.value;
       login.password = this.loginForm.get('password')?.value;
 
-      const response = await this.authService.AuthenticateUser(login);
-
-      response.subscribe({
+      this.authService.AuthenticateUser(login).subscribe({
         next: (response: LoginResponseWrapper) => {
           if (response.isSuccessful && response.data) {
-            // Store tokens using AuthService method
             this.authService.storeTokens(response.data);
 
-            // Navigate to main page
-            this.router.navigate(['/leads']);
+            this.router.navigate(['/']);
           } else {
-            // Show error messages from response
             this.messages.set([
               {
                 severity: "error",
@@ -70,7 +65,6 @@ export class LoginComponent {
           }
         },
         error: (error: { error: LoginResponseWrapper }) => {
-          // Clear previous messages
           this.messages.set([]);
 
           const errorResponse: LoginResponseWrapper = error.error;
