@@ -12,7 +12,7 @@ namespace InteractiveLeads.Api.Controllers.Base
     /// All API controllers should inherit from this base controller.
     /// Requires authorization by default.
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize]
     public class BaseApiController : ControllerBase

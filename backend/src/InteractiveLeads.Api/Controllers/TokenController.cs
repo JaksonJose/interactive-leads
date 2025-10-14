@@ -16,8 +16,6 @@ namespace InteractiveLeads.Api.Controllers
     /// <remarks>
     /// Provides endpoints for user authentication and JWT token management.
     /// </remarks>
-    [Route("api/[controller]")]
-    [ApiController]
     public class TokenController : BaseApiController
     {
         /// <summary>
