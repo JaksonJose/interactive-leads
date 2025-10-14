@@ -1,0 +1,59 @@
+<ng-container *ngIf="isBrowser">
+<div class="login-container">
+	<p-card [header]="'login.title' | translate" >
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+			<!-- User name or Email input -->
+      <div class="field">
+    		<input id="username"
+					pInputText
+					type="text"
+					formControlName="username"
+					variant="outlined"
+					[style]="{ width: '100%'}"
+					[placeholder]="'login.userName' | translate" translate />
+
+				<!-- Error messages -->
+				<div>
+        	<small *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error">
+          		{{ 'login.userNameRequired' | translate }}
+        	</small>
+				</div>
+      </div>
+
+			<!-- Password input -->
+    	<div class="field">
+				<p-password id="password"
+					formControlName="password"
+					[feedback]="false"
+					[toggleMask]="true"
+					[ngClass]="{ 'ng-invalid ng-dirty' : loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
+					[style]="{'width':'100%'}"
+					[inputStyle]="{'width':'100%'}"
+					[placeholder]="'login.password' | translate" />
+
+				<!-- Error messages -->
+      	<small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error">
+      	  {{ 'login.passwordRequired' | translate }}
+      	</small>
+
+        <small *ngIf="showRemainingAttempts">
+          {{ 'login.attemptsRemaining' | translate: { attempts: attemptsRemaining } }}
+        </small>
+      </div>
+
+      <!-- Error Messages -->
+	  <div class="mb-4">
+		  @for (message of messages(); track message; let first = $first) {
+        <p-message [severity]="message.severity" [text]="message.content" [ngClass]="{ 'mt-4': !first }" />
+      }
+	  </div>
+
+	    <!-- Login button -->
+      <div class="actions">
+      	<button pButton type="submit" [label]="'login.title' | translate" [disabled]="loginForm.invalid"></button>
+    	</div>
+  	</form>
+	</p-card>
+</div>
+</ng-container>

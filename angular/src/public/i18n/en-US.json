@@ -1,0 +1,73 @@
+{
+  "company": {
+    "brandNameRequired": "O nome fantasia é obrigatório",
+    "cityRequired": "A cidade é obrigatória",
+    "emailRequired": "O email é obrigatório",
+    "identificationNumberRequired": "CNPJ é obrigatório",
+    "legalNameRequired": "O Razão social é obrigatório",
+    "neighborhoodRequired": "O bairro é obrigatório",
+    "phoneNumberRequired": "O telefone é obrigatório",
+    "stateRequired": "UF é obrigatório",
+    "streetRequired": "Rua/Av é obrigatório",
+    "zipcodeRequired": "O CEP é Obrigatório"
+  },
+  "api": {
+    "error": {
+      "AuthenticationBlocked": "User blocked. Please contact support.",
+      "AuthenticationInvalid": "Invalid username/email or password.",
+      "CompanyNotSaved": "The company was not created.",
+      "CompanyExceptionWhenTrySave": "Error creating company. Please contact support.",
+      "CEPNotFound": "ZIP code not found.",
+      "CNPJNotFound": "CNPJ not found.",
+      "DuplicateUserName": "User already exists.",
+      "Unavailable": "Failed to connect to the server.",
+      "ServiceUnavailable": "Server is temporarily unavailable.",
+      "Timeout": "timeout",
+      "TimeoutMessage": "The server response time exceeded the limit. Please try again later.",
+      "title": "Error"
+    },
+    "success": {
+      "CompanyCreated": "The company was successfully created."
+    }
+  },
+  "login": {
+    "attemptsRemaining": "Attempts remaining: {{attempts}}.",
+    "password": "Password",
+    "passwordRequired": "Password is required`.",
+    "signin": "Sign In",
+    "title": "Sign In",
+    "userName": "User or Email",
+    "userNameRequired": "User is required."
+  },
+  "menu": {
+    "admin": "Admin",
+    "analytics": "Analíticos",
+    "company": "Empresas",
+    "dashboard": "Dashboard",
+    "consultants": "Consultores",
+    "graphics": "Gráficos",
+    "leads": "Leads",
+    "report": "Relatório" ,
+    "salesfunnel": "Funil de Vendas",
+    "schedule": "Agendamentos"
+  },
+  "primeng": {
+    "startsWith": "Começa com",
+    "contains": "Contém",
+    "notContains": "Não contém",
+    "endsWith": "Termina com",
+    "equals": "É Igual",
+    "notEquals": "Não é igual",
+    "noFilter": "No Filter",
+    "lt": "Menor que",
+    "lte": "Menor que ou igual a",
+    "gt": "Maior que",
+    "gte": "Maior que ou igual a",
+    "matchAll": "Combinar todos",
+    "matchAny": "Qualquer um",
+    "clear": "Limpar",
+    "apply": "Aplicar",
+    "addRule": "Adicionar Regra",
+    "removeRule": "Remover Regra"
+  }
+}

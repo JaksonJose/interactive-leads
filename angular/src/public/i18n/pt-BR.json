@@ -1,0 +1,94 @@
+{
+  "api": {
+    "error": {
+      "AuthenticationBlocked": "Usuário bloqueado. Entre em contato com suporte.",
+      "AuthenticationInvalid": "Usuário/Email ou Senha inválida.",
+      "CompanyNotSaved": "A empresa não foi criada",
+      "CompanyExceptionWhenTrySave": "Erro ao criar empresa, entre em contato com supporte.",
+      "ConsultantCreateError": "Erro ao criar consultor.",
+      "ConsultantCompanyInsertError": "Erro ao tentar inserir uma empresa para o consultor.",
+      "CEPNotFound": "CEP Não Encontrado",
+      "CNPJNotFound": "CNPJ não encontrado.",
+      "DuplicateUserName": "Usuário já existe.",
+      "ErrorRolesUpdate": "Erro ao tentar atulaizar a permissão do usuário.",
+      "InvalidUserName": "Nome de usuário inválido",
+      "Unavailable": "Falha na conexão com o servidor.",
+      "ServiceUnavailable": "Servidor está temporariamente indisponível.",
+      "Timeout": "timeout",
+      "TimeoutMessage": "Tempo de resposta do servidor excedeu o limite. Tenta mais tarde.",
+      "title": "Erro",
+      "unavailable": "Serviço indisponível"
+    },
+    "success": {
+      "title": "Sucesso",
+      "CompanyCreated": "A empresa foi Criada com suscesso.",
+      "UserCreated": "Usuário Criado com Sucesso.",
+      "UserUpdated": "Usuário atualizado com success."
+    }
+  },
+  "auth": {
+    "emailRequired": "Email é obrigátorio.",
+    "phoneNumberRequired": "Telefone é obrigatório.",
+    "rolesRequired": "Permissão de usuário é obrigatório.",
+    "userNameRequired": "Usuário é obrigatório."
+  },
+  "consultant": {
+    "fullNameRequired": "O nome é obrigatório."
+  },
+  "company": {
+    "brandNameRequired": "O nome fantasia é obrigatório",
+    "cityRequired": "A cidade é obrigatória",
+    "emailRequired": "O email é obrigatório",
+    "identificationNumberRequired": "CNPJ é obrigatório",
+    "legalNameRequired": "O Razão social é obrigatório",
+    "neighborhoodRequired": "O bairro é obrigatório",
+    "phoneNumberRequired": "O telefone é obrigatório",
+    "stateRequired": "UF é obrigatório",
+    "streetRequired": "Rua/Av é obrigatório",
+    "zipcodeRequired": "O CEP é Obrigatório"
+  },
+  "login": {
+    "attemptsRemaining": "Tentativas restantates: {{attempts}}.",
+    "password": "Senha",
+    "passwordRequired": "Senha é obrigatório.",
+    "signin": "Entrar",
+    "title": "Entrar",
+    "userName": "Usuário ou Email",
+    "userNameRequired": "Usuário ou Email é obrigatório."
+  },
+  "menu": {
+    "admin": "Admin",
+    "analytics": "Analíticos",
+    "company": "Empresas",
+    "dashboard": "Dashboard",
+    "consultants": "Consultores",
+    "graphics": "Gráficos",
+    "leads": "Leads",
+    "report": "Relatório" ,
+    "salespipelines": "Funil de Vendas",
+    "schedule": "Agendamentos"
+  },
+  "primeng": {
+    "startsWith": "Começa com",
+    "contains": "Contém",
+    "notContains": "Não contém",
+    "endsWith": "Termina com",
+    "equals": "É Igual",
+    "notEquals": "Não é igual",
+    "noFilter": "No Filter",
+    "lt": "Menor que",
+    "lte": "Menor que ou igual a",
+    "gt": "Maior que",
+    "gte": "Maior que ou igual a",
+    "matchAll": "Combinar todos",
+    "matchAny": "Qualquer um",
+    "clear": "Limpar",
+    "apply": "Aplicar",
+    "addRule": "Adicionar Regra",
+    "removeRule": "Remover Regra"
+  },
+  "date": {
+    "today": "Hoje",
+    "yesterday": "Ontem"
+  }
+}

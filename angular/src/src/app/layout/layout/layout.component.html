@@ -1,5 +1,90 @@
 <ng-container>
-   <div class="flex h-full" style="flex-direction: column;">
-    <app-bar />
-   </div>
+  <div class="flex h-full" style="flex-direction: column;">
+  <!--app bar-->
+  <p-menubar>
+    <ng-template pTemplate="start">
+      <div class="flex flex-column font-semibold">
+        Interactive <span>Leads</span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="end">
+      <p-avatar
+        image="https://www.gravatar.com/avatar?d=mp"
+        shape="circle"
+        class="p-mr-2 cursor-pointer"
+        size="large"
+        (click)="menu.toggle($event)">
+      </p-avatar>
+
+      <p-menu #menu [popup]="true" [model]="userMenuItems"></p-menu>
+    </ng-template>
+  </p-menubar>
+
+  <div class="app-layout">
+    <!-- side menu -->
+    <div
+      Class="sidebar p-sidebar p-component"
+      [ngClass]="{'collapsed': collapsed}"
+      (mouseenter)="onMouseEnter()"
+      (mouseleave)="onMouseLeave()">
+      <ul>
+        @for(item of menuItems; track $index) {
+          <li [routerLink]="item.route">
+
+            <div class="sidebar-menu-item" routerLinkActive="active" tabindex="0"
+              (click)="toggleSubMenu(item)"
+              (keydown.enter)="toggleSubMenu(item)"
+              (keydown.space)="toggleSubMenu(item)">
+              <div style="width: 100%;">
+                <div>
+                  <i [class]="'pi ' + item.icon"></i>
+                  @if (!collapsed) {
+                    <span class="p-menuitem-text">{{ item.label | translate }}</span>
+                  }
+                </div>
+              </div>
+
+              @if (!collapsed)
+              {
+                <div>
+                  @if (item.children.length > 0 && !item.expanded) {
+                    <span>
+                      <i class="pi pi-arrow-down" style="font-size: 12px;"></i>
+                    </span>
+                  }
+
+                  @if (item.children.length > 0 && item.expanded) {
+                    <span>
+                      <i class="pi pi-arrow-up" style="font-size: 12px;"></i>
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (item.expanded && item.children.length && !collapsed) {
+              <ul>
+                @for(child of item.children; track $index) {
+                  <li [routerLink]="child.route">
+
+                    <div class="sidebar-menu-item" routerLinkActive="active">
+                      <i [class]="'pi ' + child.icon"></i>
+                      <a>{{ child.label | translate }}</a>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- render content -->
+    <div class="content">
+      <router-outlet />
+    </div>
+  </div>
+</div>
+
 </ng-container>
