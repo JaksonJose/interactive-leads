@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InteractiveLeads.Infrastructure.Migrations.Tenant
 {
     /// <inheritdoc />
-    public partial class InitialDbData : Migration
+    public partial class InitialDbTenant : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,11 +34,39 @@ namespace InteractiveLeads.Infrastructure.Migrations.Tenant
                     table.PrimaryKey("PK_Tenants", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserTenantMappings",
+                schema: "Multitenancy",
+                columns: table => new
+                {
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTenantMappings", x => x.Email);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_Identifier",
                 schema: "Multitenancy",
                 table: "Tenants",
                 column: "Identifier",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTenantMappings_Email_IsActive",
+                schema: "Multitenancy",
+                table: "UserTenantMappings",
+                columns: new[] { "Email", "IsActive" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTenantMappings_Email_Unique",
+                schema: "Multitenancy",
+                table: "UserTenantMappings",
+                column: "Email",
                 unique: true);
         }
 
@@ -47,6 +75,10 @@ namespace InteractiveLeads.Infrastructure.Migrations.Tenant
         {
             migrationBuilder.DropTable(
                 name: "Tenants",
+                schema: "Multitenancy");
+
+            migrationBuilder.DropTable(
+                name: "UserTenantMappings",
                 schema: "Multitenancy");
         }
     }

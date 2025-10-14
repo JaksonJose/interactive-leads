@@ -25,6 +25,13 @@ namespace InteractiveLeads.Infrastructure.Identity.Models
         public bool IsActive { get; set; }
         
         /// <summary>
+        /// Gets or sets the tenant ID to which this user belongs.
+        /// This establishes the multi-tenant relationship for the user.
+        /// Note: This is a reference to the tenant ID in the shared database.
+        /// </summary>
+        public string TenantId { get; set; } = string.Empty;
+        
+        /// <summary>
         /// Gets or sets the date and time when the user was created.
         /// This value is automatically set when the user is first saved to the database.
         /// </summary>

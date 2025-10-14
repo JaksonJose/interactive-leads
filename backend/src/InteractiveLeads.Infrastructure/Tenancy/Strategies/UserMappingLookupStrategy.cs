@@ -1,24 +1,24 @@
-using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using Finbuckle.MultiTenant.Strategies;
-using InteractiveLeads.Infrastructure.Tenancy.Extensions;
+using InteractiveLeads.Infrastructure.Context.Tenancy;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace InteractiveLeads.Infrastructure.Tenancy.Strategies
 {
     /// <summary>
-    /// Resolves tenant automatically from user email in login requests.
-    /// Uses an optimized method to find the tenant by email address.
+    /// Strategy that uses a user-tenant mapping table for optimal performance.
+    /// This provides O(1) lookup time by directly querying the mapping table.
     /// </summary>
-    public class EmailLookupStrategy : IMultiTenantStrategy
+    public class UserMappingLookupStrategy : IMultiTenantStrategy
     {
-        private readonly IMultiTenantStore<InteractiveTenantInfo> _tenantStore;
+        private readonly TenantDbContext _tenantDbContext;
 
-        public EmailLookupStrategy(IMultiTenantStore<InteractiveTenantInfo> tenantStore)
+        public UserMappingLookupStrategy(TenantDbContext tenantDbContext)
         {
-            _tenantStore = tenantStore;
+            _tenantDbContext = tenantDbContext;
         }
 
         public async Task<string?> GetIdentifierAsync(object context)
@@ -59,9 +59,15 @@ namespace InteractiveLeads.Infrastructure.Tenancy.Strategies
                 if (string.IsNullOrWhiteSpace(email))
                     return null;
 
-                // Find tenant by owner email - OTIMIZADO usando extensão
-                var tenant = await _tenantStore.FindByEmailAsync(email);
-                return tenant?.Id;
+                // PERFORMANCE MÁXIMA: Busca direta na tabela de mapeamento
+                // O(1) - busca direta por índice único, escalável para milhões de usuários
+                var mapping = await _tenantDbContext.UserTenantMappings
+                    .Where(m => m.Email == email && m.IsActive)
+                    .Select(m => m.TenantId)
+                    .AsNoTracking() // ← Otimização: sem tracking para query readonly
+                    .FirstOrDefaultAsync();
+
+                return mapping;
             }
             catch
             {
@@ -70,4 +76,3 @@ namespace InteractiveLeads.Infrastructure.Tenancy.Strategies
         }
     }
 }
-

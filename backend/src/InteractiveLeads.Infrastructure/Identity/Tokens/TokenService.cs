@@ -59,6 +59,13 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
                 throw new UnauthorizedException(response);
             }
 
+            // TODO: Adicionar validação de TenantId quando implementarmos UserTenantLookupStrategy
+            // if (userInDb.TenantId != _multiTenantContextAccessor.MultiTenantContext.TenantInfo.Id)
+            // {
+            //     response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
+            //     throw new UnauthorizedException(response);
+            // }
+
             if (!userInDb.IsActive)
             {
                 response.AddErrorMessage("User not active. Contact administrator.", "auth.user_not_active");

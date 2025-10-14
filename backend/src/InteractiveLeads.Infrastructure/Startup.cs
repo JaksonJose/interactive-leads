@@ -51,7 +51,7 @@ namespace InteractiveLeads.Infrastructure
                 npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()));
 
             services.AddMultiTenant<InteractiveTenantInfo>()
-                .WithStrategy<EmailLookupStrategy>(ServiceLifetime.Scoped)
+                .WithStrategy<UserMappingLookupStrategy>(ServiceLifetime.Scoped)
                 .WithHeaderStrategy("tenant")
                 .WithClaimStrategy("tenant")
                 .WithEFCoreStore<TenantDbContext, InteractiveTenantInfo>();

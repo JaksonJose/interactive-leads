@@ -1,5 +1,6 @@
 ﻿using Finbuckle.MultiTenant;
 using InteractiveLeads.Infrastructure.Identity.Models;
+using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,6 +16,24 @@ namespace InteractiveLeads.Infrastructure.Context.Application
             {
                 builder.ToTable("Users", "Identity")
                        .IsMultiTenant();
+
+                // Configuração do TenantId
+                builder.Property(u => u.TenantId)
+                       .HasMaxLength(64)
+                       .IsRequired()
+                       .HasComment("ID do tenant ao qual este usuário pertence");
+
+                // Índice composto para performance - garante email único por tenant
+                builder.HasIndex(u => new { u.TenantId, u.Email })
+                       .IsUnique(true)
+                       .HasDatabaseName("IX_Users_TenantId_Email");
+
+                // Índice para busca rápida por tenant
+                builder.HasIndex(u => u.TenantId)
+                       .HasDatabaseName("IX_Users_TenantId");
+
+                // TenantId é apenas uma referência string, não um FK
+                // O relacionamento real está no banco shared (Tenants)
 
                 // Audit fields configuration
                 builder.Property(u => u.CreatedAt)

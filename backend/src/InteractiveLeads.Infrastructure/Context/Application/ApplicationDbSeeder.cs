@@ -1,10 +1,12 @@
 ﻿
 using Finbuckle.MultiTenant.Abstractions;
 using InteractiveLeads.Infrastructure.Constants;
+using InteractiveLeads.Infrastructure.Context.Tenancy;
 using InteractiveLeads.Infrastructure.Identity.Models;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
 namespace InteractiveLeads.Infrastructure.Context.Application
@@ -13,12 +15,14 @@ namespace InteractiveLeads.Infrastructure.Context.Application
         IMultiTenantContextAccessor<InteractiveTenantInfo> tenantInfoContextAccessor,
         RoleManager<ApplicationRole> roleManager,
         UserManager<ApplicationUser> userManager,
-        ApplicationDbContext applicationDbContext)
+        ApplicationDbContext applicationDbContext,
+        IServiceProvider serviceProvider)
     {
         private readonly IMultiTenantContextAccessor<InteractiveTenantInfo> _tenantInfoContextAccessor = tenantInfoContextAccessor;
         private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly ApplicationDbContext _applicationDbContext = applicationDbContext;
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
 
         public async Task InitializeDatabaseAsync(CancellationToken cancellationToken)
         {
@@ -106,20 +110,56 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                     UserName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email,
                     NormalizedEmail = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email.ToUpperInvariant(),
                     NormalizedUserName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo?.Email?.ToUpperInvariant(),
+                    TenantId = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Id, // ← Definir o tenant do usuário
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
-                    IsActive = true,
+                    IsActive = true
                 };
 
                 var passwordHash = new PasswordHasher<ApplicationUser>();
 
                 incomingUser.PasswordHash = passwordHash.HashPassword(incomingUser, TenancyConstants.DefaultPassword);
                 await _userManager.CreateAsync(incomingUser);
+
+                // Criar mapeamento usuário-tenant para performance otimizada
+                await CreateUserTenantMappingAsync(incomingUser.Email, incomingUser.TenantId);
             }
 
             if (!await _userManager.IsInRoleAsync(incomingUser, RoleConstants.Admin))
             {
                 await _userManager.AddToRoleAsync(incomingUser, RoleConstants.Admin);
+            }
+        }
+
+        private async Task CreateUserTenantMappingAsync(string email, string tenantId)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
+                
+                // Verificar se o mapeamento já existe
+                var existingMapping = await tenantDbContext.UserTenantMappings
+                    .Where(m => m.Email == email)
+                    .FirstOrDefaultAsync();
+                
+                if (existingMapping == null)
+                {
+                    var mapping = new UserTenantMapping
+                    {
+                        Email = email,
+                        TenantId = tenantId,
+                        IsActive = true
+                    };
+                    
+                    tenantDbContext.UserTenantMappings.Add(mapping);
+                    await tenantDbContext.SaveChangesAsync();
+                }
+            }
+            catch
+            {
+                // Log error if needed, but don't fail the user creation
+                // The system can still work with the fallback strategy
             }
         }
     }

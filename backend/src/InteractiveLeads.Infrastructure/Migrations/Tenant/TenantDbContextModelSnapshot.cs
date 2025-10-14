@@ -62,6 +62,39 @@ namespace InteractiveLeads.Infrastructure.Migrations.Tenant
 
                     b.ToTable("Tenants", "Multitenancy");
                 });
+
+            modelBuilder.Entity("InteractiveLeads.Infrastructure.Tenancy.Models.UserTenantMapping", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("Email");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserTenantMappings_Email_Unique");
+
+                    b.HasIndex("Email", "IsActive")
+                        .HasDatabaseName("IX_UserTenantMappings_Email_IsActive");
+
+                    b.ToTable("UserTenantMappings", "Multitenancy");
+                });
 #pragma warning restore 612, 618
         }
     }

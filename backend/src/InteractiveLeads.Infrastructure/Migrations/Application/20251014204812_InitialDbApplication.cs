@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InteractiveLeads.Infrastructure.Migrations.Application
 {
     /// <inheritdoc />
-    public partial class InitialDbData : Migration
+    public partial class InitialDbApplication : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,11 +45,11 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "ID do tenant ao qual este usuário pertence"),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -278,6 +278,19 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                 schema: "Identity",
                 table: "Users",
                 column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId",
+                schema: "Identity",
+                table: "Users",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId_Email",
+                schema: "Identity",
+                table: "Users",
+                columns: new[] { "TenantId", "Email" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

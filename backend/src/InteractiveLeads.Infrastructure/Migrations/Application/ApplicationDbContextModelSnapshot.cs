@@ -183,7 +183,8 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("ID do tenant ao qual este usuário pertence");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
@@ -208,6 +209,13 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_Users_TenantId");
+
+                    b.HasIndex("TenantId", "Email")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Users_TenantId_Email");
 
                     b.ToTable("Users", "Identity");
 
