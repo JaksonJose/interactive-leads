@@ -2,6 +2,7 @@
 using InteractiveLeads.Application;
 using InteractiveLeads.Application.Exceptions;
 using InteractiveLeads.Application.Feature.Identity.Tokens;
+using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Identity.Models;
@@ -59,7 +60,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
                 throw new UnauthorizedException(response);
             }
 
-            // TODO: Adicionar validação de TenantId quando implementarmos UserTenantLookupStrategy
+            // TODO: Add TenantId validation when implementing UserTenantLookupStrategy
             // if (userInDb.TenantId != _multiTenantContextAccessor.MultiTenantContext.TenantInfo.Id)
             // {
             //     response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");

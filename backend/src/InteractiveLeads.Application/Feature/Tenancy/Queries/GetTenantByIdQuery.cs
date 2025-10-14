@@ -1,4 +1,5 @@
 ﻿using InteractiveLeads.Application.Exceptions;
+using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 

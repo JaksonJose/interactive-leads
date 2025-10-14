@@ -110,7 +110,7 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                     UserName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email,
                     NormalizedEmail = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email.ToUpperInvariant(),
                     NormalizedUserName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo?.Email?.ToUpperInvariant(),
-                    TenantId = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Id, // ← Definir o tenant do usuário
+                    TenantId = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Id, // ← Set user's tenant
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
                     IsActive = true
@@ -121,7 +121,7 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                 incomingUser.PasswordHash = passwordHash.HashPassword(incomingUser, TenancyConstants.DefaultPassword);
                 await _userManager.CreateAsync(incomingUser);
 
-                // Criar mapeamento usuário-tenant para performance otimizada
+                // Create user-tenant mapping for optimized performance
                 await CreateUserTenantMappingAsync(incomingUser.Email, incomingUser.TenantId);
             }
 
@@ -138,7 +138,7 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                 using var scope = _serviceProvider.CreateScope();
                 var tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
                 
-                // Verificar se o mapeamento já existe
+                // Check if mapping already exists
                 var existingMapping = await tenantDbContext.UserTenantMappings
                     .Where(m => m.Email == email)
                     .FirstOrDefaultAsync();

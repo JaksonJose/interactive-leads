@@ -1,6 +1,7 @@
 ﻿using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using InteractiveLeads.Application.Feature.Tenancy;
+using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Infrastructure.Context.Application;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Mapster;

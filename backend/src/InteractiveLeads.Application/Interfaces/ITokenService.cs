@@ -1,4 +1,6 @@
-﻿namespace InteractiveLeads.Application.Feature.Identity.Tokens
+﻿using InteractiveLeads.Application.Feature.Identity.Tokens;
+
+namespace InteractiveLeads.Application.Interfaces
 {
     /// <summary>
     /// Service interface for handling JWT token operations.

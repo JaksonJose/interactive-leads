@@ -17,23 +17,23 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                 builder.ToTable("Users", "Identity")
                        .IsMultiTenant();
 
-                // Configuração do TenantId
+                // TenantId configuration
                 builder.Property(u => u.TenantId)
                        .HasMaxLength(64)
                        .IsRequired()
                        .HasComment("ID do tenant ao qual este usuário pertence");
 
-                // Índice composto para performance - garante email único por tenant
+                // Composite index for performance - ensures unique email per tenant
                 builder.HasIndex(u => new { u.TenantId, u.Email })
                        .IsUnique(true)
                        .HasDatabaseName("IX_Users_TenantId_Email");
 
-                // Índice para busca rápida por tenant
+                // Index for fast tenant lookup
                 builder.HasIndex(u => u.TenantId)
                        .HasDatabaseName("IX_Users_TenantId");
 
-                // TenantId é apenas uma referência string, não um FK
-                // O relacionamento real está no banco shared (Tenants)
+                // TenantId is just a string reference, not a FK
+                // The real relationship is in the shared database (Tenants)
 
                 // Audit fields configuration
                 builder.Property(u => u.CreatedAt)

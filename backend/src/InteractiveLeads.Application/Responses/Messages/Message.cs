@@ -1,22 +1,22 @@
 ﻿namespace InteractiveLeads.Application.Responses.Messages
 {
     /// <summary>
-    /// Representa uma mensagem estruturada com texto, código e tipo.
+    /// Represents a structured message with text, code, and type.
     /// </summary>
     public sealed class Message
     {
         /// <summary>
-        /// O texto da mensagem.
+        /// The message text.
         /// </summary>
         public string Text { get; set; } = string.Empty;
 
         /// <summary>
-        /// O código da mensagem para internacionalização.
+        /// The message code for internationalization.
         /// </summary>
         public string Code { get; set; } = string.Empty;
 
         /// <summary>
-        /// O tipo da mensagem (Error, Success, Info, Warning).
+        /// The message type (Error, Success, Info, Warning).
         /// </summary>
         public MessageType Type { get; set; } = MessageType.Info;
     }

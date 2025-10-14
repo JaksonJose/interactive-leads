@@ -1,27 +1,27 @@
 namespace InteractiveLeads.Application.Responses.Messages
 {
     /// <summary>
-    /// Enumeração dos tipos de mensagem para categorizar diferentes tipos de feedback.
+    /// Enumeration of message types for categorizing different types of feedback.
     /// </summary>
     public enum MessageType
     {
         /// <summary>
-        /// Mensagem de erro - indica falha na operação.
+        /// Error message - indicates operation failure.
         /// </summary>
         Error,
 
         /// <summary>
-        /// Mensagem de sucesso - indica operação bem-sucedida.
+        /// Success message - indicates successful operation.
         /// </summary>
         Success,
 
         /// <summary>
-        /// Mensagem informativa - fornece informações adicionais.
+        /// Informational message - provides additional information.
         /// </summary>
         Info,
 
         /// <summary>
-        /// Mensagem de aviso - indica situação que requer atenção.
+        /// Warning message - indicates a situation that requires attention.
         /// </summary>
         Warning
     }

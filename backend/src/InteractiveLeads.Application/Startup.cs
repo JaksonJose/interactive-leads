@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using InteractiveLeads.Application.Pipelines;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -28,6 +30,7 @@ namespace InteractiveLeads.Application
             var assembly = Assembly.GetExecutingAssembly();
 
             return services.AddValidatorsFromAssembly(assembly)
+                .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBenaviour<,>))
                 .AddMediatR(cfg =>
                 {
                     cfg.RegisterServicesFromAssemblies(assembly);

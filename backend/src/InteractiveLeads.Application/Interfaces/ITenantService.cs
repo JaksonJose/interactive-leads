@@ -1,4 +1,6 @@
-﻿namespace InteractiveLeads.Application.Feature.Tenancy
+﻿using InteractiveLeads.Application.Feature.Tenancy;
+
+namespace InteractiveLeads.Application.Interfaces
 {
     /// <summary>
     /// Service interface for managing tenant operations in the multi-tenant system.

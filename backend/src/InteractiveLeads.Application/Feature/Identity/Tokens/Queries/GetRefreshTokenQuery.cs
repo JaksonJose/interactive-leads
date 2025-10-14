@@ -1,4 +1,6 @@
-﻿using InteractiveLeads.Application.Responses;
+﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
+using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
@@ -10,7 +12,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
     /// This query implements the CQRS pattern for token refresh operations,
     /// allowing users to obtain new tokens without re-authenticating.
     /// </remarks>
-    public class GetRefreshTokenQuery : IRequest<IResponse>
+    public class GetRefreshTokenQuery : IRequest<IResponse>, IValidate
     {
         /// <summary>
         /// Gets or sets the refresh token request containing current tokens.

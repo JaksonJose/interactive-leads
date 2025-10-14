@@ -1,4 +1,5 @@
-﻿using InteractiveLeads.Application.Responses;
+﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Tenancy.Commands

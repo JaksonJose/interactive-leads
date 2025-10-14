@@ -1,7 +1,6 @@
 ﻿using Finbuckle.MultiTenant;
 using InteractiveLeads.Application;
-using InteractiveLeads.Application.Feature.Identity.Tokens;
-using InteractiveLeads.Application.Feature.Tenancy;
+using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Context.Application;

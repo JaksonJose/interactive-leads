@@ -16,7 +16,7 @@ namespace InteractiveLeads.Infrastructure.Context.Tenancy
             modelBuilder.Entity<InteractiveTenantInfo>()
                 .ToTable("Tenants", "Multitenancy");
 
-            // Configuração da tabela de mapeamento usuário-tenant
+            // Configuration for user-tenant mapping table
             modelBuilder.Entity<UserTenantMapping>(entity =>
             {
                 entity.ToTable("UserTenantMappings", "Multitenancy");
@@ -38,9 +38,9 @@ namespace InteractiveLeads.Infrastructure.Context.Tenancy
                     .ValueGeneratedOnAdd()
                     .HasDefaultValueSql("now() at time zone 'utc'");
                 
-                // Índices otimizados para máxima performance
+                // Optimized indexes for maximum performance
                 entity.HasIndex(m => m.Email)
-                    .IsUnique(true) // Email único - performance máxima
+                    .IsUnique(true) // Unique email - maximum performance
                     .HasDatabaseName("IX_UserTenantMappings_Email_Unique");
                 
                 entity.HasIndex(m => new { m.Email, m.IsActive })

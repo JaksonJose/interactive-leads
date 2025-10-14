@@ -1,4 +1,6 @@
-﻿using InteractiveLeads.Application.Responses;
+﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
+using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
@@ -9,7 +11,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
     /// <remarks>
     /// This query implements the CQRS pattern for user login operations.
     /// </remarks>
-    public class GetTokenQuery : IRequest<IResponse>
+    public class GetTokenQuery : IRequest<IResponse>, IValidate
     {
         /// <summary>
         /// Gets or sets the token request containing login credentials.

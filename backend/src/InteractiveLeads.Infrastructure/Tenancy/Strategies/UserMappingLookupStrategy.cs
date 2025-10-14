@@ -59,12 +59,12 @@ namespace InteractiveLeads.Infrastructure.Tenancy.Strategies
                 if (string.IsNullOrWhiteSpace(email))
                     return null;
 
-                // PERFORMANCE MÁXIMA: Busca direta na tabela de mapeamento
-                // O(1) - busca direta por índice único, escalável para milhões de usuários
+                // MAXIMUM PERFORMANCE: Direct lookup in mapping table
+                // O(1) - direct lookup by unique index, scalable for millions of users
                 var mapping = await _tenantDbContext.UserTenantMappings
                     .Where(m => m.Email == email && m.IsActive)
                     .Select(m => m.TenantId)
-                    .AsNoTracking() // ← Otimização: sem tracking para query readonly
+                    .AsNoTracking() // ← Optimization: no tracking for readonly query
                     .FirstOrDefaultAsync();
 
                 return mapping;

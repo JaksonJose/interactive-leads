@@ -59,7 +59,7 @@ namespace InteractiveLeads.Infrastructure.Tenancy.Strategies
                 if (string.IsNullOrWhiteSpace(email))
                     return null;
 
-                // Find tenant by owner email - OTIMIZADO usando extensão
+                // Find tenant by owner email - OPTIMIZED using extension
                 var tenant = await _tenantStore.FindByEmailAsync(email);
                 return tenant?.Id;
             }
