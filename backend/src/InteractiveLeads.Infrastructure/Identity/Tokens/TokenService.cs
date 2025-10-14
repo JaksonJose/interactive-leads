@@ -40,8 +40,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
             var response = new Response();
 
             #region validations
-            // Check if tenant was found
-            if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo == null)
+            if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo is null)
             {
                 response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
                 throw new UnauthorizedException(response);
