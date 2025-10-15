@@ -48,7 +48,11 @@ namespace InteractiveLeads.Api.Middleware
                 var responseWrapper = HandleException(ex);
                 response.StatusCode = (int)GetStatusCode(ex);
 
-                var result = JsonSerializer.Serialize(responseWrapper);
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                var result = JsonSerializer.Serialize(responseWrapper, jsonOptions);
 
                 await response.WriteAsync(result);
             }

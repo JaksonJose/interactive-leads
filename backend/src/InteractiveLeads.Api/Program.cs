@@ -1,6 +1,7 @@
 using InteractiveLeads.Api.Middleware;
 using InteractiveLeads.Application;
 using InteractiveLeads.Infrastructure;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,11 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader());
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 builder.Services.AddInfraestructureServices(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Services.GetJwtSettings(builder.Configuration));

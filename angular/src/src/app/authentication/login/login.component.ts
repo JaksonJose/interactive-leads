@@ -66,11 +66,10 @@ export class LoginComponent {
           }
         },
         error: (error) => {
-          console.log(error.error.Messages)
           this.carregando.set(false);
           this.messages.set([{
             severity: 'error',
-            content: error.error.Messages[0].Text || 'Erro de conexão'
+            content: error.error.messages[0].text || 'Erro de conexão'
           }]);
         }
       });

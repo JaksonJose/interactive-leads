@@ -106,7 +106,11 @@ namespace InteractiveLeads.Infrastructure
                                 context.Response.ContentType = "application/json";
 
                                 var response = new Response().AddErrorMessage("Token has expired", "auth.token_expired");
-                                var result = JsonSerializer.Serialize(response);
+                                var jsonOptions = new JsonSerializerOptions
+                                {
+                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                                };
+                                var result = JsonSerializer.Serialize(response, jsonOptions);
                                 return context.Response.WriteAsync(result);
                             }
 
@@ -120,7 +124,11 @@ namespace InteractiveLeads.Infrastructure
                                 context.Response.ContentType = "application/json";
 
                                 var response = new Response().AddErrorMessage("An unhandled error has occurred", "general.something_went_wrong");
-                                var result = JsonSerializer.Serialize(response);
+                                var jsonOptions = new JsonSerializerOptions
+                                {
+                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                                };
+                                var result = JsonSerializer.Serialize(response, jsonOptions);
                                 return context.Response.WriteAsync(result);
                             }
 
@@ -136,7 +144,11 @@ namespace InteractiveLeads.Infrastructure
                             context.Response.ContentType = "application/json";
 
                             var response = new Response().AddErrorMessage("You are not authorized", "general.unauthorized");
-                            var result = JsonSerializer.Serialize(response);
+                            var jsonOptions = new JsonSerializerOptions
+                            {
+                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                            };
+                            var result = JsonSerializer.Serialize(response, jsonOptions);
                             return context.Response.WriteAsync(result);
                         }
 
@@ -148,7 +160,11 @@ namespace InteractiveLeads.Infrastructure
                         context.Response.ContentType = "application/json";
 
                         var response = new Response().AddErrorMessage("You are not authorized to access this resource", "general.access_denied");
-                        var result = JsonSerializer.Serialize(response);
+                        var jsonOptions = new JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        };
+                        var result = JsonSerializer.Serialize(response, jsonOptions);
                         return context.Response.WriteAsync(result);
                     }
                 };
