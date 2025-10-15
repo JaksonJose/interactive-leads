@@ -35,7 +35,7 @@ namespace InteractiveLeads.Application.Pipelines
                         errors.Add(failure.ErrorMessage);
                     }
 
-                    var response = new Response();
+                    var response = new ResultResponse();
                     foreach (var error in errors)
                     {
                         // Extract code and message from "code:message" format

@@ -32,11 +32,6 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> GetTokenAsync([FromBody] TokenRequest tokenRequest)
         {
             var response = await Sender.Send(new GetTokenQuery { TokenRequest = tokenRequest });
-            if (!response.IsSuccessful)
-            {
-                return BadRequest(response);
-            }
-
             return Ok(response);
         }
 
@@ -55,11 +50,6 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> GetRefreshTokenAsync([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
             var response = await Sender.Send(new GetRefreshTokenQuery { RefreshToken = refreshTokenRequest });
-            if (!response.IsSuccessful)
-            {
-                return BadRequest(response);
-            }
-
             return Ok(response);
         }
     }

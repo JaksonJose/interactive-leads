@@ -21,14 +21,14 @@ namespace InteractiveLeads.Application.Exceptions
         /// <summary>
         /// Gets or sets the response wrapper containing error information.
         /// </summary>
-        public Response Response { get; private set; }
+        public ResultResponse Response { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the IdentityException class.
         /// </summary>
         /// <param name="response">The response wrapper containing error information.</param>
         /// <param name="statusCode">The HTTP status code (defaults to Forbidden).</param>
-        public IdentityException(Response response = default!, HttpStatusCode statusCode = HttpStatusCode.Forbidden)
+        public IdentityException(ResultResponse response = default!, HttpStatusCode statusCode = HttpStatusCode.Forbidden)
         {
             StatusCode = statusCode;
             Response = response;

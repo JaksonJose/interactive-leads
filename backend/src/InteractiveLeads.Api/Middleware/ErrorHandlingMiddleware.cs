@@ -68,21 +68,21 @@ namespace InteractiveLeads.Api.Middleware
             return ex switch
             {
                 ConflictException ce when ce.Response != null => ce.Response,
-                ConflictException => new Response().AddErrorMessage("Conflict detected", "general.conflict"),
+                ConflictException => new ResultResponse().AddErrorMessage("Conflict detected", "general.conflict"),
                 
                 NotFoundException nfe when nfe.Response != null => nfe.Response,
-                NotFoundException => new Response().AddErrorMessage("Resource not found", "general.resource_not_found"),
+                NotFoundException => new ResultResponse().AddErrorMessage("Resource not found", "general.resource_not_found"),
                 
                 ForbiddenException fe when fe.Response != null => fe.Response,
-                ForbiddenException => new Response().AddErrorMessage("Access denied", "general.access_denied"),
+                ForbiddenException => new ResultResponse().AddErrorMessage("Access denied", "general.access_denied"),
                 
                 IdentityException ie when ie.Response != null => ie.Response,
-                IdentityException => new Response().AddErrorMessage("Identity error", "identity.permission_denied"),
+                IdentityException => new ResultResponse().AddErrorMessage("Identity error", "identity.permission_denied"),
                 
                 UnauthorizedException ue when ue.Response != null => ue.Response,
-                UnauthorizedException => new Response().AddErrorMessage("Unauthorized", "general.unauthorized"),
+                UnauthorizedException => new ResultResponse().AddErrorMessage("Unauthorized", "general.unauthorized"),
                 
-                _ => new Response().AddErrorMessage("Something went wrong", "general.something_went_wrong")
+                _ => new ResultResponse().AddErrorMessage("Something went wrong", "general.something_went_wrong")
             };
         }
 

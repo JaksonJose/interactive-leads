@@ -15,14 +15,7 @@ namespace InteractiveLeads.Application.Responses
         /// <summary>
         /// Gets or sets the list of messages associated with the response.
         /// </summary>
-        //public List<string> Messages { get; set; } = [];
-
         public List<Message> Messages { get; set; } = [];
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the operation was successful.
-        /// </summary>
-        public bool IsSuccessful { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the ResponseWrapper class.
@@ -33,14 +26,12 @@ namespace InteractiveLeads.Application.Responses
 
         public IResponse AddErrorMessage(string message, string code)
         {
-            IsSuccessful = false;
             Messages.Add(new Message() { Text = message, Code = code, Type = MessageType.Error });
             return this;
         }
 
         public IResponse AddSuccessMessage(string message, string code)
         {
-            IsSuccessful = true;
             Messages.Add(new Message() { Text = message, Code = code, Type = MessageType.Success });
             return this;
         }

@@ -49,7 +49,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
         {
             var refreshToken = await _tokenService.RefreshTokenAsync(request.RefreshToken);
 
-            return new Response<TokenResponse>(refreshToken)
+            return new SingleResponse<TokenResponse>(refreshToken)
                 .AddSuccessMessage("Token refreshed successfully", "auth.token_refreshed_successfully");
         }
     }

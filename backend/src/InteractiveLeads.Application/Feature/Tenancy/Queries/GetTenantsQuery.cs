@@ -43,7 +43,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
         {
             var tenantInDb = await _tenantService.GetTenantsAsync();
 
-            return new Response<List<TenantResponse>>(tenantInDb)
+            return new ListResponse<TenantResponse>(tenantInDb, tenantInDb.Count)
                 .AddSuccessMessage("Tenants retrieved successfully", "tenants.retrieved_successfully");
         }
     }

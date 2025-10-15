@@ -105,7 +105,7 @@ namespace InteractiveLeads.Infrastructure
                                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 context.Response.ContentType = "application/json";
 
-                                var response = new Response().AddErrorMessage("Token has expired", "auth.token_expired");
+                                var response = new ResultResponse().AddErrorMessage("Token has expired", "auth.token_expired");
                                 var jsonOptions = new JsonSerializerOptions
                                 {
                                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -123,7 +123,7 @@ namespace InteractiveLeads.Infrastructure
                                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                                 context.Response.ContentType = "application/json";
 
-                                var response = new Response().AddErrorMessage("An unhandled error has occurred", "general.something_went_wrong");
+                                var response = new ResultResponse().AddErrorMessage("An unhandled error has occurred", "general.something_went_wrong");
                                 var jsonOptions = new JsonSerializerOptions
                                 {
                                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -143,7 +143,7 @@ namespace InteractiveLeads.Infrastructure
                             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                             context.Response.ContentType = "application/json";
 
-                            var response = new Response().AddErrorMessage("You are not authorized", "general.unauthorized");
+                            var response = new ResultResponse().AddErrorMessage("You are not authorized", "general.unauthorized");
                             var jsonOptions = new JsonSerializerOptions
                             {
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -159,7 +159,7 @@ namespace InteractiveLeads.Infrastructure
                         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         context.Response.ContentType = "application/json";
 
-                        var response = new Response().AddErrorMessage("You are not authorized to access this resource", "general.access_denied");
+                        var response = new ResultResponse().AddErrorMessage("You are not authorized to access this resource", "general.access_denied");
                         var jsonOptions = new JsonSerializerOptions
                         {
                             PropertyNamingPolicy = JsonNamingPolicy.CamelCase

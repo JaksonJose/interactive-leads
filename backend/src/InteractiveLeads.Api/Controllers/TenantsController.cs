@@ -32,12 +32,7 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> CreateTenantAsync([FromBody] CreateTenantRequest request)
         {
             var response = await Sender.Send(new CreateTenantCommand { CreateTenant = request });
-            if (response.IsSuccessful)
-            {
-                return Ok(response);
-            }
-
-            return BadRequest(response);
+            return Ok(response);
         }
 
         /// <summary>
@@ -54,12 +49,7 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> ActivateTenantAsync(string tenantId)
         {
             var response = await Sender.Send(new ActivateTenantCommand { TenantId = tenantId });
-            if (response.IsSuccessful)
-            {
-                return Ok(response);
-            }
-
-            return BadRequest(response);
+            return Ok(response);
         }
 
         /// <summary>
@@ -76,12 +66,7 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> DeactivateTenantAsync(string tenantId)
         {
             var response = await Sender.Send(new DeactivateTenantCommand { TenantId = tenantId });
-            if (response.IsSuccessful)
-            {
-                return Ok(response);
-            }
-
-            return BadRequest(response);
+            return Ok(response);
         }
 
         /// <summary>
@@ -98,12 +83,7 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> UpgradeTenantSubscriptionAsync([FromBody] UpdateTenantSubscriptionRequest request)
         {
             var response = await Sender.Send(new UpdateSubscriptionCommand { UpdateTenantSubscription = request });
-            if (response.IsSuccessful)
-            {
-                return Ok(response);
-            }
-
-            return BadRequest(response);
+            return Ok(response);
         }
 
         /// <summary>
@@ -120,12 +100,7 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> GetTenantByIdAsync(string tenantId)
         {
             var response = await Sender.Send(new GetTenantByIdQuery { TenantId = tenantId });
-            if (response.IsSuccessful)
-            {
-                return Ok(response);
-            }
-
-            return BadRequest(response);
+            return Ok(response);
         }
 
         /// <summary>
@@ -141,12 +116,7 @@ namespace InteractiveLeads.Api.Controllers
         public async Task<IActionResult> GetTenantsAsync()
         {
             var response = await Sender.Send(new GetTenantsQuery());
-            if (response.IsSuccessful)
-            {
-                return Ok(response);
-            }
-
-            return BadRequest(response);
+            return Ok(response);
         }
     }
 }

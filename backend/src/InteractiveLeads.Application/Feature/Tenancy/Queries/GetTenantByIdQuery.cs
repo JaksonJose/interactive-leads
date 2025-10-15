@@ -49,12 +49,12 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
             var tenantInDb = await _tenantService.GetTenantsByIdAsync(request.TenantId);
             if (tenantInDb is not null)
             {
-                var response = new Response<TenantResponse>(tenantInDb);
+                var response = new SingleResponse<TenantResponse>(tenantInDb);
                 response.AddSuccessMessage("Tenant retrieved successfully", "tenant.retrieved_successfully");
                 return (IResponse)response;
             }
 
-            var errorResponse = new Response();
+            var errorResponse = new ResultResponse();
             errorResponse.AddErrorMessage("Tenant does not exist", "tenant.not_found");
             throw new NotFoundException(errorResponse);
         }

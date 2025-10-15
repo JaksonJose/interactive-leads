@@ -48,7 +48,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         {
             var tenantId = await _tenantService.DeactivateAsync(request.TenantId);
 
-            return new Response<string>(tenantId)
+            return new SingleResponse<string>(tenantId)
                 .AddSuccessMessage("Tenant deactivated successfully", "tenant.deactivated_successfully");
         }
     }

@@ -48,7 +48,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         {
             var tenantId = await _tenantService.ActivateAsync(request.TenantId);
 
-            return new Response<string>(tenantId)
+            return new SingleResponse<string>(tenantId)
                 .AddSuccessMessage("Tenant activated successfully", "tenant.activated_successfully");
         }
     }

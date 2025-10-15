@@ -38,7 +38,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
 
         public async Task<TokenResponse> LoginAsync(TokenRequest request)
         {
-            var response = new Response();
+            var response = new ResultResponse();
 
             #region validations
             if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo is null)
@@ -88,7 +88,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
 
         public async Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
         {
-            Response response = new();
+            ResultResponse response = new();
 
             var userPrincipal = GetClaimsPrincipalFromExpiringToken(request.CurrentJwt);
             var userEmail = userPrincipal.GetEmail();
@@ -110,7 +110,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
 
         private ClaimsPrincipal GetClaimsPrincipalFromExpiringToken(string expiringToken)
         {
-            Response response = new();
+            ResultResponse response = new();
 
             var tokenValidationParams = new TokenValidationParameters
             {

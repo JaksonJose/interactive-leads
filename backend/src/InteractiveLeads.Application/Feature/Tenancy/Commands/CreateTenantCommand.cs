@@ -47,7 +47,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         {
             var tenantId = await _tenantService.CreateTenantAsync(request.CreateTenant, cancellationToken);
 
-            return new Response<string>(tenantId)
+            return new SingleResponse<string>(tenantId)
                 .AddSuccessMessage("Tenant created successfully", "tenant.created_successfully");
         }
     }

@@ -48,7 +48,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
         {
             var token = await _tokenService.LoginAsync(request.TokenRequest);
 
-            return new Response<TokenResponse>(token)
+            return new SingleResponse<TokenResponse>(token)
                 .AddSuccessMessage("Authentication successful", "auth.login_successful");
         }
     }

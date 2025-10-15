@@ -20,14 +20,14 @@ namespace InteractiveLeads.Application.Exceptions
         /// <summary>
         /// Gets or sets the response wrapper containing error information.
         /// </summary>
-        public Response Response { get; private set; }
+        public ResultResponse Response { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the ConflictException class.
         /// </summary>
         /// <param name="response">The response wrapper containing error information.</param>
         /// <param name="statusCode">The HTTP status code (defaults to Conflict).</param>
-        public ConflictException(Response response = default!, HttpStatusCode statusCode = HttpStatusCode.Conflict)
+        public ConflictException(ResultResponse response = default!, HttpStatusCode statusCode = HttpStatusCode.Conflict)
         {
             StatusCode = statusCode;
             Response = response;

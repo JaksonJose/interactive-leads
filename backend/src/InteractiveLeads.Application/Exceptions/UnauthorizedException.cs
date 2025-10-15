@@ -18,9 +18,9 @@ namespace InteractiveLeads.Application.Exceptions
         /// </summary>
         public HttpStatusCode StatusCode { get; set; }
 
-        public Response Response { get; private set; }
+        public ResultResponse Response { get; private set; }
 
-        public UnauthorizedException(Response response = default!, HttpStatusCode statusCode = HttpStatusCode.Unauthorized)
+        public UnauthorizedException(ResultResponse response = default!, HttpStatusCode statusCode = HttpStatusCode.Unauthorized)
         {
             StatusCode = statusCode;
             Response = response;

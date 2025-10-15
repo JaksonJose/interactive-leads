@@ -51,7 +51,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         {
             string tenantId = await _tenantService.UpdateSubscriptionAsync(request.UpdateTenantSubscription);
 
-            return new Response<string>(tenantId)
+            return new SingleResponse<string>(tenantId)
                 .AddSuccessMessage("Tenant subscription updated successfully", "tenant.subscription_updated_successfully");
         }
     }
