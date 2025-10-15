@@ -2,14 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
-interface ExtendedJwtPayload extends JwtPayload {
-  role?: string | string[];
-}
+import { Response } from '@core/responses/response';
 
-import { LoginModel, TokenResponse, LoginResponseWrapper, RefreshTokenResponseWrapper, RegisterModel } from '../models';
+import { LoginModel, TokenResponse } from '@authentication/models';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '@environment/environment';
 import { Observable } from 'rxjs';
+
+interface ExtendedJwtPayload extends JwtPayload {
+  role?: string | string[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -20,20 +22,8 @@ export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
 
-  public AuthenticateUser(login: LoginModel): Observable<LoginResponseWrapper> {
-    return this.http.post<LoginResponseWrapper>(`${this.baseUrl}/login`, login, { withCredentials: false });
-  }
-
-  public createAuthenticationAsync(registerModel: RegisterModel) : Observable<unknown>  {
-    return this.http.post(`${this.baseUrl}/register`, registerModel);
-  }
-
-  public updateCuthenticationAndConsultant(registerModel: RegisterModel): Observable<unknown> {
-    return this.http.post(`${this.baseUrl}/update`, registerModel);
-  }
-
-  public refreshToken(refreshToken: string): Observable<RefreshTokenResponseWrapper> {
-    return this.http.post<RefreshTokenResponseWrapper>(`${this.baseUrl}/refresh-token`, { currentJwt: refreshToken });
+  public AuthenticateUser(login: LoginModel): Observable<Response<TokenResponse>> {
+    return this.http.post<Response<TokenResponse>>(`${this.baseUrl}/login`, login, { withCredentials: false });
   }
 
   /**
