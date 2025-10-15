@@ -1,73 +1,55 @@
 {
-  "company": {
-    "brandNameRequired": "O nome fantasia é obrigatório",
-    "cityRequired": "A cidade é obrigatória",
-    "emailRequired": "O email é obrigatório",
-    "identificationNumberRequired": "CNPJ é obrigatório",
-    "legalNameRequired": "O Razão social é obrigatório",
-    "neighborhoodRequired": "O bairro é obrigatório",
-    "phoneNumberRequired": "O telefone é obrigatório",
-    "stateRequired": "UF é obrigatório",
-    "streetRequired": "Rua/Av é obrigatório",
-    "zipcodeRequired": "O CEP é Obrigatório"
-  },
-  "api": {
-    "error": {
-      "AuthenticationBlocked": "User blocked. Please contact support.",
-      "AuthenticationInvalid": "Invalid username/email or password.",
-      "CompanyNotSaved": "The company was not created.",
-      "CompanyExceptionWhenTrySave": "Error creating company. Please contact support.",
-      "CEPNotFound": "ZIP code not found.",
-      "CNPJNotFound": "CNPJ not found.",
-      "DuplicateUserName": "User already exists.",
-      "Unavailable": "Failed to connect to the server.",
-      "ServiceUnavailable": "Server is temporarily unavailable.",
-      "Timeout": "timeout",
-      "TimeoutMessage": "The server response time exceeded the limit. Please try again later.",
-      "title": "Error"
-    },
-    "success": {
-      "CompanyCreated": "The company was successfully created."
-    }
-  },
   "login": {
     "attemptsRemaining": "Attempts remaining: {{attempts}}.",
+    "copyright": "© 2024 Interactive Leads. All rights reserved.",
+    "forgotPassword": "Forgot your password?",
     "password": "Password",
-    "passwordRequired": "Password is required`.",
+    "passwordRequired": "Password is required.",
+    "resetPassword": "Reset password",
     "signin": "Sign In",
+    "subtitle": "Enter your credentials to access the system",
     "title": "Sign In",
     "userName": "User or Email",
     "userNameRequired": "User is required."
   },
   "menu": {
     "admin": "Admin",
-    "analytics": "Analíticos",
-    "company": "Empresas",
+    "analytics": "Analytics",
+    "company": "Companies",
+    "consultants": "Consultants",
     "dashboard": "Dashboard",
-    "consultants": "Consultores",
-    "graphics": "Gráficos",
+    "graphics": "Graphics",
     "leads": "Leads",
-    "report": "Relatório" ,
-    "salesfunnel": "Funil de Vendas",
-    "schedule": "Agendamentos"
+    "report": "Report",
+    "salespipelines": "Sales Pipelines",
+    "schedule": "Schedule"
   },
-  "primeng": {
-    "startsWith": "Começa com",
-    "contains": "Contém",
-    "notContains": "Não contém",
-    "endsWith": "Termina com",
-    "equals": "É Igual",
-    "notEquals": "Não é igual",
-    "noFilter": "No Filter",
-    "lt": "Menor que",
-    "lte": "Menor que ou igual a",
-    "gt": "Maior que",
-    "gte": "Maior que ou igual a",
-    "matchAll": "Combinar todos",
-    "matchAny": "Qualquer um",
-    "clear": "Limpar",
-    "apply": "Aplicar",
-    "addRule": "Adicionar Regra",
-    "removeRule": "Remover Regra"
+  "auth": {
+    "login_successful": "Authentication successful",
+    "token_refreshed_successfully": "Token refreshed successfully",
+    "token_request_required": "Authentication data is required",
+    "username_required": "Username or email is required",
+    "password_required": "Password is required",
+    "refresh_token_data_required": "Refresh token data is required",
+    "current_jwt_required": "Current JWT token is required",
+    "current_refresh_token_required": "Current refresh token is required",
+    "invalid_credentials": "Incorrect username or password",
+    "user_not_active": "User not active. Contact administrator.",
+    "subscription_expired": "Subscription has expired. Contact administrator.",
+    "authentication_failed": "Authentication failed.",
+    "invalid_token": "Invalid token provided. Failed to generate new token."
+  },
+  "tenant": {
+    "subscription_not_active": "Tenant subscription is not active. Contact administrator."
+  },
+  "general": {
+    "conflict": "Conflict detected",
+    "resource_not_found": "Resource not found",
+    "access_denied": "Access denied",
+    "unauthorized": "Unauthorized",
+    "something_went_wrong": "Something went wrong"
+  },
+  "identity": {
+    "permission_denied": "Identity error"
   }
 }

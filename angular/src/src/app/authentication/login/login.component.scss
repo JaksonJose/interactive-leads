@@ -1,25 +1,245 @@
 
 :host {
+  display: block;
+  min-height: 100vh;
+  background: var(--p-surface-50);
+  position: relative;
+  
+  .login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
   .login-container {
-    max-width: 400px;
-    margin: 100px auto;
+    width: 100%;
+    max-width: 420px;
+    animation: slideUp 0.6s ease-out;
   }
 
-  .field {
-    margin-bottom: 20px;
+  .login-header {
+    text-align: center;
+    
+    .pi-user-circle {
+      color: var(--p-primary-500);
+      animation: fadeIn 0.8s ease-out;
+    }
   }
 
-  .error {
-    color: red;
-    font-size: 0.8em;
+  .login-card {
+    border-radius: 12px;
+    border: 1px solid var(--p-surface-200);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background: var(--p-surface-0);
+    
+    // Aumentar padding interno do card
+    :deep(.p-card-body) {
+      padding: 2rem 2.5rem;
+    }
+    
+    :deep(.p-card-content) {
+      padding: 0;
+    }
   }
 
-  .actions {
+  .login-form {
+    .field {
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+      
+      .error-field-message {
+        animation: shake 0.5s ease-in-out;
+      }
+    }
+    
+    // Espaçamento extra para o último campo
+    .field:last-of-type {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .login-footer {
     text-align: center;
   }
 
+  // Animações
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-  p-password {
-    width: 100%;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-3px);
+    }
+    75% {
+      transform: translateX(3px);
+    }
+  }
+
+  // Responsividade
+  @media (max-width: 768px) {
+    .login-wrapper {
+      padding: 1rem;
+    }
+    
+    .login-container {
+      max-width: 100%;
+    }
+    
+    .login-header {
+      h1 {
+        font-size: 1.75rem !important;
+      }
+    }
+    
+    .login-card {
+      :deep(.p-card-body) {
+        padding: 1.5rem 2rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .login-wrapper {
+      padding: 0.5rem;
+    }
+    
+    .login-header {
+      margin-bottom: 1.5rem !important;
+      
+      h1 {
+        font-size: 1.5rem !important;
+      }
+    }
+    
+    .login-card {
+      :deep(.p-card-body) {
+        padding: 1.25rem 1.5rem;
+      }
+    }
+    
+    .login-form {
+      .field {
+        margin-bottom: 1.25rem;
+      }
+    }
+  }
+
+  // Tamanho e estilo dos inputs - forçar com !important para PrimeNG v20
+  :deep(.p-inputtext),
+  :deep(.p-password input),
+  :deep(.p-password .p-inputtext) {
+    height: 3rem !important; // 48px - altura padrão para inputs de login
+    min-height: 3rem !important;
+    font-size: 1rem !important; // 16px - tamanho confortável
+    padding: 0.75rem 1rem !important; // 12px vertical, 16px horizontal
+    line-height: 1.5 !important;
+  }
+
+  // Forçar altura do container do p-password
+  :deep(.p-password) {
+    height: 3rem !important;
+  }
+
+  // Ajustar ícone do toggle de senha
+  :deep(.p-password .p-password-toggle) {
+    height: 3rem !important;
+    width: 3rem !important;
+  }
+
+  // Estados de foco melhorados
+  :deep(.p-inputtext:focus),
+  :deep(.p-password input:focus) {
+    box-shadow: 0 0 0 2px var(--p-primary-200);
+    border-color: var(--p-primary-500);
+  }
+
+  // Botão com hover effect mais sutil
+  :deep(.p-button:hover:not(:disabled)) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px var(--p-primary-200);
+    transition: all 0.2s ease;
+  }
+
+  // FloatLabel customizado
+  :deep(.p-floatlabel label) {
+    color: var(--p-surface-600);
+    font-weight: 500;
+    font-size: 0.9rem; // Ajustar tamanho do label
+  }
+
+  :deep(.p-floatlabel .p-floatlabel-text-wrapper--focused label) {
+    color: var(--p-primary-500);
+  }
+
+  // Ajustar posicionamento do FloatLabel para inputs maiores
+  :deep(.p-floatlabel .p-floatlabel-text-wrapper) {
+    top: 0.75rem !important; // 12px - ajustar para altura do input
+  }
+
+  :deep(.p-floatlabel .p-floatlabel-text-wrapper--focused) {
+    top: -0.5rem !important; // Ajustar quando focado
+  }
+
+  // Forçar tamanho do botão também
+  :deep(.p-button) {
+    height: 3rem !important;
+    min-height: 3rem !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1.5rem !important;
+  }
+
+  // Classes customizadas para garantir altura
+  :deep(.login-input) {
+    height: 3rem !important;
+    min-height: 3rem !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  :deep(.login-password) {
+    height: 3rem !important;
+    min-height: 3rem !important;
+    
+    input {
+      height: 3rem !important;
+      min-height: 3rem !important;
+      font-size: 1rem !important;
+      padding: 0.75rem 1rem !important;
+    }
+  }
+
+  // Cores dos textos usando variáveis do tema
+  .login-header {
+    h1 {
+      color: var(--p-surface-900);
+    }
+    
+    p {
+      color: var(--p-surface-600);
+    }
   }
 }

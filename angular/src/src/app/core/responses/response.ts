@@ -1,4 +1,4 @@
-import { Message } from "primeng/message";
+import { Message } from "./message";
 
 export class Response<T> {
     data?: T;

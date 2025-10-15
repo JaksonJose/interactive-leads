@@ -1,61 +1,118 @@
-<ng-container>
-<div class="login-container">
-	<p-card [header]="'login.title' | translate" >
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-			<!-- User name or Email input -->
-      <div class="field">
-    		<input id="username"
-					pInputText
-					type="text"
-					formControlName="username"
-					variant="outlined"
-					[style]="{ width: '100%'}"
-					[placeholder]="'login.userName' | translate" translate />
-
-				<!-- Error messages -->
-				<div>
-        	<small *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error">
-          		{{ 'login.userNameRequired' | translate }}
-        	</small>
-				</div>
+<div class="login-wrapper">
+  <div class="login-container">
+    <!-- Header com logo/título -->
+    <div class="login-header mb-6">
+      <div class="text-center">
+        <i class="pi pi-user-circle text-6xl mb-3"></i>
+        <h1 class="text-3xl font-bold m-0">{{ 'login.title' | translate }}</h1>
+        <p class="mt-2">{{ 'login.subtitle' | translate }}</p>
       </div>
+    </div>
 
-			<!-- Password input -->
-    	<div class="field">
-				<p-password id="password"
-					formControlName="password"
-					[feedback]="false"
-					[toggleMask]="true"
-					[ngClass]="{ 'ng-invalid ng-dirty' : loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
-					[style]="{'width':'100%'}"
-					[inputStyle]="{'width':'100%'}"
-					[placeholder]="'login.password' | translate" />
+    <!-- Card principal -->
+    <p-card [style]="{ width: '100%', maxWidth: '400px' }" class="login-card">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        
+        <!-- Username com FloatLabel -->
+        <div class="field">
+          <p-floatlabel>
+            <input 
+              id="username"
+              pInputText
+              type="text"
+              formControlName="username"
+              variant="outlined"
+              [style]="{ width: '100%', height: '3rem' }"
+              styleClass="login-input"
+              pFloatLabel />
+            <label for="username" class="flex align-items-center gap-2">
+              <i class="pi pi-user"></i>
+              {{ 'login.userName' | translate }}
+            </label>
+          </p-floatlabel>
+          
+          <!-- Mensagem de erro -->
+          <small 
+            *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" 
+            class="error-field-message block mt-2">
+            {{ 'login.userNameRequired' | translate }}
+          </small>
+        </div>
 
-				<!-- Error messages -->
-      	<small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error">
-      	  {{ 'login.passwordRequired' | translate }}
-      	</small>
+        <!-- Password com FloatLabel -->
+        <div class="field">
+          <p-floatlabel>
+            <p-password
+              id="password"
+              formControlName="password"
+              [feedback]="false"
+              [toggleMask]="true"
+              [style]="{ width: '100%', height: '3rem' }"
+              [inputStyle]="{ width: '100%', height: '3rem' }"
+              variant="outlined"
+              styleClass="login-password" />
+            <label for="password" class="flex align-items-center gap-2">
+              <i class="pi pi-lock"></i>
+              {{ 'login.password' | translate }}
+            </label>
+          </p-floatlabel>
+          
+          <!-- Mensagens de erro -->
+          <small 
+            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" 
+            class="error-field-message block mt-2">
+            {{ 'login.passwordRequired' | translate }}
+          </small>
+          
+          <small 
+            *ngIf="showRemainingAttempts" 
+            class="text-orange-500 block mt-2">
+            {{ 'login.attemptsRemaining' | translate: { attempts: attemptsRemaining } }}
+          </small>
+        </div>
 
-        <small *ngIf="showRemainingAttempts">
-          {{ 'login.attemptsRemaining' | translate: { attempts: attemptsRemaining } }}
-        </small>
-      </div>
+        <!-- Mensagens de feedback -->
+        <div class="mb-3">
+          @for (message of messages(); track message) {
+            <p-message 
+              [severity]="message.severity" 
+              [text]="message.content" 
+              [closable]="true"
+              class="mb-2" />
+          }
+        </div>
 
-      <!-- Error Messages -->
-	  <div class="mb-4">
-		  @for (message of messages(); track message; let first = $first) {
-        <p-message [severity]="message.severity" [text]="message.content" [ngClass]="{ 'mt-4': !first }" />
-      }
-	  </div>
+        <!-- Botão de login -->
+        <div class="field">
+          <p-button
+            type="submit"
+            [label]="'login.title' | translate"
+            [disabled]="loginForm.invalid || carregando()"
+            [loading]="carregando()"
+            [style]="{ width: '100%', height: '3rem' }"
+            size="large"
+            icon="pi pi-sign-in"
+            styleClass="p-button-lg">
+          </p-button>
+        </div>
 
-	    <!-- Login button -->
-      <div class="actions">
-		<button pButton type="submit" [label]="'login.title' | translate" [disabled]="loginForm.invalid">
-			{{ 'login.title' | translate }}
-		</button>
-    	</div>
-  	</form>
-	</p-card>
+        <!-- Links adicionais (opcional) -->
+        <div class="text-center">
+          <p class="text-sm text-600">
+            {{ 'login.forgotPassword' | translate }}
+            <a href="#" class="no-underline ml-1 text-primary">
+              {{ 'login.resetPassword' | translate }}
+            </a>
+          </p>
+        </div>
+      </form>
+    </p-card>
+
+    <!-- Footer -->
+    <div class="login-footer mt-4">
+      <p class="text-center text-sm text-500">
+        {{ 'login.copyright' | translate }}
+      </p>
+    </div>
+  </div>
 </div>
-</ng-container>

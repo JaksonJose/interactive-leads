@@ -28,6 +28,7 @@ export class LoginComponent {
   messages = signal<{ severity: 'error' | 'success' | 'info' | 'warn' | 'secondary' | 'contrast'; content: string }[]>([]);
   showRemainingAttempts = false;
   attemptsRemaining = 0;
+  carregando = signal<boolean>(false);
 
   authService = inject(AuthService);
   router = inject(Router);
@@ -43,17 +44,35 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const login = new LoginModel();
+      this.carregando.set(true);
+      this.messages.set([]);
 
+      const login = new LoginModel();
       login.userName = this.loginForm.get('username')?.value;
       login.password = this.loginForm.get('password')?.value;
 
-      this.authService.AuthenticateUser(login).subscribe((response: Response<TokenResponse>) => {
+      this.authService.AuthenticateUser(login).subscribe({
+        next: (response: Response<TokenResponse>) => {
+          this.carregando.set(false);
           if (response.isSuccessful && response.data) {
             this.authService.storeTokens(response.data);
-
             this.router.navigate(['/']);          
+          } else {
+            const errorMessage = response.messages?.[0]?.text || 'Erro ao fazer login';
+            this.messages.set([{
+              severity: 'error',
+              content: errorMessage
+            }]);
           }
+        },
+        error: (error) => {
+          console.log(error.error.Messages)
+          this.carregando.set(false);
+          this.messages.set([{
+            severity: 'error',
+            content: error.error.Messages[0].Text || 'Erro de conexão'
+          }]);
+        }
       });
     }
   }

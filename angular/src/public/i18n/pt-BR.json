@@ -1,57 +1,13 @@
 {
-  "api": {
-    "error": {
-      "AuthenticationBlocked": "Usuário bloqueado. Entre em contato com suporte.",
-      "AuthenticationInvalid": "Usuário/Email ou Senha inválida.",
-      "CompanyNotSaved": "A empresa não foi criada",
-      "CompanyExceptionWhenTrySave": "Erro ao criar empresa, entre em contato com supporte.",
-      "ConsultantCreateError": "Erro ao criar consultor.",
-      "ConsultantCompanyInsertError": "Erro ao tentar inserir uma empresa para o consultor.",
-      "CEPNotFound": "CEP Não Encontrado",
-      "CNPJNotFound": "CNPJ não encontrado.",
-      "DuplicateUserName": "Usuário já existe.",
-      "ErrorRolesUpdate": "Erro ao tentar atulaizar a permissão do usuário.",
-      "InvalidUserName": "Nome de usuário inválido",
-      "Unavailable": "Falha na conexão com o servidor.",
-      "ServiceUnavailable": "Servidor está temporariamente indisponível.",
-      "Timeout": "timeout",
-      "TimeoutMessage": "Tempo de resposta do servidor excedeu o limite. Tenta mais tarde.",
-      "title": "Erro",
-      "unavailable": "Serviço indisponível"
-    },
-    "success": {
-      "title": "Sucesso",
-      "CompanyCreated": "A empresa foi Criada com suscesso.",
-      "UserCreated": "Usuário Criado com Sucesso.",
-      "UserUpdated": "Usuário atualizado com success."
-    }
-  },
-  "auth": {
-    "emailRequired": "Email é obrigátorio.",
-    "phoneNumberRequired": "Telefone é obrigatório.",
-    "rolesRequired": "Permissão de usuário é obrigatório.",
-    "userNameRequired": "Usuário é obrigatório."
-  },
-  "consultant": {
-    "fullNameRequired": "O nome é obrigatório."
-  },
-  "company": {
-    "brandNameRequired": "O nome fantasia é obrigatório",
-    "cityRequired": "A cidade é obrigatória",
-    "emailRequired": "O email é obrigatório",
-    "identificationNumberRequired": "CNPJ é obrigatório",
-    "legalNameRequired": "O Razão social é obrigatório",
-    "neighborhoodRequired": "O bairro é obrigatório",
-    "phoneNumberRequired": "O telefone é obrigatório",
-    "stateRequired": "UF é obrigatório",
-    "streetRequired": "Rua/Av é obrigatório",
-    "zipcodeRequired": "O CEP é Obrigatório"
-  },
   "login": {
-    "attemptsRemaining": "Tentativas restantates: {{attempts}}.",
+    "attemptsRemaining": "Tentativas restantes: {{attempts}}.",
+    "copyright": "© 2024 Interactive Leads. Todos os direitos reservados.",
+    "forgotPassword": "Esqueceu sua senha?",
     "password": "Senha",
     "passwordRequired": "Senha é obrigatório.",
+    "resetPassword": "Redefinir senha",
     "signin": "Entrar",
+    "subtitle": "Entre com suas credenciais para acessar o sistema",
     "title": "Entrar",
     "userName": "Usuário ou Email",
     "userNameRequired": "Usuário ou Email é obrigatório."
@@ -60,35 +16,40 @@
     "admin": "Admin",
     "analytics": "Analíticos",
     "company": "Empresas",
-    "dashboard": "Dashboard",
     "consultants": "Consultores",
+    "dashboard": "Dashboard",
     "graphics": "Gráficos",
     "leads": "Leads",
-    "report": "Relatório" ,
+    "report": "Relatório",
     "salespipelines": "Funil de Vendas",
     "schedule": "Agendamentos"
   },
-  "primeng": {
-    "startsWith": "Começa com",
-    "contains": "Contém",
-    "notContains": "Não contém",
-    "endsWith": "Termina com",
-    "equals": "É Igual",
-    "notEquals": "Não é igual",
-    "noFilter": "No Filter",
-    "lt": "Menor que",
-    "lte": "Menor que ou igual a",
-    "gt": "Maior que",
-    "gte": "Maior que ou igual a",
-    "matchAll": "Combinar todos",
-    "matchAny": "Qualquer um",
-    "clear": "Limpar",
-    "apply": "Aplicar",
-    "addRule": "Adicionar Regra",
-    "removeRule": "Remover Regra"
+  "auth": {
+    "login_successful": "Autenticação realizada com sucesso",
+    "token_refreshed_successfully": "Token atualizado com sucesso",
+    "token_request_required": "Dados de autenticação são obrigatórios",
+    "username_required": "Usuário ou email é obrigatório",
+    "password_required": "Senha é obrigatória",
+    "refresh_token_data_required": "Dados do token de atualização são obrigatórios",
+    "current_jwt_required": "Token JWT atual é obrigatório",
+    "current_refresh_token_required": "Token de atualização atual é obrigatório",
+    "invalid_credentials": "Usuário ou senha incorretos",
+    "user_not_active": "Usuário inativo. Entre em contato com o administrador.",
+    "subscription_expired": "Assinatura expirada. Entre em contato com o administrador.",
+    "authentication_failed": "Falha na autenticação.",
+    "invalid_token": "Token inválido fornecido. Falha ao gerar novo token."
   },
-  "date": {
-    "today": "Hoje",
-    "yesterday": "Ontem"
+  "tenant": {
+    "subscription_not_active": "Assinatura do tenant não está ativa. Entre em contato com o administrador."
+  },
+  "general": {
+    "conflict": "Conflito detectado",
+    "resource_not_found": "Recurso não encontrado",
+    "access_denied": "Acesso negado",
+    "unauthorized": "Não autorizado",
+    "something_went_wrong": "Algo deu errado"
+  },
+  "identity": {
+    "permission_denied": "Erro de identidade"
   }
 }
