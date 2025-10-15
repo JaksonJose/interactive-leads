@@ -1,0 +1,28 @@
+﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Responses;
+using MediatR;
+
+namespace InteractiveLeads.Application.Feature.Identity.Roles.Commands
+{
+    public class CreateRoleCommand : IRequest<IResponse>
+    {
+        public CreateRoleRequest CreateRole { get; set; }
+    }
+
+    public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, IResponse>
+    {
+        private readonly IRoleService _roleService;
+
+        public CreateRoleCommandHandler(IRoleService roleService)
+        {
+            _roleService = roleService;
+        }
+
+        public async Task<IResponse> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
+        {
+            var roleName = await _roleService.CreateAsync(request.CreateRole);
+
+            return new SingleResponse<string>(roleName).AddSuccessMessage(message: $"Role '{roleName}' created successfully.");
+        }
+    }
+}

@@ -8,6 +8,7 @@ using InteractiveLeads.Infrastructure.Context.Tenancy;
 using InteractiveLeads.Infrastructure.Context.Tenancy.Interfaces;
 using InteractiveLeads.Infrastructure.Identity.Auth;
 using InteractiveLeads.Infrastructure.Identity.Models;
+using InteractiveLeads.Infrastructure.Identity.Roles;
 using InteractiveLeads.Infrastructure.Identity.Tokens;
 using InteractiveLeads.Infrastructure.OpenApi;
 using InteractiveLeads.Infrastructure.Tenancy;
@@ -64,6 +65,7 @@ namespace InteractiveLeads.Infrastructure
             // Register application services
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IRoleService, RoleService>();
 
             services.AddOpenApiDocumentation(config);
 

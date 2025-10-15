@@ -24,25 +24,25 @@ namespace InteractiveLeads.Application.Responses
         {
         }
 
-        public IResponse AddErrorMessage(string message, string code)
+        public IResponse AddErrorMessage(string message, string code = "")
         {
             Messages.Add(new Message() { Text = message, Code = code, Type = MessageType.Error });
             return this;
         }
 
-        public IResponse AddSuccessMessage(string message, string code)
+        public IResponse AddSuccessMessage(string message, string code = "")
         {
             Messages.Add(new Message() { Text = message, Code = code, Type = MessageType.Success });
             return this;
         }
 
-        public IResponse AddInfoMessage(string message, string code)
+        public IResponse AddInfoMessage(string message, string code = "")
         {
             Messages.Add(new Message() { Text = message, Code = code, Type = MessageType.Info });
             return this;
         }
 
-        public IResponse AddWarningMessage(string message, string code)
+        public IResponse AddWarningMessage(string message, string code = "")
         {
             Messages.Add(new Message() { Text = message, Code = code, Type = MessageType.Warning });
             return this;
