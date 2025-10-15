@@ -19,8 +19,8 @@ const MyPreset = definePreset(Lara, {
     colorScheme: {
       light: {
         surface: {
-          0: '#ffffff', // Card de login branco
-          50: '#f8fafc', // Background quase branco com sutil diferença
+          0: '#ffffff', // White login card
+          50: '#f8fafc', // Almost white background with subtle difference
           100: '#f1f5f9',
           200: '#e2e8f0',
           300: '#cbd5e1',
@@ -61,8 +61,8 @@ const MyPreset = definePreset(Lara, {
           950: '#4e69c4'
         },
         surface: {
-          0: '#1e293b', // Card de login escuro
-          50: '#0f172a', // Background escuro mais escuro
+          0: '#1e293b', // Dark login card
+          50: '#0f172a', // Darker dark background
           100: '#1e293b',
           200: '#334155',
           300: '#475569',

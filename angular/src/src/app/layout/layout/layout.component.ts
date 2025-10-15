@@ -97,7 +97,7 @@ export class LayoutComponent implements OnInit {
 
   userMenuItems: MenuItem[] = [
     {
-      label: 'Editar Perfil',
+      label: 'Edit Profile',
       icon: 'pi pi-user-edit',
       //command: () => this.onEditProfile()
     },

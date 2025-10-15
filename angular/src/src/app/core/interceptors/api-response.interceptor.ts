@@ -10,17 +10,17 @@ export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     tap({
       next: (event) => {
-        // Intercepta apenas respostas HTTP bem-sucedidas
+        // Intercept only successful HTTP responses
         if (event instanceof HttpResponse) {
           const response = event.body as Response<unknown>;
 
-          // Verifica se a resposta tem mensagens para exibir
+          // Check if the response has messages to display
           if (response && response.messages && response.messages.length > 0) {
             response.messages.forEach((message: Message) => {
               if (message.text) {
                 const messageConfig = {
-                  severity: obterSeveridade(message.type),
-                  summary: obterTitulo(message.type),
+                  severity: getSeverity(message.type),
+                  summary: getTitle(message.type),
                   detail: message.text,
                   life: 5000
                 };
@@ -32,14 +32,14 @@ export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
         }
       },
       error: (error) => {
-        // Trata erros HTTP
+        // Handle HTTP errors
         if (error.error && error.error.messages && error.error.messages.length > 0) {
-          // Se o erro tem mensagens estruturadas da API
+          // If the error has structured messages from the API
           error.error.messages.forEach((message: Message) => {
             if (message.text) {
               const messageConfig = {
-                severity: obterSeveridade(message.type) || 'error',
-                summary: obterTitulo(message.type) || 'Erro',
+                severity: getSeverity(message.type) || 'error',
+                summary: getTitle(message.type) || 'Error',
                 detail: message.text,
                 life: 7000
               };
@@ -48,11 +48,11 @@ export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
             }
           });
         } else {
-          // Erro genérico quando não há mensagens estruturadas
+          // Generic error when there are no structured messages
           const messageConfig = {
             severity: 'error',
-            summary: 'Erro',
-            detail: error.message || 'Ocorreu um erro inesperado',
+            summary: 'Error',
+            detail: error.message || 'An unexpected error occurred',
             life: 7000
           };
 
@@ -64,9 +64,9 @@ export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
 };
 
 /**
- * Converte o tipo de mensagem da API para a severidade do PrimeNG
+ * Converts the API message type to PrimeNG severity
  */
-function obterSeveridade(messageType?: MessageType): string {
+function getSeverity(messageType?: MessageType): string {
   switch (messageType) {
     case MessageType.success:
       return 'success';
@@ -82,19 +82,19 @@ function obterSeveridade(messageType?: MessageType): string {
 }
 
 /**
- * Obtém o título apropriado para cada tipo de mensagem
+ * Gets the appropriate title for each message type
  */
-function obterTitulo(messageType?: MessageType): string {
+function getTitle(messageType?: MessageType): string {
   switch (messageType) {
     case MessageType.success:
-      return 'Sucesso';
+      return 'Success';
     case MessageType.error:
-      return 'Erro';
+      return 'Error';
     case MessageType.warn:
-      return 'Atenção';
+      return 'Warning';
     case MessageType.info:
-      return 'Informação';
+      return 'Information';
     default:
-      return 'Informação';
+      return 'Information';
   }
 }

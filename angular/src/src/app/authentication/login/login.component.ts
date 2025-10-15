@@ -1,8 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { TranslateDirective, TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { AuthService } from '@authentication/services/auth.service';
 import { LoginModel, TokenResponse } from '@authentication/models';
@@ -13,9 +12,7 @@ import { PRIME_NG_MODULES } from '@shared/primeng-imports';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
-    TranslateDirective,
     TranslatePipe,
     ...PRIME_NG_MODULES 
   ],
@@ -28,7 +25,7 @@ export class LoginComponent {
   messages = signal<{ severity: 'error' | 'success' | 'info' | 'warn' | 'secondary' | 'contrast'; content: string }[]>([]);
   showRemainingAttempts = false;
   attemptsRemaining = 0;
-  carregando = signal<boolean>(false);
+  loading = signal<boolean>(false);
 
   authService = inject(AuthService);
   router = inject(Router);
@@ -44,7 +41,7 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      this.carregando.set(true);
+      this.loading.set(true);
       this.messages.set([]);
 
       const login = new LoginModel();
@@ -53,12 +50,13 @@ export class LoginComponent {
 
       this.authService.AuthenticateUser(login).subscribe({
         next: (response: Response<TokenResponse>) => {
-          this.carregando.set(false);
+          this.loading.set(false);
           if (response.isSuccessful && response.data) {
             this.authService.storeTokens(response.data);
             this.router.navigate(['/']);          
           } else {
-            const errorMessage = response.messages?.[0]?.text || 'Erro ao fazer login';
+            const errorCode = response.messages?.[0]?.code || 'LOGIN_ERROR';
+            const errorMessage = this.translate.instant(errorCode) || 'Login error';
             this.messages.set([{
               severity: 'error',
               content: errorMessage
@@ -66,10 +64,12 @@ export class LoginComponent {
           }
         },
         error: (error) => {
-          this.carregando.set(false);
+          this.loading.set(false);
+          const errorCode = error.error?.messages?.[0]?.code || 'CONNECTION_ERROR';
+            const errorMessage = this.translate.instant(errorCode) || 'Connection error';
           this.messages.set([{
             severity: 'error',
-            content: error.error.messages[0].text || 'Erro de conexão'
+            content: errorMessage
           }]);
         }
       });

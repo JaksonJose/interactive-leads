@@ -1,6 +1,6 @@
 <div class="login-wrapper">
   <div class="login-container">
-    <!-- Header com logo/título -->
+    <!-- Header with logo/title -->
     <div class="login-header mb-6">
       <div class="text-center">
         <i class="pi pi-user-circle text-6xl mb-3"></i>
@@ -9,11 +9,11 @@
       </div>
     </div>
 
-    <!-- Card principal -->
+    <!-- Main card -->
     <p-card [style]="{ width: '100%', maxWidth: '400px' }" class="login-card">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
         
-        <!-- Username com FloatLabel -->
+        <!-- Username with FloatLabel -->
         <div class="field">
           <p-floatlabel>
             <input 
@@ -31,15 +31,16 @@
             </label>
           </p-floatlabel>
           
-          <!-- Mensagem de erro -->
-          <small 
-            *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" 
-            class="error-field-message block mt-2">
-            {{ 'login.userNameRequired' | translate }}
-          </small>
+          <!-- Error message -->
+          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+            <small 
+              class="error-field-message block mt-2">
+              {{ 'login.userNameRequired' | translate }}
+            </small>
+          }
         </div>
 
-        <!-- Password com FloatLabel -->
+        <!-- Password with FloatLabel -->
         <div class="field">
           <p-floatlabel>
             <p-password
@@ -50,28 +51,28 @@
               [style]="{ width: '100%', height: '3rem' }"
               [inputStyle]="{ width: '100%', height: '3rem' }"
               variant="outlined"
-              styleClass="login-password" />
+              class="login-password" />
             <label for="password" class="flex align-items-center gap-2">
               <i class="pi pi-lock"></i>
               {{ 'login.password' | translate }}
             </label>
           </p-floatlabel>
           
-          <!-- Mensagens de erro -->
-          <small 
-            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" 
-            class="error-field-message block mt-2">
-            {{ 'login.passwordRequired' | translate }}
-          </small>
-          
-          <small 
-            *ngIf="showRemainingAttempts" 
-            class="text-orange-500 block mt-2">
-            {{ 'login.attemptsRemaining' | translate: { attempts: attemptsRemaining } }}
-          </small>
+          <!-- Error messages -->
+           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <small class="error-field-message block mt-2">
+              {{ 'login.passwordRequired' | translate }}
+            </small>
+           }
+
+          @if (showRemainingAttempts) {
+            <small class="text-orange-500 block mt-2">
+              {{ 'login.attemptsRemaining' | translate: { attempts: attemptsRemaining } }}
+            </small>
+          }          
         </div>
 
-        <!-- Mensagens de feedback -->
+        <!-- Feedback messages -->
         <div class="mb-3">
           @for (message of messages(); track message) {
             <p-message 
@@ -82,13 +83,13 @@
           }
         </div>
 
-        <!-- Botão de login -->
+        <!-- Login button -->
         <div class="field">
           <p-button
             type="submit"
             [label]="'login.title' | translate"
-            [disabled]="loginForm.invalid || carregando()"
-            [loading]="carregando()"
+            [disabled]="loginForm.invalid || loading()"
+            [loading]="loading()"
             [style]="{ width: '100%', height: '3rem' }"
             size="large"
             icon="pi pi-sign-in"
@@ -96,7 +97,7 @@
           </p-button>
         </div>
 
-        <!-- Links adicionais (opcional) -->
+        <!-- Additional links (optional) -->
         <div class="text-center">
           <p class="text-sm text-600">
             {{ 'login.forgotPassword' | translate }}

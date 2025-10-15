@@ -83,7 +83,7 @@ export class AppBarComponent {
 
   userMenuItems: MenuItem[] = [
     {
-      label: 'Editar Perfil',
+      label: 'Edit Profile',
       icon: 'pi pi-user-edit',
       //command: () => this.onEditProfile()
     },

@@ -34,7 +34,7 @@
     box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     background: var(--p-surface-0);
     
-    // Aumentar padding interno do card
+    // Increase internal padding of the card
     :deep(.p-card-body) {
       padding: 2rem 2.5rem;
     }
@@ -54,7 +54,7 @@
       }
     }
     
-    // Espaçamento extra para o último campo
+    // Extra spacing for the last field
     .field:last-of-type {
       margin-bottom: 1rem;
     }
@@ -64,7 +64,7 @@
     text-align: center;
   }
 
-  // Animações
+  // Animations
   @keyframes slideUp {
     from {
       opacity: 0;
@@ -148,63 +148,63 @@
     }
   }
 
-  // Tamanho e estilo dos inputs - forçar com !important para PrimeNG v20
+  // Input size and style - force with !important for PrimeNG v20
   :deep(.p-inputtext),
   :deep(.p-password input),
   :deep(.p-password .p-inputtext) {
-    height: 3rem !important; // 48px - altura padrão para inputs de login
+    height: 3rem !important; // 48px - standard height for login inputs
     min-height: 3rem !important;
-    font-size: 1rem !important; // 16px - tamanho confortável
+    font-size: 1rem !important; // 16px - comfortable size
     padding: 0.75rem 1rem !important; // 12px vertical, 16px horizontal
     line-height: 1.5 !important;
   }
 
-  // Forçar altura do container do p-password
+  // Force height of p-password container
   :deep(.p-password) {
     height: 3rem !important;
   }
 
-  // Ajustar ícone do toggle de senha
+  // Adjust password toggle icon
   :deep(.p-password .p-password-toggle) {
     height: 3rem !important;
     width: 3rem !important;
   }
 
-  // Estados de foco melhorados
+  // Improved focus states
   :deep(.p-inputtext:focus),
   :deep(.p-password input:focus) {
     box-shadow: 0 0 0 2px var(--p-primary-200);
     border-color: var(--p-primary-500);
   }
 
-  // Botão com hover effect mais sutil
+  // Button with more subtle hover effect
   :deep(.p-button:hover:not(:disabled)) {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px var(--p-primary-200);
     transition: all 0.2s ease;
   }
 
-  // FloatLabel customizado
+  // Custom FloatLabel
   :deep(.p-floatlabel label) {
     color: var(--p-surface-600);
     font-weight: 500;
-    font-size: 0.9rem; // Ajustar tamanho do label
+    font-size: 0.9rem; // Adjust label size
   }
 
   :deep(.p-floatlabel .p-floatlabel-text-wrapper--focused label) {
     color: var(--p-primary-500);
   }
 
-  // Ajustar posicionamento do FloatLabel para inputs maiores
+  // Adjust FloatLabel positioning for larger inputs
   :deep(.p-floatlabel .p-floatlabel-text-wrapper) {
-    top: 0.75rem !important; // 12px - ajustar para altura do input
+    top: 0.75rem !important; // 12px - adjust for input height
   }
 
   :deep(.p-floatlabel .p-floatlabel-text-wrapper--focused) {
-    top: -0.5rem !important; // Ajustar quando focado
+    top: -0.5rem !important; // Adjust when focused
   }
 
-  // Forçar tamanho do botão também
+  // Force button size as well
   :deep(.p-button) {
     height: 3rem !important;
     min-height: 3rem !important;
@@ -212,7 +212,7 @@
     padding: 0.75rem 1.5rem !important;
   }
 
-  // Classes customizadas para garantir altura
+  // Custom classes to ensure height
   :deep(.login-input) {
     height: 3rem !important;
     min-height: 3rem !important;
@@ -232,7 +232,7 @@
     }
   }
 
-  // Cores dos textos usando variáveis do tema
+  // Text colors using theme variables
   .login-header {
     h1 {
       color: var(--p-surface-900);

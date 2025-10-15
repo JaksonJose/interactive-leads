@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 export const jwtInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   const authService = inject(AuthService);
 
-  const skipUrls = ['/login', '/register', '/refresh-token'];
+  const skipUrls = ['/login', '/refresh-token'];
   const shouldSkip = skipUrls.some(url => req.url.includes(url));
   
   if (shouldSkip) {
