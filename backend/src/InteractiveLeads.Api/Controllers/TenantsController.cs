@@ -16,7 +16,7 @@ namespace InteractiveLeads.Api.Controllers
     /// Provides endpoints for creating, activating, deactivating, and retrieving tenant information.
     /// All operations require appropriate permissions.
     /// </remarks>
-    public class TenantsControllerController : BaseApiController
+    public class TenantsController : BaseApiController
     {
         /// <summary>
         /// Creates a new tenant in the system.

@@ -1,29 +1,26 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
 import { Response } from '@core/responses/response';
-
 import { LoginModel, TokenResponse } from '@authentication/models';
-import { isPlatformBrowser } from '@angular/common';
-import { environment } from '@environment/environment';
 import { Observable } from 'rxjs';
+import { AuthRepository } from '../repositories/auth.repository';
+import { TokenStorageService } from './token-storage.service';
 
 interface ExtendedJwtPayload extends JwtPayload {
   role?: string | string[];
+  permission?: string | string[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = `${environment.apiUrl}/${environment.apiVersion}/token`;
-
-  private http = inject(HttpClient);
-  private platformId = inject(PLATFORM_ID);
+  private authRepository = inject(AuthRepository);
+  private tokenStorage = inject(TokenStorageService);
 
   public AuthenticateUser(login: LoginModel): Observable<Response<TokenResponse>> {
-    return this.http.post<Response<TokenResponse>>(`${this.baseUrl}/login`, login, { withCredentials: false });
+    return this.authRepository.autenticarUsuario(login);
   }
 
   /**
@@ -31,11 +28,7 @@ export class AuthService {
    * @returns Get the token stored in local storage
    */
   public getAuthorizationToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('token');
-    }
-
-    return null;
+    return this.tokenStorage.obterToken();
   }
 
   /**
@@ -43,11 +36,7 @@ export class AuthService {
    * @returns The refresh token stored in local storage
    */
   public getRefreshToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('refreshToken');
-    }
-
-    return null;
+    return this.tokenStorage.obterRefreshToken();
   }
 
   /**
@@ -55,23 +44,14 @@ export class AuthService {
    * @param tokenResponse Token response containing JWT and refresh token
    */
   public storeTokens(tokenResponse: TokenResponse): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('token', tokenResponse.jwt);
-      localStorage.setItem('refreshToken', tokenResponse.refreshToken);
-      localStorage.setItem('refreshTokenExpiry', tokenResponse.refreshTokenExpirationDate.toString());
-    }
+    this.tokenStorage.armazenarTokens(tokenResponse);
   }
 
   /**
    * Clear all authentication tokens from local storage
    */
   public clearTokens(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('refreshTokenExpiry');
-      localStorage.removeItem('interactiveUser');
-    }
+    this.tokenStorage.limparTokens();
   }
 
   /**
@@ -151,6 +131,60 @@ export class AuthService {
   public isSysAdmin() : boolean {
     const roles = this.getUserRoles();
     return roles.includes('SysAdmin');
+  }
+
+  /**
+   * Get user permissions from JWT token
+   * @returns Array of user permissions
+   */
+  public getUserPermissions(): string[] {
+    const token = this.getAuthorizationToken();
+    if (!token) return [];
+    
+    const decoded = jwtDecode<ExtendedJwtPayload>(token);
+    return decoded?.permission ? 
+      (Array.isArray(decoded.permission) ? decoded.permission : [decoded.permission]) : 
+      [];
+  }
+
+  /**
+   * Check if user has a specific permission
+   * @param permission The permission to check
+   * @returns True if user has the permission
+   */
+  public hasPermission(permission: string): boolean {
+    return this.getUserPermissions().includes(permission);
+  }
+
+  /**
+   * Check if user has any of the specified permissions
+   * @param permissions Array of permissions to check
+   * @returns True if user has at least one of the permissions
+   */
+  public hasAnyPermission(permissions: string[]): boolean {
+    return permissions.some(permission => this.hasPermission(permission));
+  }
+
+  /**
+   * Check if user has all of the specified permissions
+   * @param permissions Array of permissions to check
+   * @returns True if user has all of the permissions
+   */
+  public hasAllPermissions(permissions: string[]): boolean {
+    return permissions.every(permission => this.hasPermission(permission));
+  }
+
+  /**
+   * Check if user is a root administrator (has tenant management permissions)
+   * @returns True if user has root admin permissions
+   */
+  public isRootAdmin(): boolean {
+    const rootPermissions = [
+      'Permission.Tenants.Create',
+      'Permission.Tenants.Read',
+      'Permission.Tenants.Update'
+    ];
+    return this.hasAllPermissions(rootPermissions);
   }
 
   /**

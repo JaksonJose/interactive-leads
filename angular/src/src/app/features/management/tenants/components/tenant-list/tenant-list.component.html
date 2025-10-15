@@ -1,0 +1,182 @@
+<div class="tenant-list-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>{{ 'tenantManagement.title' | translate }}</h1>
+      <p class="subtitle">{{ 'tenantManagement.subtitle' | translate }}</p>
+    </div>
+    
+    <div class="actions-section">
+      <button 
+        *hasPermission="['Permission.Tenants.Create']"
+        type="button" 
+        class="btn btn-primary"
+        (click)="createTenant()">
+        <i class="pi pi-plus"></i>
+        {{ 'tenantManagement.createTenant' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <p-message
+    *ngFor="let message of messages()"
+    [severity]="message.severity"
+    [closable]="true"
+    (onClose)="messages.set([])">
+    {{ message.content }}
+  </p-message>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+    <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+    <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+  </div>
+
+  <!-- Tenants Table -->
+  <div *ngIf="!loading() && tenants().length > 0" class="table-container">
+    <p-table 
+      [value]="tenants()" 
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+        currentPageReportTemplate="{{ 'tenantManagement.showingResults' | translate }}"
+      [globalFilterFields]="['name', 'email', 'firstName', 'lastName']"
+      styleClass="p-datatable-sm">
+      
+      <ng-template pTemplate="caption">
+        <div class="table-header">
+          <span class="table-title">{{ 'tenantManagement.tenantsList' | translate }}</span>
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input 
+              pInputText 
+              type="text" 
+              placeholder="{{ 'tenantManagement.searchTenants' | translate }}"
+              (input)="$event.target && $any($event.target).value && $any($event.target).value.length > 0 ? $any($event.target).value : ''"
+              #searchInput>
+          </span>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="name">
+            {{ 'tenantManagement.name' | translate }}
+            <p-sortIcon field="name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="email">
+            {{ 'tenantManagement.email' | translate }}
+            <p-sortIcon field="email"></p-sortIcon>
+          </th>
+          <th pSortableColumn="firstName">
+            {{ 'tenantManagement.adminName' | translate }}
+            <p-sortIcon field="firstName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="expirationDate">
+            {{ 'tenantManagement.expirationDate' | translate }}
+            <p-sortIcon field="expirationDate"></p-sortIcon>
+          </th>
+          <th pSortableColumn="isActive">
+            {{ 'tenantManagement.status' | translate }}
+            <p-sortIcon field="isActive"></p-sortIcon>
+          </th>
+          <th>{{ 'tenantManagement.actions' | translate }}</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-tenant>
+        <tr>
+          <td>
+            <div class="tenant-info">
+              <strong>{{ tenant.name }}</strong>
+              <small class="text-muted">ID: {{ tenant.identifier }}</small>
+            </div>
+          </td>
+          <td>{{ tenant.email }}</td>
+          <td>{{ getTenantAdminFullName(tenant) }}</td>
+          <td>
+            <span [class]="isTenantExpired(tenant) ? 'text-danger' : ''">
+              {{ tenant.expirationDate | date:'short' }}
+            </span>
+          </td>
+          <td>
+            <p-tag 
+              [value]="getTenantStatusDescription(tenant)"
+              [severity]="getStatusSeverity(tenant)">
+            </p-tag>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button 
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                (click)="viewTenantDetails(tenant)"
+                [title]="'tenantManagement.viewDetails' | translate">
+                <i class="pi pi-eye"></i>
+              </button>
+              
+              <button 
+                *hasPermission="['Permission.Tenants.Update']"
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                (click)="editTenant(tenant)"
+                [title]="'tenantManagement.editTenant' | translate">
+                <i class="pi pi-pencil"></i>
+              </button>
+              
+              <ng-container *hasPermission="['Permission.Tenants.Update']">
+                <button 
+                  *ngIf="!tenant.isActive"
+                  type="button"
+                  class="btn btn-sm btn-outline-success"
+                  (click)="activateTenant(tenant)"
+                  [title]="'tenantManagement.activateTenant' | translate">
+                  <i class="pi pi-check"></i>
+                </button>
+                
+                <button 
+                  *ngIf="tenant.isActive"
+                  type="button"
+                  class="btn btn-sm btn-outline-warning"
+                  (click)="deactivateTenant(tenant)"
+                  [title]="'tenantManagement.deactivateTenant' | translate">
+                  <i class="pi pi-times"></i>
+                </button>
+              </ng-container>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center">
+            <div class="empty-state">
+              <i class="pi pi-building" style="font-size: 3rem; color: #ccc;"></i>
+              <p>{{ 'tenantManagement.noTenantsFound' | translate }}</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && tenants().length === 0" class="empty-container">
+    <div class="empty-state">
+      <i class="pi pi-building" style="font-size: 4rem; color: #ccc;"></i>
+      <h3>{{ 'tenantManagement.noTenantsYet' | translate }}</h3>
+      <p>{{ 'tenantManagement.getStartedByCreatingTenant' | translate }}</p>
+      <button 
+        *hasPermission="['Permission.Tenants.Create']"
+        type="button" 
+        class="btn btn-primary"
+        (click)="createTenant()">
+        <i class="pi pi-plus"></i>
+        {{ 'tenantManagement.createFirstTenant' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

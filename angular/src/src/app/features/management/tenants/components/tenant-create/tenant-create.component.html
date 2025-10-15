@@ -1,0 +1,203 @@
+<div class="tenant-create-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>{{ 'tenantManagement.createTenant' | translate }}</h1>
+      <p class="subtitle">{{ 'tenantManagement.createNewTenantOrganization' | translate }}</p>
+    </div>
+    
+    <button 
+      type="button" 
+      class="btn btn-secondary"
+      (click)="onCancel()">
+      <i class="pi pi-arrow-left"></i>
+      {{ 'tenantManagement.backToList' | translate }}
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <p-message
+    *ngFor="let message of messages()"
+    [severity]="message.severity"
+    [closable]="true"
+    (onClose)="messages.set([])">
+    {{ message.content }}
+  </p-message>
+
+  <!-- Form -->
+  <div class="form-container">
+    <form [formGroup]="tenantForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <!-- Tenant Identifier -->
+        <div class="form-group">
+          <label for="identifier" class="form-label">
+            {{ 'tenantManagement.tenantIdentifier' | translate }} *
+          </label>
+          <input
+            type="text"
+            id="identifier"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('identifier')"
+            formControlName="identifier"
+            placeholder="e.g., company-slug">
+          <div *ngIf="isFieldInvalid('identifier')" class="invalid-feedback">
+            {{ getFieldError('identifier') }}
+          </div>
+          <small class="form-text text-muted">
+            {{ 'tenantManagement.identifierHelpText' | translate }}
+          </small>
+        </div>
+
+        <!-- Tenant Name -->
+        <div class="form-group">
+          <label for="name" class="form-label">
+            {{ 'tenantManagement.tenantName' | translate }} *
+          </label>
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('name')"
+            formControlName="name"
+            placeholder="Company Name">
+          <div *ngIf="isFieldInvalid('name')" class="invalid-feedback">
+            {{ getFieldError('name') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Admin First Name -->
+        <div class="form-group">
+          <label for="firstName" class="form-label">
+            {{ 'tenantManagement.adminFirstName' | translate }} *
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('firstName')"
+            formControlName="firstName"
+            placeholder="John">
+          <div *ngIf="isFieldInvalid('firstName')" class="invalid-feedback">
+            {{ getFieldError('firstName') }}
+          </div>
+        </div>
+
+        <!-- Admin Last Name -->
+        <div class="form-group">
+          <label for="lastName" class="form-label">
+            {{ 'tenantManagement.adminLastName' | translate }} *
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('lastName')"
+            formControlName="lastName"
+            placeholder="Doe">
+          <div *ngIf="isFieldInvalid('lastName')" class="invalid-feedback">
+            {{ getFieldError('lastName') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Admin Email -->
+        <div class="form-group">
+          <label for="email" class="form-label">
+            {{ 'tenantManagement.adminEmail' | translate }} *
+          </label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('email')"
+            formControlName="email"
+            placeholder="admin@company.com">
+          <div *ngIf="isFieldInvalid('email')" class="invalid-feedback">
+            {{ getFieldError('email') }}
+          </div>
+          <small class="form-text text-muted">
+            {{ 'tenantManagement.adminEmailHelpText' | translate }}
+          </small>
+        </div>
+
+        <!-- Expiration Date -->
+        <div class="form-group">
+          <label for="expirationDate" class="form-label">
+            {{ 'tenantManagement.subscriptionExpiration' | translate }} *
+          </label>
+          <p-datepicker
+            id="expirationDate"
+            formControlName="expirationDate"
+            [showIcon]="true"
+            [minDate]="minDate"
+            dateFormat="dd/mm/yy"
+            placeholder="Select expiration date">
+          </p-datepicker>
+          <div *ngIf="isFieldInvalid('expirationDate')" class="invalid-feedback">
+            {{ getFieldError('expirationDate') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Connection String -->
+        <div class="form-group full-width">
+          <label for="connectionString" class="form-label">
+            {{ 'tenantManagement.databaseConnectionString' | translate }}
+          </label>
+          <textarea
+            id="connectionString"
+            class="form-control"
+            formControlName="connectionString"
+            rows="3"
+            placeholder="Server=localhost;Database=TenantDB;... (Optional)">
+          </textarea>
+          <small class="form-text text-muted">
+            {{ 'tenantManagement.connectionStringHelpText' | translate }}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Active Status -->
+        <div class="form-group">
+          <div class="form-check">
+            <input
+              type="checkbox"
+              id="isActive"
+              class="form-check-input"
+              formControlName="isActive">
+            <label for="isActive" class="form-check-label">
+              {{ 'tenantManagement.activateTenantImmediately' | translate }}
+            </label>
+          </div>
+          <small class="form-text text-muted">
+            {{ 'tenantManagement.activateTenantHelpText' | translate }}
+          </small>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn btn-secondary"
+          (click)="onCancel()">
+          {{ 'tenantManagement.cancel' | translate }}
+        </button>
+        
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="loading() || !tenantForm.valid">
+          <i *ngIf="loading()" class="pi pi-spin pi-spinner"></i>
+          <i *ngIf="!loading()" class="pi pi-check"></i>
+          {{ loading() ? ('tenantManagement.creating' | translate) : ('tenantManagement.createTenant' | translate) }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

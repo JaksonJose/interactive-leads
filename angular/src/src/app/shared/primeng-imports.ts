@@ -2,6 +2,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
 import { CardModule } from 'primeng/card';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
@@ -46,6 +47,7 @@ export const PRIME_NG_MODULES = [
     AvatarGroupModule,
     BadgeModule,
     ButtonModule,
+    DatePickerModule,
     CardModule,
     CheckboxModule,
     ChipModule,

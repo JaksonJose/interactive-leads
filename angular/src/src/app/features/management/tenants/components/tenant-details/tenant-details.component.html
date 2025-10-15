@@ -1,0 +1,196 @@
+<div class="tenant-details-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>{{ 'tenantManagement.tenantDetails' | translate }}</h1>
+      <p class="subtitle">{{ 'tenantManagement.viewTenantInformationAndStatus' | translate }}</p>
+    </div>
+    
+    <div class="header-actions">
+      <button 
+        type="button" 
+        class="btn btn-secondary"
+        (click)="backToList()">
+        <i class="pi pi-arrow-left"></i>
+        {{ 'tenantManagement.backToList' | translate }}
+      </button>
+      
+      <button 
+        *hasPermission="['Permission.Tenants.Update']"
+        type="button" 
+        class="btn btn-primary"
+        (click)="editTenant()">
+        <i class="pi pi-pencil"></i>
+        {{ 'tenantManagement.editTenant' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <p-message
+    *ngFor="let message of messages()"
+    [severity]="message.severity"
+    [closable]="true"
+    (onClose)="messages.set([])">
+    {{ message.content }}
+  </p-message>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <div class="skeleton-card">
+      <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+      <p-skeleton height="1.5rem" class="mb-4"></p-skeleton>
+      <p-skeleton height="10rem"></p-skeleton>
+    </div>
+  </div>
+
+  <!-- Tenant Details -->
+  <div *ngIf="!loading() && tenant()" class="details-container">
+    <div class="details-grid">
+      <!-- Basic Information Card -->
+      <div class="detail-card">
+        <div class="card-header">
+          <h3>{{ 'tenantManagement.basicInformation' | translate }}</h3>
+          <p-tag 
+            [value]="getTenantStatusDescription()"
+            [severity]="getStatusSeverity()">
+          </p-tag>
+        </div>
+        
+        <div class="card-content">
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.tenantIdentifier' | translate }}</div>
+            <div class="detail-value">{{ tenant()?.identifier }}</div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.tenantName' | translate }}</div>
+            <div class="detail-value">{{ tenant()?.name }}</div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.status' | translate }}</div>
+            <div class="detail-value">
+              <span [class]="isTenantExpired() ? 'text-danger' : ''">
+                {{ getTenantStatusDescription() }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.subscriptionExpiration' | translate }}</div>
+            <div class="detail-value">
+              <span [class]="isTenantExpired() ? 'text-danger' : ''">
+                {{ tenant()?.expirationDate | date:'full' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Administrator Information Card -->
+      <div class="detail-card">
+        <div class="card-header">
+          <h3>{{ 'tenantManagement.administratorInformation' | translate }}</h3>
+        </div>
+        
+        <div class="card-content">
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.adminName' | translate }}</div>
+            <div class="detail-value">{{ getTenantAdminFullName() }}</div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.adminEmail' | translate }}</div>
+            <div class="detail-value">
+              <a [href]="'mailto:' + tenant()?.email">{{ tenant()?.email }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database Information Card -->
+      <div class="detail-card" *ngIf="tenant()?.connectionString">
+        <div class="card-header">
+          <h3>{{ 'tenantManagement.databaseInformation' | translate }}</h3>
+        </div>
+        
+        <div class="card-content">
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.connectionType' | translate }}</div>
+            <div class="detail-value">
+              <p-tag value="Isolated Database" severity="info"></p-tag>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.connectionString' | translate }}</div>
+            <div class="detail-value">
+              <code class="connection-string">{{ tenant()?.connectionString }}</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database Information Card (Shared) -->
+      <div class="detail-card" *ngIf="!tenant()?.connectionString">
+        <div class="card-header">
+          <h3>{{ 'tenantManagement.databaseInformation' | translate }}</h3>
+        </div>
+        
+        <div class="card-content">
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.connectionType' | translate }}</div>
+            <div class="detail-value">
+              <p-tag value="Shared Database" severity="success"></p-tag>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.sharedDatabaseDescription' | translate }}</div>
+            <div class="detail-value">
+              {{ 'SHARED_DATABASE_DESCRIPTION' | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons" *hasPermission="['Permission.Tenants.Update']">
+      <button 
+        *ngIf="!tenant()?.isActive"
+        type="button"
+        class="btn btn-success"
+        (click)="activateTenant()">
+        <i class="pi pi-check"></i>
+        {{ 'tenantManagement.activateTenant' | translate }}
+      </button>
+      
+      <button 
+        *ngIf="tenant()?.isActive"
+        type="button"
+        class="btn btn-warning"
+        (click)="deactivateTenant()">
+        <i class="pi pi-times"></i>
+        {{ 'tenantManagement.deactivateTenant' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading() && !tenant()" class="error-container">
+    <div class="error-state">
+      <i class="pi pi-exclamation-triangle" style="font-size: 4rem; color: #dc3545;"></i>
+      <h3>{{ 'tenantManagement.tenantNotFound' | translate }}</h3>
+      <p>{{ 'tenantManagement.tenantNotFoundMessage' | translate }}</p>
+      <button 
+        type="button" 
+        class="btn btn-primary"
+        (click)="backToList()">
+        <i class="pi pi-arrow-left"></i>
+        {{ 'tenantManagement.backToList' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
