@@ -15,8 +15,7 @@ namespace Application.Features.Identity.Users.Queries
 
         public async Task<IResponse> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
-            var users = await _userService.GetAllAsync(cancellationToken);
-            return users;
+            return await _userService.GetAllAsync(cancellationToken);
         }
     }
 }

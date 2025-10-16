@@ -15,8 +15,7 @@ namespace InteractiveLeads.Application.Feature.Users.Commands
 
         public async Task<IResponse> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var response = await _userService.UpdateAsync(request.UpdateUser);
-            return response;
+            return await _userService.UpdateAsync(request.UpdateUser);
         }
     }
 }

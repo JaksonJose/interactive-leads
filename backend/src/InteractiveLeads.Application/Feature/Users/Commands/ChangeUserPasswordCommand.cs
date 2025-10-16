@@ -16,8 +16,7 @@ namespace InteractiveLeads.Application.Feature.Users.Commands
 
         public async Task<IResponse> Handle(ChangeUserPasswordCommand request, CancellationToken cancellationToken)
         {
-            var response = await _userService.ChangePasswordAsync(request.ChangePassword);
-            return response;
+            return await _userService.ChangePasswordAsync(request.ChangePassword);
         }
     }
 }

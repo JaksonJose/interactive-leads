@@ -21,8 +21,7 @@ namespace InteractiveLeads.Application.Feature.Users.Commands
 
         public async Task<IResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var response = await _userService.CreateAsync(request.CreateUser);
-            return response;
+            return await _userService.CreateAsync(request.CreateUser);
         }
     }
 }

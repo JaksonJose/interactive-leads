@@ -21,9 +21,7 @@ namespace InteractiveLeads.Application.Feature.Users.Queries
 
         public async Task<IResponse> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userService.GetByIdAsync(request.UserId, cancellationToken);
-
-            return user;
+            return await _userService.GetByIdAsync(request.UserId, cancellationToken);
         }
     }
 }

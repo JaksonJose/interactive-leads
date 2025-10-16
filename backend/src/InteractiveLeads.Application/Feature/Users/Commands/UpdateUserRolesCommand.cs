@@ -16,8 +16,7 @@ namespace InteractiveLeads.Application.Feature.Users.Commands
 
         public async Task<IResponse> Handle(UpdateUserRolesCommand request, CancellationToken cancellationToken)
         {
-            var response = await _userService.AssignRolesAsync(request.UserId, request.UserRolesRequest);
-            return response;
+            return await _userService.AssignRolesAsync(request.UserId, request.UserRolesRequest);
         }
     }
 }

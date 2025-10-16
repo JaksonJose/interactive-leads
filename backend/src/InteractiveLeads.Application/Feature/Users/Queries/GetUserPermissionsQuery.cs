@@ -16,8 +16,7 @@ namespace InteractiveLeads.Application.Feature.Users.Queries
 
         public async Task<IResponse> Handle(GetUserPermissionsQuery request, CancellationToken cancellationToken)
         {
-            var permissions = await _userService.GetUserPermissionsAsync(request.UserId, cancellationToken);
-            return permissions;
+            return await _userService.GetUserPermissionsAsync(request.UserId, cancellationToken);
         }
     }
 }
