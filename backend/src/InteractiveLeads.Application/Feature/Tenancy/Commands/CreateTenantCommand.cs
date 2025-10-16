@@ -25,12 +25,12 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// <remarks>
     /// Creates a new tenant via ITenantService and returns the tenant identifier.
     /// </remarks>
-    public sealed class CreateTeanantCommandHandler : IRequestHandler<CreateTenantCommand, IResponse>
+    public sealed class CreateTenantCommandHandler : IRequestHandler<CreateTenantCommand, IResponse>
     {
         private readonly ITenantService _tenantService;
 
         /// <summary>
-        /// Initializes a new instance of the CreateTeanantCommandHandler class.
+        /// Initializes a new instance of the CreateTenantCommandHandler class.
         /// </summary>
         /// <param name="tenantService">The tenant service for managing tenant operations.</param>
         public CreateTeanantCommandHandler(ITenantService tenantService)

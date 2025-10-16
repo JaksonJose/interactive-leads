@@ -22,7 +22,7 @@ namespace InteractiveLeads.Application.Pipelines
                 var validationResults = await Task
                     .WhenAll(_validators.Select(vr => vr.ValidateAsync(context, cancellationToken)));
 
-                if (!validationResults.Any(vr => vr.IsValid))
+                if (validationResults.Any(vr => !vr.IsValid))
                 {
                     List<string> errors = [];
 

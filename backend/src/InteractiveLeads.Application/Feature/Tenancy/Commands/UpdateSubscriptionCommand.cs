@@ -26,18 +26,18 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// <remarks>
     /// Updates the tenant's subscription via ITenantService.
     /// </remarks>
-    public sealed class UpdateTeantSubscriptionCommandHandler : IRequestHandler<UpdateSubscriptionCommand, IResponse>
+    public sealed class UpdateTenantSubscriptionCommandHandler : IRequestHandler<UpdateSubscriptionCommand, IResponse>
     {
         /// <summary>
         /// The tenant service for managing tenant operations.
         /// </summary>
-        public readonly ITenantService _tenantService;
+        private readonly ITenantService _tenantService;
 
         /// <summary>
-        /// Initializes a new instance of the UpdateTeantSubscriptionCommandHandler class.
+        /// Initializes a new instance of the UpdateTenantSubscriptionCommandHandler class.
         /// </summary>
         /// <param name="tenantService">The tenant service for managing tenant operations.</param>
-        public UpdateTeantSubscriptionCommandHandler(ITenantService tenantService)
+        public UpdateTenantSubscriptionCommandHandler(ITenantService tenantService)
         {
             _tenantService = tenantService;
         }
