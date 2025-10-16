@@ -15,8 +15,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Roles.Commands
 
         public async Task<IResponse> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
         {
-            var updatedRole = await _roleService.UpdateAsync(request.UpdateRole);
-            return new SingleResponse<string>(updatedRole).AddSuccessMessage(message: $"Role '{updatedRole}' updated successfully.");
+            return await _roleService.UpdateAsync(request.UpdateRole, cancellationToken);
         }
     }
 }

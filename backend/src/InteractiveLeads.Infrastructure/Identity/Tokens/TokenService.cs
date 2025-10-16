@@ -36,28 +36,28 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
             _jwtSettings = jwtSettings.Value;
         }
 
-        public async Task<TokenResponse> LoginAsync(TokenRequest request)
+        public async Task<SingleResponse<TokenResponse>> LoginAsync(TokenRequest request, CancellationToken ct = default)
         {
-            var response = new ResultResponse();
+            ResultResponse result = new();
 
             #region validations
             if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo is null)
             {
-                response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
-                throw new UnauthorizedException(response);
+                result.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
+                throw new UnauthorizedException(result);
             }
 
             if (!_multiTenantContextAccessor.MultiTenantContext.TenantInfo.IsActive)
             {
-                response.AddErrorMessage("Tenant subscription is not active. Contact administrator.", "tenant.subscription_not_active");
-                throw new UnauthorizedException(response);
+                result.AddErrorMessage("Tenant subscription is not active. Contact administrator.", "tenant.subscription_not_active");
+                throw new UnauthorizedException(result);
             }
 
             var userInDb = await _userManager.FindByNameAsync(request.UserName);
             if (userInDb is null || !await _userManager.CheckPasswordAsync(userInDb, request.Password)) 
             {
-                response.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
-                throw new UnauthorizedException(response);
+                result.AddErrorMessage("Incorrect username or password", "auth.invalid_credentials");
+                throw new UnauthorizedException(result);
             }
 
             // TODO: Add TenantId validation when implementing UserTenantLookupStrategy
@@ -69,24 +69,28 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
 
             if (!userInDb.IsActive)
             {
-                response.AddErrorMessage("User not active. Contact administrator.", "auth.user_not_active");
-                throw new UnauthorizedException(response);
+                result.AddErrorMessage("User not active. Contact administrator.", "auth.user_not_active");
+                throw new UnauthorizedException(result);
             }
 
             if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo.Id is not TenancyConstants.Root.Id)
             {
                 if (_multiTenantContextAccessor.MultiTenantContext.TenantInfo.ExpirationDate < DateTime.UtcNow)
                 {
-                    response.AddErrorMessage("Subscription has expired. Contact administrator.", "auth.subscription_expired");
-                    throw new UnauthorizedException(response);
+                    result.AddErrorMessage("Subscription has expired. Contact administrator.", "auth.subscription_expired");
+                    throw new UnauthorizedException(result);
                 }
             }
             #endregion
 
-            return await GenerateJwtTokenAndUpdateUserAsync(userInDb);
+            var tokenResponse = await GenerateJwtTokenAndUpdateUserAsync(userInDb);
+            
+            var response = new SingleResponse<TokenResponse>(tokenResponse);
+            response.AddSuccessMessage("Authentication successful", "auth.login_successful");
+            return response;
         }
 
-        public async Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
+        public async Task<SingleResponse<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken ct = default)
         {
             ResultResponse response = new();
 
@@ -105,7 +109,11 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
             //    throw new UnauthorizedException(["Invalid token."]);
             //}
 
-            return await GenerateJwtTokenAndUpdateUserAsync(userInDb);
+            var tokenResponse = await GenerateJwtTokenAndUpdateUserAsync(userInDb);
+            
+            var tokenResponseObject = new SingleResponse<TokenResponse>(tokenResponse);
+            tokenResponseObject.AddSuccessMessage("Token refreshed successfully", "auth.token_refreshed_successfully");
+            return tokenResponseObject;
         }
 
         private ClaimsPrincipal GetClaimsPrincipalFromExpiringToken(string expiringToken)
@@ -191,7 +199,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
                 roleClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 var currentRole = await _roleManager.FindByNameAsync(userRole);
 
-                var allPermissionsForCurrentRole = await _roleManager.GetClaimsAsync(currentRole);
+                var allPermissionsForCurrentRole = await _roleManager.GetClaimsAsync(currentRole!);
 
                 permissionClaims.AddRange(allPermissionsForCurrentRole);
             }

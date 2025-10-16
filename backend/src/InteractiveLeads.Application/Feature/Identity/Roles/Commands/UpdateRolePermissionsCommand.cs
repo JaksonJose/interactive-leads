@@ -16,8 +16,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Roles.Commands
 
         public async Task<IResponse> Handle(UpdateRolePermissionsCommand request, CancellationToken cancellationToken)
         {
-            var message = await _roleService.UpdatePermissionsAsync(request.UpdateRolePermissions);
-            return new SingleResponse<string>(message).AddSuccessMessage(message: message);
+            return await _roleService.UpdatePermissionsAsync(request.UpdateRolePermissions, cancellationToken);
         }
     }
 }

@@ -20,9 +20,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Roles.Commands
 
         public async Task<IResponse> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
         {
-            var roleName = await _roleService.CreateAsync(request.CreateRole);
-
-            return new SingleResponse<string>(roleName).AddSuccessMessage(message: $"Role '{roleName}' created successfully.");
+            return await _roleService.CreateAsync(request.CreateRole, cancellationToken);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
             _tenantInfoContextAccessor = tenantInfoContextAccessor;
         }
 
-        public async Task<string> CreateAsync(CreateRoleRequest request)
+        public async Task<ResultResponse> CreateAsync(CreateRoleRequest request, CancellationToken ct = default)
         {
             var newRole = new ApplicationRole()
             {
@@ -52,10 +52,12 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 throw new IdentityException(identityResponse);
             }
 
-            return newRole.Name;
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Role created successfully", "role.created_successfully");
+            return response;
         }
 
-        public async Task<string> DeleteAsync(Guid id)
+        public async Task<ResultResponse> DeleteAsync(Guid id, CancellationToken ct = default)
         {
             var roleInDb = await _roleManager.FindByIdAsync(id.ToString());
             if (roleInDb is null)
@@ -93,24 +95,30 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 throw new IdentityException(identityResponse);
             }
 
-            return roleInDb.Name!;
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Role deleted successfully", "role.deleted_successfully");
+            return response;
         }
 
-        public async Task<bool> DoesItExistsAsync(string name)
+        public async Task<bool> DoesItExistsAsync(string name, CancellationToken ct = default)
         {
             return await _roleManager.RoleExistsAsync(name);
         }
 
-        public async Task<List<RoleResponse>> GetAllAsync(CancellationToken ct)
+        public async Task<ListResponse<RoleResponse>> GetAllAsync(CancellationToken ct)
         {
             var rolesInDb = await _roleManager
                 .Roles
                 .ToListAsync(ct);
 
-            return rolesInDb.Adapt<List<RoleResponse>>();
+            var roles = rolesInDb.Adapt<List<RoleResponse>>();
+
+            var response = new ListResponse<RoleResponse>(roles, roles.Count);
+            response.AddSuccessMessage("Roles retrieved successfully", "roles.retrieved_successfully");
+            return response;
         }
 
-        public async Task<RoleResponse> GetByIdAsync(Guid id, CancellationToken ct)
+        public async Task<SingleResponse<RoleResponse>> GetByIdAsync(Guid id, CancellationToken ct)
         {
             var roleInDb = await _context.Roles
                 .FirstOrDefaultAsync(role => role.Id == id, ct);
@@ -123,22 +131,29 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 throw new NotFoundException(notFoundResponse);
             }
 
-            return roleInDb.Adapt<RoleResponse>();
+            var roleResponse = roleInDb.Adapt<RoleResponse>();
+            
+            var response = new SingleResponse<RoleResponse>(roleResponse);
+            response.AddSuccessMessage("Role retrieved successfully", "role.retrieved_successfully");
+            return response;
         }
 
-        public async Task<RoleResponse> GetRoleWithPermissionsAsync(Guid id, CancellationToken ct)
+        public async Task<SingleResponse<RoleResponse>> GetRoleWithPermissionsAsync(Guid id, CancellationToken ct)
         {
-            var role = await GetByIdAsync(id, ct);
+            var roleResult = await GetByIdAsync(id, ct);
+            var role = roleResult.Data!;
 
             role.Permissions = await _context.RoleClaims
                 .Where(rc => rc.RoleId == id && rc.ClaimType == ClaimConstants.Permission && rc.ClaimValue != null)
                 .Select(rc => rc.ClaimValue!)
                 .ToListAsync(ct);
 
-            return role;
+            var response = new SingleResponse<RoleResponse>(role);
+            response.AddSuccessMessage("Role with permissions retrieved successfully", "role.retrieved_with_permissions_successfully");
+            return response;
         }
 
-        public async Task<string> UpdateAsync(UpdateRoleRequest request)
+        public async Task<ResultResponse> UpdateAsync(UpdateRoleRequest request, CancellationToken ct = default)
         {
             var roleInDb = await _roleManager.FindByIdAsync(request.Id);
             if (roleInDb == null)
@@ -171,10 +186,13 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 }
                 throw new IdentityException(identityResponse);
             }
-            return roleInDb.Name;
+            
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Role updated successfully", "role.updated_successfully");
+            return response;
         }
 
-        public async Task<string> UpdatePermissionsAsync(UpdateRolePermissionsRequest request)
+        public async Task<ResultResponse> UpdatePermissionsAsync(UpdateRolePermissionsRequest request, CancellationToken ct = default)
         {
             var roleInDb = await _roleManager.FindByIdAsync(request.RoleId);
             if (roleInDb == null)
@@ -231,7 +249,9 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
 
             await _context.SaveChangesAsync();
 
-            return "Permissions Updated Successfully.";
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Role permissions updated successfully", "role.permissions_updated_successfully");
+            return response;
         }
     }
 }

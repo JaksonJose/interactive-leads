@@ -49,10 +49,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         /// <returns>A wrapped response containing the tenant identifier if subscription update succeeds.</returns>
         public async Task<IResponse> Handle(UpdateSubscriptionCommand request, CancellationToken cancellationToken)
         {
-            string tenantId = await _tenantService.UpdateSubscriptionAsync(request.UpdateTenantSubscription);
-
-            return new SingleResponse<string>(tenantId)
-                .AddSuccessMessage("Tenant subscription updated successfully", "tenant.subscription_updated_successfully");
+            return await _tenantService.UpdateSubscriptionAsync(request.UpdateTenantSubscription, cancellationToken);
         }
     }
 }

@@ -46,10 +46,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
         /// <returns>A wrapped response containing the JWT tokens if authentication succeeds.</returns>
         public async Task<IResponse> Handle(GetTokenQuery request, CancellationToken cancellationToken)
         {
-            var token = await _tokenService.LoginAsync(request.TokenRequest);
-
-            return new SingleResponse<TokenResponse>(token)
-                .AddSuccessMessage("Authentication successful", "auth.login_successful");
+            return await _tokenService.LoginAsync(request.TokenRequest, cancellationToken);
         }
     }
 }

@@ -15,8 +15,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Roles.Queries
 
         public async Task<IResponse> Handle(GetRolesQuery request, CancellationToken cancellationToken)
         {
-            var roles = await _roleService.GetAllAsync(cancellationToken);
-            return new ListResponse<RoleResponse>(roles);
+            return await _roleService.GetAllAsync(cancellationToken);
         }
     }
 }

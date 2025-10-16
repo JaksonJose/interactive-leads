@@ -47,10 +47,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Tokens.Queries
         /// <returns>A wrapped response containing the new JWT tokens if refresh succeeds.</returns>
         public async Task<IResponse> Handle(GetRefreshTokenQuery request, CancellationToken cancellationToken)
         {
-            var refreshToken = await _tokenService.RefreshTokenAsync(request.RefreshToken);
-
-            return new SingleResponse<TokenResponse>(refreshToken)
-                .AddSuccessMessage("Token refreshed successfully", "auth.token_refreshed_successfully");
+            return await _tokenService.RefreshTokenAsync(request.RefreshToken, cancellationToken);
         }
     }
 }

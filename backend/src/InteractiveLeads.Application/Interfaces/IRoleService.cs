@@ -1,4 +1,5 @@
 ﻿using InteractiveLeads.Application.Feature.Identity.Roles;
+using InteractiveLeads.Application.Responses;
 
 namespace InteractiveLeads.Application.Interfaces
 {
@@ -14,43 +15,48 @@ namespace InteractiveLeads.Application.Interfaces
         /// Creates a new role in the system.
         /// </summary>
         /// <param name="request">Role creation request data.</param>
-        /// <returns>Identifier of the created role.</returns>
-        Task<string> CreateAsync(CreateRoleRequest request);
+        /// <param name="ct">Cancellation token for the async operation.</param>
+        /// <returns>Result of the role creation operation.</returns>
+        Task<ResultResponse> CreateAsync(CreateRoleRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Updates an existing role.
         /// </summary>
         /// <param name="request">Role update request data.</param>
-        /// <returns>Identifier of the updated role.</returns>
-        Task<string> UpdateAsync(UpdateRoleRequest request);
+        /// <param name="ct">Cancellation token for the async operation.</param>
+        /// <returns>Result of the role update operation.</returns>
+        Task<ResultResponse> UpdateAsync(UpdateRoleRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes a role from the system.
         /// </summary>
         /// <param name="id">Unique identifier of the role to delete.</param>
-        /// <returns>Identifier of the deleted role.</returns>
-        Task<string> DeleteAsync(Guid id);
+        /// <param name="ct">Cancellation token for the async operation.</param>
+        /// <returns>Result of the role deletion operation.</returns>
+        Task<ResultResponse> DeleteAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the permissions assigned to a role.
         /// </summary>
         /// <param name="request">Role permissions update request data.</param>
-        /// <returns>Identifier of the role with updated permissions.</returns>
-        Task<string> UpdatePermissionsAsync(UpdateRolePermissionsRequest request);
+        /// <param name="ct">Cancellation token for the async operation.</param>
+        /// <returns>Result of the permissions update operation.</returns>
+        Task<ResultResponse> UpdatePermissionsAsync(UpdateRolePermissionsRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Checks if a role with the specified name exists.
         /// </summary>
         /// <param name="name">Name of the role to check.</param>
+        /// <param name="ct">Cancellation token for the async operation.</param>
         /// <returns>True if role exists, false otherwise.</returns>
-        Task<bool> DoesItExistsAsync(string name);
+        Task<bool> DoesItExistsAsync(string name, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves all roles in the system.
         /// </summary>
         /// <param name="ct">Cancellation token for the async operation.</param>
         /// <returns>List of all roles.</returns>
-        Task<List<RoleResponse>> GetAllAsync(CancellationToken ct);
+        Task<ListResponse<RoleResponse>> GetAllAsync(CancellationToken ct);
 
         /// <summary>
         /// Retrieves a role by its unique identifier.
@@ -58,7 +64,7 @@ namespace InteractiveLeads.Application.Interfaces
         /// <param name="id">Unique identifier of the role.</param>
         /// <param name="ct">Cancellation token for the async operation.</param>
         /// <returns>Role data if found.</returns>
-        Task<RoleResponse> GetByIdAsync(Guid id, CancellationToken ct);
+        Task<SingleResponse<RoleResponse>> GetByIdAsync(Guid id, CancellationToken ct);
 
         /// <summary>
         /// Retrieves a role by its unique identifier including permissions.
@@ -66,6 +72,6 @@ namespace InteractiveLeads.Application.Interfaces
         /// <param name="id">Unique identifier of the role.</param>
         /// <param name="ct">Cancellation token for the async operation.</param>
         /// <returns>Role data with permissions if found.</returns>
-        Task<RoleResponse> GetRoleWithPermissionsAsync(Guid id, CancellationToken ct);
+        Task<SingleResponse<RoleResponse>> GetRoleWithPermissionsAsync(Guid id, CancellationToken ct);
     }
 }

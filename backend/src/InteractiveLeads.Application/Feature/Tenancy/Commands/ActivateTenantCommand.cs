@@ -46,10 +46,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         /// <returns>A wrapped response containing the activated tenant identifier if activation succeeds.</returns>
         public async Task<IResponse> Handle(ActivateTenantCommand request, CancellationToken cancellationToken)
         {
-            var tenantId = await _tenantService.ActivateAsync(request.TenantId);
-
-            return new SingleResponse<string>(tenantId)
-                .AddSuccessMessage("Tenant activated successfully", "tenant.activated_successfully");
+            return await _tenantService.ActivateAsync(request.TenantId, cancellationToken);
         }
     }
 }

@@ -41,10 +41,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
         /// <returns>A wrapped response containing a list of all tenants.</returns>
         public async Task<IResponse> Handle(GetTenantsQuery request, CancellationToken cancellationToken)
         {
-            var tenantInDb = await _tenantService.GetTenantsAsync();
-
-            return new ListResponse<TenantResponse>(tenantInDb, tenantInDb.Count)
-                .AddSuccessMessage("Tenants retrieved successfully", "tenants.retrieved_successfully");
+            return await _tenantService.GetTenantsAsync(cancellationToken);
         }
     }
 }

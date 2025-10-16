@@ -15,8 +15,7 @@ namespace InteractiveLeads.Application.Feature.Identity.Roles.Commands
 
         public async Task<IResponse> Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
         {
-            var deletedRole = await _roleService.DeleteAsync(request.RoleId);
-            return new SingleResponse<string>(deletedRole).AddSuccessMessage(message: $"Role '{deletedRole}' deleted successfully.");
+            return await _roleService.DeleteAsync(request.RoleId, cancellationToken);
         }
     }
 }

@@ -46,10 +46,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         /// <returns>A wrapped response containing the deactivated tenant identifier if deactivation succeeds.</returns>
         public async Task<IResponse> Handle(DeactivateTenantCommand request, CancellationToken cancellationToken)
         {
-            var tenantId = await _tenantService.DeactivateAsync(request.TenantId);
-
-            return new SingleResponse<string>(tenantId)
-                .AddSuccessMessage("Tenant deactivated successfully", "tenant.deactivated_successfully");
+            return await _tenantService.DeactivateAsync(request.TenantId, cancellationToken);
         }
     }
 }

@@ -2,6 +2,7 @@
 using Finbuckle.MultiTenant.Abstractions;
 using InteractiveLeads.Application.Feature.Tenancy;
 using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Context.Application;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Mapster;
@@ -22,17 +23,19 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> ActivateAsync(string id)
+        public async Task<ResultResponse> ActivateAsync(string id, CancellationToken ct = default)
         {
             var tenantInDb = await _tenantStore.TryGetAsync(id);
             tenantInDb.IsActive = true;
 
             await _tenantStore.TryUpdateAsync(tenantInDb);
 
-            return tenantInDb.Identifier;
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Tenant activated successfully", "tenant.activated_successfully");
+            return response;
         }
 
-        public async Task<string> CreateTenantAsync(CreateTenantRequest createTenantRequest, CancellationToken ct)
+        public async Task<ResultResponse> CreateTenantAsync(CreateTenantRequest createTenantRequest, CancellationToken ct)
         {
             var newTenant = new InteractiveTenantInfo
             {
@@ -63,27 +66,34 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             await scope.ServiceProvider.GetRequiredService<ApplicationDbSeeder>()
                 .InitializeDatabaseAsync(ct);
 
-            return newTenant.Identifier;
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Tenant created successfully", "tenant.created_successfully");
+            return response;
         }
 
-        public async Task<string> DeactivateAsync(string id)
+        public async Task<ResultResponse> DeactivateAsync(string id, CancellationToken ct = default)
         {
             var tenantInDb = await _tenantStore.TryGetAsync(id);
             tenantInDb.IsActive = false;
 
             await _tenantStore.TryUpdateAsync(tenantInDb);
 
-            return tenantInDb.Identifier;
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Tenant deactivated successfully", "tenant.deactivated_successfully");
+            return response;
         }
 
-        public async Task<List<TenantResponse>> GetTenantsAsync()
+        public async Task<ListResponse<TenantResponse>> GetTenantsAsync(CancellationToken ct)
         {
             var tenantInDb = await _tenantStore.GetAllAsync();
+            var tenants = tenantInDb.Adapt<List<TenantResponse>>();
 
-            return tenantInDb.Adapt<List<TenantResponse>>();
+            var response = new ListResponse<TenantResponse>(tenants, tenants.Count);
+            response.AddSuccessMessage("Tenants retrieved successfully", "tenants.retrieved_successfully");
+            return response;
         }
 
-        public async Task<TenantResponse> GetTenantsByIdAsync(string id)
+        public async Task<SingleResponse<TenantResponse>> GetTenantsByIdAsync(string id, CancellationToken ct)
         {
             var tenantInDb = await _tenantStore.TryGetAsync(id);
 
@@ -100,10 +110,14 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             };
 
             // Mapster
-            return tenantInDb.Adapt<TenantResponse>();
+            var tenantResponse = tenantInDb.Adapt<TenantResponse>();
+            
+            var response = new SingleResponse<TenantResponse>(tenantResponse);
+            response.AddSuccessMessage("Tenant retrieved successfully", "tenant.retrieved_successfully");
+            return response;
         }
 
-        public async Task<string> UpdateSubscriptionAsync(UpdateTenantSubscriptionRequest updateTenantSubscriptionRequest)
+        public async Task<ResultResponse> UpdateSubscriptionAsync(UpdateTenantSubscriptionRequest updateTenantSubscriptionRequest, CancellationToken ct = default)
         {
             var tenantInDb = await _tenantStore.TryGetAsync(updateTenantSubscriptionRequest.TenantId);
 
@@ -111,7 +125,9 @@ namespace InteractiveLeads.Infrastructure.Tenancy
 
             await _tenantStore.TryUpdateAsync(tenantInDb);
 
-            return tenantInDb.Identifier;
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Tenant subscription updated successfully", "tenant.subscription_updated_successfully");
+            return response;
         }
     }
 }
