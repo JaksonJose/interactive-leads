@@ -1,10 +1,11 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Users.Commands
 {
-    public class ChangeUserPasswordCommand : IRequest<IResponse>
+    public class ChangeUserPasswordCommand : IRequest<IResponse>, IValidate
     {
         public ChangePasswordRequest ChangePassword { get; set; }
     }

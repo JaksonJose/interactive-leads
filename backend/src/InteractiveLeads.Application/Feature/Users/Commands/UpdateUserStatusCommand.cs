@@ -1,10 +1,11 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Users.Commands
 {
-    public class UpdateUserStatusCommand : IRequest<IResponse>
+    public class UpdateUserStatusCommand : IRequest<IResponse>, IValidate
     {
         public ChangeUserStatusRequest ChangeUserStatus { get; set; }
     }

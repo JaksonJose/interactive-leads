@@ -1,4 +1,5 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
@@ -10,7 +11,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// <remarks>
     /// This command implements the CQRS pattern for tenant creation operations.
     /// </remarks>
-    public sealed class CreateTenantCommand : IRequest<IResponse>
+    public sealed class CreateTenantCommand : IRequest<IResponse>, IValidate
     {
         /// <summary>
         /// Gets or sets the tenant creation request containing tenant details.

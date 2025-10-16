@@ -1,4 +1,5 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
@@ -11,7 +12,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// This command implements the CQRS pattern for tenant subscription update operations.
     /// Typically used to extend or modify subscription expiration dates.
     /// </remarks>
-    public sealed class UpdateSubscriptionCommand : IRequest<IResponse>
+    public sealed class UpdateSubscriptionCommand : IRequest<IResponse>, IValidate
     {
         /// <summary>
         /// Gets or sets the subscription update request containing new subscription details.

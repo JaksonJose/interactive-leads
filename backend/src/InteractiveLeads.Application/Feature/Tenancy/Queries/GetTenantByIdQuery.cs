@@ -1,5 +1,6 @@
 ﻿using InteractiveLeads.Application.Exceptions;
 using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
@@ -11,7 +12,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Queries
     /// <remarks>
     /// This query implements the CQRS pattern for tenant retrieval operations.
     /// </remarks>
-    public sealed class GetTenantByIdQuery : IRequest<IResponse>
+    public sealed class GetTenantByIdQuery : IRequest<IResponse>, IValidate
     {
         /// <summary>
         /// Gets or sets the unique identifier of the tenant to retrieve.

@@ -1,4 +1,5 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
@@ -11,7 +12,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
     /// This command implements the CQRS pattern for tenant deactivation operations.
     /// Deactivating a tenant disables their access to the system.
     /// </remarks>
-    public sealed class DeactivateTenantCommand : IRequest<IResponse>
+    public sealed class DeactivateTenantCommand : IRequest<IResponse>, IValidate
     {
         /// <summary>
         /// Gets or sets the unique identifier of the tenant to deactivate.

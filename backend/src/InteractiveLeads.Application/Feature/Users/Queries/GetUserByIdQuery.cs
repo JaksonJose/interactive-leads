@@ -1,11 +1,12 @@
 ﻿using Application.Features.Identity.Users;
 using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Users.Queries
 {
-    public class GetUserByIdQuery : IRequest<IResponse>
+    public class GetUserByIdQuery : IRequest<IResponse>, IValidate
     {
         public Guid UserId { get; set; }
     }

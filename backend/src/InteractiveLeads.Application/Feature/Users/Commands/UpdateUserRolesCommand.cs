@@ -1,10 +1,11 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Users.Commands
 {
-    public class UpdateUserRolesCommand : IRequest<IResponse>
+    public class UpdateUserRolesCommand : IRequest<IResponse>, IValidate
     {
         public Guid UserId { get; set; }
         public UserRolesRequest UserRolesRequest { get; set; }

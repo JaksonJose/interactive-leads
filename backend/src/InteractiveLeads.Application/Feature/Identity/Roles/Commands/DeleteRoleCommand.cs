@@ -1,10 +1,11 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Identity.Roles.Commands
 {
-    public class DeleteRoleCommand : IRequest<IResponse>
+    public class DeleteRoleCommand : IRequest<IResponse>, IValidate
     {
         public Guid RoleId { get; set; }
     }

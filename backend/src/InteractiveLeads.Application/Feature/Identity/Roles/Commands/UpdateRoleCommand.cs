@@ -1,10 +1,11 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Identity.Roles.Commands
 {
-    public class UpdateRoleCommand : IRequest<IResponse>
+    public class UpdateRoleCommand : IRequest<IResponse>, IValidate
     {
         public UpdateRoleRequest UpdateRole { get; set; }
     }

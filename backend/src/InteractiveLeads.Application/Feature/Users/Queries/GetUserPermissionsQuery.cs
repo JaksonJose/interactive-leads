@@ -1,10 +1,11 @@
 ﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;
 
 namespace InteractiveLeads.Application.Feature.Users.Queries
 {
-    public class GetUserPermissionsQuery : IRequest<IResponse>
+    public class GetUserPermissionsQuery : IRequest<IResponse>, IValidate
     {
         public Guid UserId { get; set; }
     }
