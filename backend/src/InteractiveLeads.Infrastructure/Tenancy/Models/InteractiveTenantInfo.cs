@@ -54,7 +54,7 @@ namespace InteractiveLeads.Infrastructure.Tenancy.Models
 
         /// <summary>
         /// The database connection string for the tenant.
-        /// Required for database-per-tenant scenarios.
+        /// Optional - supports hybrid architecture where tenants can share database.
         /// </summary>
         public string? ConnectionString { get; set; }
     }

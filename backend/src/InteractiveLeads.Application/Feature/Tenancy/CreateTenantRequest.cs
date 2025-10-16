@@ -21,6 +21,7 @@
 
         /// <summary>
         /// Gets or sets the database connection string for the tenant's isolated data.
+        /// Optional - null for shared database scenarios in hybrid architecture.
         /// </summary>
         public string? ConnectionString { get; set; }
 

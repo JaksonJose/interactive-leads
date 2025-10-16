@@ -33,7 +33,7 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Commands
         /// Initializes a new instance of the CreateTenantCommandHandler class.
         /// </summary>
         /// <param name="tenantService">The tenant service for managing tenant operations.</param>
-        public CreateTeanantCommandHandler(ITenantService tenantService)
+        public CreateTenantCommandHandler(ITenantService tenantService)
         {
             _tenantService = tenantService;
         }
