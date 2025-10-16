@@ -27,7 +27,7 @@ namespace InteractiveLeads.Api.Controllers
         /// Requires Create permission for the Tenants feature.
         /// </remarks>
         [HttpPost("add")]
-        [ShouldHavePermission(feature: InteractiveFeature.Tenants, action: InteractiveAction.Create)]
+        [ShouldHavePermission(InteractiveAction.Create, InteractiveFeature.Tenants)]
         [OpenApiOperation("Create a tenant by request")]
         public async Task<IActionResult> CreateTenantAsync([FromBody] CreateTenantRequest request)
         {
@@ -44,7 +44,7 @@ namespace InteractiveLeads.Api.Controllers
         /// Requires Update permission for the Tenants feature.
         /// </remarks>
         [HttpPut("{tenantId}/activate")]
-        [ShouldHavePermission(feature: InteractiveFeature.Tenants, action: InteractiveAction.Update)]
+        [ShouldHavePermission(InteractiveAction.Update, InteractiveFeature.Tenants)]
         [OpenApiOperation("Active a tenant")]
         public async Task<IActionResult> ActivateTenantAsync(string tenantId)
         {
@@ -61,7 +61,7 @@ namespace InteractiveLeads.Api.Controllers
         /// Requires Update permission for the Tenants feature.
         /// </remarks>
         [HttpPut("{tenantId}/deactivate")]
-        [ShouldHavePermission(feature: InteractiveFeature.Tenants, action: InteractiveAction.Update)]
+        [ShouldHavePermission(InteractiveAction.Update, InteractiveFeature.Tenants)]
         [OpenApiOperation("Deactive a tenant")]
         public async Task<IActionResult> DeactivateTenantAsync(string tenantId)
         {
@@ -78,7 +78,7 @@ namespace InteractiveLeads.Api.Controllers
         /// Requires UpgradeSubscription permission for the Tenants feature.
         /// </remarks>
         [HttpPut("upgrade")]
-        [ShouldHavePermission(feature: InteractiveFeature.Tenants, action: InteractiveAction.UpgradeSubscription)]
+        [ShouldHavePermission(InteractiveAction.UpgradeSubscription, InteractiveFeature.Tenants)]
         [OpenApiOperation("Upgrade the subscription")]
         public async Task<IActionResult> UpgradeTenantSubscriptionAsync([FromBody] UpdateTenantSubscriptionRequest request)
         {
@@ -95,7 +95,7 @@ namespace InteractiveLeads.Api.Controllers
         /// Requires Read permission for the Tenants feature.
         /// </remarks>
         [HttpGet("{tenantId}")]
-        [ShouldHavePermission(feature: InteractiveFeature.Tenants, action: InteractiveAction.Read)]
+        [ShouldHavePermission(InteractiveAction.Read, InteractiveFeature.Tenants)]
         [OpenApiOperation("Fetch a tenant")]
         public async Task<IActionResult> GetTenantByIdAsync(string tenantId)
         {
@@ -111,7 +111,7 @@ namespace InteractiveLeads.Api.Controllers
         /// Requires Read permission for the Tenants feature.
         /// </remarks>
         [HttpGet("all")]
-        [ShouldHavePermission(feature: InteractiveFeature.Tenants, action: InteractiveAction.Read)]
+        [ShouldHavePermission(InteractiveAction.Read, InteractiveFeature.Tenants)]
         [OpenApiOperation("Fetch all tenants")]
         public async Task<IActionResult> GetTenantsAsync()
         {

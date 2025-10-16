@@ -46,7 +46,7 @@ namespace InteractiveLeads.Api.Controllers
         /// </remarks>
         [HttpPost("refresh-token")]
         [OpenApiOperation("Used to generate new jwt from refresh token")]
-        [ShouldHavePermission(action: InteractiveAction.RefreshToken, feature: InteractiveFeature.Tokens)]
+        [ShouldHavePermission(InteractiveAction.RefreshToken, InteractiveFeature.Tokens)]
         public async Task<IActionResult> GetRefreshTokenAsync([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
             var response = await Sender.Send(new GetRefreshTokenQuery { RefreshToken = refreshTokenRequest });

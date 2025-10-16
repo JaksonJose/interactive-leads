@@ -51,6 +51,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 }
                 throw new IdentityException(identityResponse);
             }
+
             return newRole.Name;
         }
 

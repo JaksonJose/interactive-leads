@@ -10,6 +10,7 @@ using InteractiveLeads.Infrastructure.Identity.Auth;
 using InteractiveLeads.Infrastructure.Identity.Models;
 using InteractiveLeads.Infrastructure.Identity.Roles;
 using InteractiveLeads.Infrastructure.Identity.Tokens;
+using InteractiveLeads.Infrastructure.Identity.Users;
 using InteractiveLeads.Infrastructure.OpenApi;
 using InteractiveLeads.Infrastructure.Tenancy;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
@@ -66,6 +67,7 @@ namespace InteractiveLeads.Infrastructure
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddOpenApiDocumentation(config);
 

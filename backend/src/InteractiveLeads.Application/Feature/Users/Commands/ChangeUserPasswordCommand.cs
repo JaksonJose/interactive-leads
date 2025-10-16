@@ -1,0 +1,23 @@
+﻿using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Responses;
+using MediatR;
+
+namespace InteractiveLeads.Application.Feature.Users.Commands
+{
+    public class ChangeUserPasswordCommand : IRequest<IResponse>
+    {
+        public ChangePasswordRequest ChangePassword { get; set; }
+    }
+
+    public class ChangeUserPasswordCommandHandler(IUserService userService) :
+        IRequestHandler<ChangeUserPasswordCommand, IResponse>
+    {
+        private readonly IUserService _userService = userService;
+
+        public async Task<IResponse> Handle(ChangeUserPasswordCommand request, CancellationToken cancellationToken)
+        {
+            var response = await _userService.ChangePasswordAsync(request.ChangePassword);
+            return response;
+        }
+    }
+}
