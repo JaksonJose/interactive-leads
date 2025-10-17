@@ -4,6 +4,7 @@ using InteractiveLeads.Application.Feature.Tenancy;
 using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Models;
 using InteractiveLeads.Application.Responses;
+using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Context.Application;
 using InteractiveLeads.Infrastructure.Context.Tenancy;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
@@ -34,6 +35,14 @@ namespace InteractiveLeads.Infrastructure.Tenancy
 
         public async Task<ResultResponse> ActivateAsync(string id, CancellationToken ct = default)
         {
+            // Block operations on root tenant
+            if (id == TenancyConstants.Root.Id)
+            {
+                var errorResponse = new ResultResponse();
+                errorResponse.AddErrorMessage("Cannot modify root tenant", "tenant.root_modification_denied");
+                return errorResponse;
+            }
+
             var tenantInDb = await _tenantStore.TryGetAsync(id);
             tenantInDb.IsActive = true;
 
@@ -82,6 +91,14 @@ namespace InteractiveLeads.Infrastructure.Tenancy
 
         public async Task<ResultResponse> DeactivateAsync(string id, CancellationToken ct = default)
         {
+            // Block operations on root tenant
+            if (id == TenancyConstants.Root.Id)
+            {
+                var errorResponse = new ResultResponse();
+                errorResponse.AddErrorMessage("Cannot modify root tenant", "tenant.root_modification_denied");
+                return errorResponse;
+            }
+
             var tenantInDb = await _tenantStore.TryGetAsync(id);
             tenantInDb.IsActive = false;
 
@@ -100,13 +117,20 @@ namespace InteractiveLeads.Infrastructure.Tenancy
                 pagination = new PaginationRequest(); // Use default values if invalid
             }
 
-            // Get total count efficiently from database
-            var totalTenants = await _tenantDbContext.TenantInfo.CountAsync(ct);
+            // Get total count efficiently from database, excluding root tenant
+            var totalTenants = await _tenantDbContext.TenantInfo
+                .Where(t => t.Identifier != TenancyConstants.Root.Id)
+                .CountAsync(ct);
 
-            // Use Finbuckle's efficient pagination method
-            var paginatedTenants = await _tenantStore.GetAllAsync(pagination.PageSize, pagination.CalculateSkip());
+            // Get all tenants and filter out root tenant, then apply pagination manually
+            var allTenants = await _tenantStore.GetAllAsync();
+            var filteredTenants = allTenants
+                .Where(t => t.Identifier != TenancyConstants.Root.Id)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToList();
             
-            var tenants = paginatedTenants.Adapt<List<TenantResponse>>();
+            var tenants = filteredTenants.Adapt<List<TenantResponse>>();
 
             var response = new ListResponse<TenantResponse>(tenants, totalTenants);
             response.AddSuccessMessage("Tenants retrieved successfully", "tenants.retrieved_successfully");
@@ -115,6 +139,14 @@ namespace InteractiveLeads.Infrastructure.Tenancy
 
         public async Task<SingleResponse<TenantResponse>> GetTenantsByIdAsync(string id, CancellationToken ct)
         {
+            // Block access to root tenant
+            if (id == TenancyConstants.Root.Id)
+            {
+                var errorResponse = new SingleResponse<TenantResponse>(null);
+                errorResponse.AddErrorMessage("Access to root tenant is not allowed", "tenant.root_access_denied");
+                return errorResponse;
+            }
+
             var tenantInDb = await _tenantStore.TryGetAsync(id);
 
             var newTenant = new InteractiveTenantInfo
