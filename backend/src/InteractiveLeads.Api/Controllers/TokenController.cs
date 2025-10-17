@@ -2,9 +2,7 @@
 using InteractiveLeads.Application.Feature.Identity.Tokens;
 using InteractiveLeads.Application.Feature.Identity.Tokens.Commands;
 using InteractiveLeads.Application.Feature.Identity.Tokens.Queries;
-using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Identity;
-using InteractiveLeads.Infrastructure.Identity.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;

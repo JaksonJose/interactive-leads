@@ -1,67 +1,10 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
-import { TenantRepository } from '../repositories';
-import { Tenant, CreateTenantRequest, UpdateSubscriptionRequest } from '../models';
+import { Injectable } from '@angular/core';
+import { Tenant } from '../models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TenantService {
-  private readonly tenantRepository = inject(TenantRepository);
-
-  /**
-   * Retrieves all tenants in the system.
-   */
-  getAllTenants(): Observable<Tenant[]> {
-    return this.tenantRepository.getAllTenants().pipe(
-      map(response => response.data || [])
-    );
-  }
-
-  /**
-   * Retrieves a specific tenant by its identifier.
-   */
-  getTenantById(tenantId: string): Observable<Tenant> {
-    return this.tenantRepository.getTenantById(tenantId).pipe(
-      map(response => response.data!)
-    );
-  }
-
-  /**
-   * Creates a new tenant in the system.
-   */
-  createTenant(request: CreateTenantRequest): Observable<Tenant> {
-    return this.tenantRepository.createTenant(request).pipe(
-      map(response => response.data!)
-    );
-  }
-
-  /**
-   * Activates an existing tenant.
-   */
-  activateTenant(tenantId: string): Observable<void> {
-    return this.tenantRepository.activateTenant(tenantId).pipe(
-      map(() => void 0)
-    );
-  }
-
-  /**
-   * Deactivates an existing tenant.
-   */
-  deactivateTenant(tenantId: string): Observable<void> {
-    return this.tenantRepository.deactivateTenant(tenantId).pipe(
-      map(() => void 0)
-    );
-  }
-
-  /**
-   * Updates a tenant's subscription plan.
-   */
-  updateSubscription(request: UpdateSubscriptionRequest): Observable<void> {
-    return this.tenantRepository.updateSubscription(request).pipe(
-      map(() => void 0)
-    );
-  }
 
   /**
    * Gets the full name of a tenant administrator.
@@ -90,5 +33,36 @@ export class TenantService {
     }
     
     return 'Active';
+  }
+
+  /**
+   * Validates if a tenant can be activated.
+   */
+  canActivateTenant(tenant: Tenant): boolean {
+    return !tenant.isActive && !this.isTenantExpired(tenant);
+  }
+
+  /**
+   * Validates if a tenant can be deactivated.
+   */
+  canDeactivateTenant(tenant: Tenant): boolean {
+    return tenant.isActive;
+  }
+
+  /**
+   * Gets the days remaining until tenant expiration.
+   */
+  getDaysUntilExpiration(tenant: Tenant): number {
+    const today = new Date();
+    const expirationDate = new Date(tenant.expirationDate);
+    const diffTime = expirationDate.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  /**
+   * Checks if a tenant is approaching expiration (within 30 days).
+   */
+  isApproachingExpiration(tenant: Tenant): boolean {
+    return this.getDaysUntilExpiration(tenant) <= 30 && this.getDaysUntilExpiration(tenant) > 0;
   }
 }

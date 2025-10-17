@@ -14,14 +14,14 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
   const authService = inject(AuthService);
 
   // Skip authentication logic for specific endpoints
-  const skipUrls = [
-    `${environment.apiUrl}/login`, 
-    `${environment.apiUrl}/refresh-token`,
-    `${environment.apiUrl}/logout-device`,
-    `${environment.apiUrl}/logout-all`
+  const skipPaths = [
+    '/login', 
+    '/refresh-token',
+    '/logout-device',
+    '/logout-all'
   ];
   
-  const shouldSkip = skipUrls.some(url => req.url.includes(url));
+  const shouldSkip = skipPaths.some(path => req.url.includes(path));
   
   if (shouldSkip) {
     return next(req);

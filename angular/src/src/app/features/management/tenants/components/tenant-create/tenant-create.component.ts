@@ -5,7 +5,9 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { TenantService } from '../../services';
-import { CreateTenantRequest } from '../../models';
+import { TenantRepository } from '../../repositories';
+import { CreateTenantRequest, Tenant } from '../../models';
+import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 
 @Component({
@@ -22,6 +24,7 @@ import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 })
 export class TenantCreateComponent implements OnInit {
   private readonly tenantService = inject(TenantService);
+  private readonly tenantRepository = inject(TenantRepository);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
@@ -67,8 +70,8 @@ export class TenantCreateComponent implements OnInit {
         connectionString: formValue.connectionString || undefined
       };
 
-      this.tenantService.createTenant(createRequest).subscribe({
-        next: (tenant) => {
+      this.tenantRepository.createTenant(createRequest).subscribe({
+        next: (response: Response<Tenant>) => {
           this.messages.set([{
             severity: 'success',
             content: 'Tenant created successfully'

@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { TenantService } from '../../services';
+import { TenantRepository } from '../../repositories';
 import { Tenant } from '../../models';
+import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 import { HasPermissionDirective } from '@shared/directives';
 
@@ -24,6 +26,7 @@ import { HasPermissionDirective } from '@shared/directives';
 })
 export class TenantListComponent implements OnInit {
   private readonly tenantService = inject(TenantService);
+  private readonly tenantRepository = inject(TenantRepository);
   private readonly router = inject(Router);
 
   tenants = signal<Tenant[]>([]);
@@ -38,12 +41,12 @@ export class TenantListComponent implements OnInit {
     this.loading.set(true);
     this.messages.set([]);
 
-    this.tenantService.getAllTenants().subscribe({
-      next: (tenants) => {
-        this.tenants.set(tenants);
+    this.tenantRepository.getAllTenants().subscribe({
+      next: (response: Response<Tenant[]>) => {
+        this.tenants.set(response.data || []);
         this.loading.set(false);
       },
-      error: (error) => {
+      error: () => {
         this.messages.set([{
           severity: 'error',
           content: 'Error loading tenants'
@@ -66,7 +69,7 @@ export class TenantListComponent implements OnInit {
   }
 
   activateTenant(tenant: Tenant): void {
-    this.tenantService.activateTenant(tenant.identifier).subscribe({
+    this.tenantRepository.activateTenant(tenant.identifier).subscribe({
       next: () => {
         tenant.isActive = true;
         this.messages.set([{
@@ -84,7 +87,7 @@ export class TenantListComponent implements OnInit {
   }
 
   deactivateTenant(tenant: Tenant): void {
-    this.tenantService.deactivateTenant(tenant.identifier).subscribe({
+    this.tenantRepository.deactivateTenant(tenant.identifier).subscribe({
       next: () => {
         tenant.isActive = false;
         this.messages.set([{

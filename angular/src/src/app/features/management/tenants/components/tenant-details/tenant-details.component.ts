@@ -4,7 +4,9 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { TenantService } from '../../services';
+import { TenantRepository } from '../../repositories';
 import { Tenant } from '../../models';
+import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 import { HasPermissionDirective } from '@shared/directives';
 
@@ -22,6 +24,7 @@ import { HasPermissionDirective } from '@shared/directives';
 })
 export class TenantDetailsComponent implements OnInit {
   private readonly tenantService = inject(TenantService);
+  private readonly tenantRepository = inject(TenantRepository);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -47,9 +50,9 @@ export class TenantDetailsComponent implements OnInit {
     this.loading.set(true);
     this.messages.set([]);
 
-    this.tenantService.getTenantById(tenantId).subscribe({
-      next: (tenant) => {
-        this.tenant.set(tenant);
+    this.tenantRepository.getTenantById(tenantId).subscribe({
+      next: (response: Response<Tenant>) => {
+        this.tenant.set(response.data!);
         this.loading.set(false);
       },
       error: (error) => {
@@ -73,7 +76,7 @@ export class TenantDetailsComponent implements OnInit {
     const tenant = this.tenant();
     if (!tenant) return;
 
-    this.tenantService.activateTenant(tenant.identifier).subscribe({
+    this.tenantRepository.activateTenant(tenant.identifier).subscribe({
       next: () => {
         tenant.isActive = true;
         this.messages.set([{
@@ -94,7 +97,7 @@ export class TenantDetailsComponent implements OnInit {
     const tenant = this.tenant();
     if (!tenant) return;
 
-    this.tenantService.deactivateTenant(tenant.identifier).subscribe({
+    this.tenantRepository.deactivateTenant(tenant.identifier).subscribe({
       next: () => {
         tenant.isActive = false;
         this.messages.set([{
