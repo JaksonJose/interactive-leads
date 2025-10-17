@@ -7,6 +7,7 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from '@authentication/shared';
+import { refreshTokenInterceptor } from '@authentication/shared/interceptor/refresh-token.interceptor';
 import { apiResponseInterceptor } from '@core/responses/index';
 
 import { providePrimeNG } from 'primeng/config';
@@ -86,7 +87,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideRouter(routes),
     MessageService,
-    provideHttpClient(withFetch(), withInterceptors([jwtInterceptor, apiResponseInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([jwtInterceptor, refreshTokenInterceptor, apiResponseInterceptor])),
     provideTranslateService({
       lang: 'pt-BR',
       fallbackLang: 'pt-BR',

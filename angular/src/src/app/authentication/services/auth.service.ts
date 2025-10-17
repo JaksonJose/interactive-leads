@@ -20,7 +20,7 @@ export class AuthService {
    * @returns Get the token stored in local storage
    */
   public getAuthorizationToken(): string | null {
-    return this.tokenStorage.obterToken();
+    return this.tokenStorage.getToken();
   }
 
   /**
@@ -28,7 +28,7 @@ export class AuthService {
    * @returns The refresh token stored in local storage
    */
   public getRefreshToken(): string | null {
-    return this.tokenStorage.obterRefreshToken();
+    return this.tokenStorage.getRefreshToken();
   }
 
   /**
@@ -36,14 +36,105 @@ export class AuthService {
    * @param tokenResponse Token response containing JWT and refresh token
    */
   public storeTokens(tokenResponse: TokenResponse): void {
-    this.tokenStorage.armazenarTokens(tokenResponse);
+    this.tokenStorage.storeTokens(tokenResponse);
   }
 
   /**
    * Clear all authentication tokens from local storage
    */
   public clearTokens(): void {
-    this.tokenStorage.limparTokens();
+    this.tokenStorage.clearTokens();
+  }
+
+  /**
+   * Refresh the JWT token using the refresh token
+   * @returns Promise<boolean> - True if refresh was successful
+   */
+  public async refreshToken(): Promise<boolean> {
+    const refreshToken = this.getRefreshToken();
+    const currentToken = this.getAuthorizationToken();
+    
+    if (!refreshToken || !currentToken) {
+      return false;
+    }
+
+    try {
+      // Import AuthRepository dynamically to avoid circular dependency
+      const { AuthRepository } = await import('../repositories/auth.repository');
+      const authRepository = new AuthRepository();
+      
+      const refreshRequest = {
+        currentJwt: currentToken,
+        currentRefreshToken: refreshToken,
+        refreshTokenExpiryDate: this.tokenStorage.getRefreshTokenExpirationDate() || new Date()
+      };
+
+      const response = await authRepository.refreshToken(refreshRequest).toPromise();
+      
+      if (response?.data) {
+        this.storeTokens(response.data);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      this.clearTokens();
+      return false;
+    }
+  }
+
+  /**
+   * Logout from current device only
+   * @returns Promise<boolean> - True if logout was successful
+   */
+  public async logoutFromCurrentDevice(): Promise<boolean> {
+    const refreshToken = this.getRefreshToken();
+    
+    if (!refreshToken) {
+      this.clearTokens();
+      return true;
+    }
+
+    try {
+      // Import AuthRepository dynamically to avoid circular dependency
+      const { AuthRepository } = await import('../repositories/auth.repository');
+      const authRepository = new AuthRepository();
+      
+      const logoutRequest = {
+        refreshToken: refreshToken
+      };
+
+      await authRepository.logoutFromCurrentDevice(logoutRequest).toPromise();
+      this.clearTokens();
+      return true;
+    } catch (error) {
+      console.error('Device logout failed:', error);
+      // Clear tokens anyway for security
+      this.clearTokens();
+      return false;
+    }
+  }
+
+  /**
+   * Logout from all devices
+   * @returns Promise<boolean> - True if logout was successful
+   */
+  public async logoutFromAllDevices(): Promise<boolean> {
+    try {
+      // Import AuthRepository dynamically to avoid circular dependency
+      const { AuthRepository } = await import('../repositories/auth.repository');
+      const authRepository = new AuthRepository();
+      
+      await authRepository.logoutFromAllDevices().toPromise();
+      this.clearTokens();
+      return true;
+    } catch (error) {
+      console.error('Logout from all devices failed:', error);
+      // Clear tokens anyway for security
+      this.clearTokens();
+      return false;
+    }
   }
 
   /**

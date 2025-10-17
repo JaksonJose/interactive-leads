@@ -10,10 +10,10 @@ export class TokenStorageService {
   private platformId = inject(PLATFORM_ID);
 
   /**
-   * Obtém o token JWT do usuário logado
-   * @returns Token armazenado no localStorage
+   * Gets the JWT token of the logged user
+   * @returns Token stored in localStorage
    */
-  public obterToken(): string | null {
+  public getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem('token');
     }
@@ -21,10 +21,10 @@ export class TokenStorageService {
   }
 
   /**
-   * Obtém o refresh token do localStorage
-   * @returns Refresh token armazenado no localStorage
+   * Gets the refresh token from localStorage
+   * @returns Refresh token stored in localStorage
    */
-  public obterRefreshToken(): string | null {
+  public getRefreshToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem('refreshToken');
     }
@@ -32,10 +32,10 @@ export class TokenStorageService {
   }
 
   /**
-   * Armazena tokens no localStorage
-   * @param tokenResponse Resposta contendo JWT e refresh token
+   * Stores tokens in localStorage
+   * @param tokenResponse Response containing JWT and refresh token
    */
-  public armazenarTokens(tokenResponse: TokenResponse): void {
+  public storeTokens(tokenResponse: TokenResponse): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('token', tokenResponse.jwt);
       localStorage.setItem('refreshToken', tokenResponse.refreshToken);
@@ -44,9 +44,9 @@ export class TokenStorageService {
   }
 
   /**
-   * Limpa todos os tokens de autenticação do localStorage
+   * Clears all authentication tokens from localStorage
    */
-  public limparTokens(): void {
+  public clearTokens(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
@@ -56,10 +56,10 @@ export class TokenStorageService {
   }
 
   /**
-   * Obtém a data de expiração do refresh token
-   * @returns Data de expiração ou null se não existir
+   * Gets the expiration date of the refresh token
+   * @returns Expiration date or null if it doesn't exist
    */
-  public obterDataExpiracaoRefreshToken(): Date | null {
+  public getRefreshTokenExpirationDate(): Date | null {
     if (isPlatformBrowser(this.platformId)) {
       const expiry = localStorage.getItem('refreshTokenExpiry');
       return expiry ? new Date(expiry) : null;

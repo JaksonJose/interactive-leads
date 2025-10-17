@@ -50,7 +50,7 @@ export class LoginComponent {
       login.userName = this.loginForm.get('username')?.value;
       login.password = this.loginForm.get('password')?.value;
 
-      this.authRepository.autenticarUsuario(login).subscribe({
+      this.authRepository.authenticateUser(login).subscribe({
         next: (response: Response<TokenResponse>) => {
           this.loading.set(false);
           
