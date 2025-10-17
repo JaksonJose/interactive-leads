@@ -39,7 +39,7 @@
         display: flex;
         padding: 12px 12px;
         width: calc(100% - 12px);
-        margin: 4px 8px;
+        margin: 4px 6px;
         border-radius: 8px;
         border: 1px solid transparent;
         transition: all 0.2s ease;
@@ -117,6 +117,26 @@
       font-size: 1.1rem;
     }
 
+    // Layout expandido
+    & .expanded-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    & .icon-text {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    & .chevron-container {
+      display: flex;
+      align-items: center;
+      margin-left: 8px;
+    }
+
     & li .chevron-icon {
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       font-size: 0.8rem !important;
@@ -139,6 +159,24 @@
         justify-content: center;
         padding: 12px;
         width: calc(100% - 16px);
+      }
+
+      // Layout específico para conteúdo collapsed
+      & .collapsed-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      // Garantir que o ícone fique perfeitamente centralizado
+      & .collapsed-content i {
+        margin: 0;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
 

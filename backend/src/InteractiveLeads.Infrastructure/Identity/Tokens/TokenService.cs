@@ -7,7 +7,9 @@ using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Identity.Models;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
+using InteractiveLeads.Infrastructure.Context.Application;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,17 +24,20 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IMultiTenantContextAccessor<InteractiveTenantInfo> _multiTenantContextAccessor;
+        private readonly ApplicationDbContext _context;
         private readonly JwtSettings _jwtSettings;
 
         public TokenService(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             IMultiTenantContextAccessor<InteractiveTenantInfo> multiTenantContextAccessor,
+            ApplicationDbContext context,
             IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _multiTenantContextAccessor = multiTenantContextAccessor;
+            _context = context;
             _jwtSettings = jwtSettings.Value;
         }
 
@@ -104,10 +109,28 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
                 throw new UnauthorizedException(response);
             }
 
-            //if (userInDb.RefreshToken != request.CurrentRefreshToken || userInDb.RefreshTokenExpiryTime < DateTime.UtcNow)
-            //{
-            //    throw new UnauthorizedException(["Invalid token."]);
-            //}
+            // Find the refresh token in the database
+            var hashedRefreshToken = HashRefreshToken(request.CurrentRefreshToken);
+            var refreshTokenInDb = await _context.RefreshTokens
+                .Where(rt => rt.UserId == userInDb.Id && rt.Token == hashedRefreshToken && !rt.IsRevoked)
+                .FirstOrDefaultAsync(ct);
+
+            if (refreshTokenInDb is null)
+            {
+                response.AddErrorMessage("Invalid refresh token.", "auth.invalid_refresh_token");
+                throw new UnauthorizedException(response);
+            }
+
+            // Check if the refresh token has not expired
+            if (refreshTokenInDb.ExpirationTime < DateTime.UtcNow)
+            {
+                response.AddErrorMessage("Refresh token expired.", "auth.refresh_token_expired");
+                throw new UnauthorizedException(response);
+            }
+
+            // Revoke the current refresh token (one-time use)
+            refreshTokenInDb.IsRevoked = true;
+            refreshTokenInDb.UpdatedAt = DateTime.UtcNow;
 
             var tokenResponse = await GenerateJwtTokenAndUpdateUserAsync(userInDb);
             
@@ -148,16 +171,32 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
         {
             var newJwt = await GenerateJwtTokenAsync(user);
 
-            var refreshToken = new RefreshToken();
-            refreshToken.Token = GenerateRefreshToken();
-            refreshToken.ExpirationTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshExpiresInDays);
+            // Generate new refresh token
+            var refreshTokenValue = GenerateRefreshToken();
+            var hashedRefreshToken = HashRefreshToken(refreshTokenValue);
 
-            await _userManager.UpdateAsync(user);
+            // Create new refresh token in the database
+            var refreshToken = new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Token = hashedRefreshToken,
+                ExpirationTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshExpiresInDays),
+                IsRevoked = false,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _context.RefreshTokens.Add(refreshToken);
+            await _context.SaveChangesAsync();
+
+            // Clean up expired refresh tokens for the user
+            await CleanExpiredRefreshTokensAsync(user.Id);
 
             return new TokenResponse
             {
                 Jwt = newJwt,
-                RefreshToken = refreshToken.Token,
+                RefreshToken = refreshTokenValue, // Return the original value (not hashed)
                 RefreshTokenExpirationDate = refreshToken.ExpirationTime
             };
         }
@@ -228,6 +267,89 @@ namespace InteractiveLeads.Infrastructure.Identity.Tokens
             rng.GetBytes(randomNumber);
 
             return Convert.ToBase64String(randomNumber);
+        }
+
+        /// <summary>
+        /// Generates a SHA-256 hash of the refresh token for secure storage.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token in plain text.</param>
+        /// <returns>The SHA-256 hash of the refresh token.</returns>
+        private static string HashRefreshToken(string refreshToken)
+        {
+            using var sha256 = SHA256.Create();
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(refreshToken));
+            return Convert.ToBase64String(hashedBytes);
+        }
+
+        /// <summary>
+        /// Removes all expired refresh tokens for the specified user.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        private async Task CleanExpiredRefreshTokensAsync(Guid userId)
+        {
+            var expiredTokens = await _context.RefreshTokens
+                .Where(rt => rt.UserId == userId && rt.ExpirationTime < DateTime.UtcNow)
+                .ToListAsync();
+
+            if (expiredTokens.Any())
+            {
+                _context.RefreshTokens.RemoveRange(expiredTokens);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Revokes all active refresh tokens for a user (useful for logout from all devices).
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        public async Task<ResultResponse> RevokeUserRefreshTokensAsync(Guid userId)
+        {
+            var activeTokens = await _context.RefreshTokens
+                .Where(rt => rt.UserId == userId && !rt.IsRevoked && rt.ExpirationTime > DateTime.UtcNow)
+                .ToListAsync();
+
+            foreach (var token in activeTokens)
+            {
+                token.IsRevoked = true;
+                token.UpdatedAt = DateTime.UtcNow;
+            }
+
+            if (activeTokens.Any())
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Logout successful", "auth.logout_successful");
+            return response;
+        }
+
+        /// <summary>
+        /// Revokes a specific refresh token for a user (useful for logout from current device).
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="refreshToken">The refresh token to revoke.</param>
+        public async Task<ResultResponse> RevokeSpecificRefreshTokenAsync(Guid userId, string refreshToken)
+        {
+            var hashedRefreshToken = HashRefreshToken(refreshToken);
+            var tokenToRevoke = await _context.RefreshTokens
+                .Where(rt => rt.UserId == userId && rt.Token == hashedRefreshToken && !rt.IsRevoked && rt.ExpirationTime > DateTime.UtcNow)
+                .FirstOrDefaultAsync();
+
+            var response = new ResultResponse();
+
+            if (tokenToRevoke == null)
+            {
+                response.AddErrorMessage("Refresh token not found or already revoked", "auth.token_not_found_or_revoked");
+                return response;
+            }
+
+            tokenToRevoke.IsRevoked = true;
+            tokenToRevoke.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            response.AddSuccessMessage("Device logout successful", "auth.device_logout_successful");
+            return response;
         }
     }
 }

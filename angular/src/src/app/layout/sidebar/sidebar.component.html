@@ -11,23 +11,24 @@
           (click)="toggleSubMenu(item)"
           (keydown.enter)="toggleSubMenu(item)"
           (keydown.space)="toggleSubMenu(item)">
-          <div style="width: 100%;">
-            <div>
+          
+          @if (collapsed) {
+            <!-- Layout collapsed: apenas ícone centralizado -->
+            <div class="collapsed-content">
               <i [class]="'pi ' + item.icon"></i>
-              @if (!collapsed) {
-                <span class="p-menuitem-text">{{ item.label | translate }}</span>
-              }
             </div>
-          </div>
-
-          @if (!collapsed)
-          {
-            <div>
+          } @else {
+            <!-- Layout expandido: ícone + texto + chevron -->
+            <div class="expanded-content">
+              <div class="icon-text">
+                <i [class]="'pi ' + item.icon"></i>
+                <span class="p-menuitem-text">{{ item.label | translate }}</span>
+              </div>
               @if (item.children && item.children.length > 0) {
-                <span>
+                <div class="chevron-container">
                   <i class="pi pi-chevron-right chevron-icon" 
                      [style.transform]="item.expanded ? 'rotate(90deg)' : 'rotate(0deg)'"></i>
-                </span>
+                </div>
               }
             </div>
           }
