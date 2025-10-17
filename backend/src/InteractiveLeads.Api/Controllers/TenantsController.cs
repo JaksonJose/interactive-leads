@@ -2,6 +2,7 @@
 using InteractiveLeads.Application.Feature.Tenancy;
 using InteractiveLeads.Application.Feature.Tenancy.Commands;
 using InteractiveLeads.Application.Feature.Tenancy.Queries;
+using InteractiveLeads.Application.Models;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Identity.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -104,18 +105,28 @@ namespace InteractiveLeads.Api.Controllers
         }
 
         /// <summary>
-        /// Retrieves all tenants in the system.
+        /// Retrieves tenants in the system with pagination support.
         /// </summary>
-        /// <returns>Returns Ok with a list of all tenants if successful, otherwise BadRequest.</returns>
+        /// <param name="page">Page number (1-based).</param>
+        /// <param name="pageSize">Number of items per page.</param>
+        /// <returns>Returns Ok with a paginated list of tenants if successful, otherwise BadRequest.</returns>
         /// <remarks>
         /// Requires Read permission for the Tenants feature.
+        /// Default values: page=1, pageSize=10
+        /// Maximum pageSize: 100
         /// </remarks>
         [HttpGet("all")]
         [ShouldHavePermission(InteractiveAction.Read, InteractiveFeature.Tenants)]
-        [OpenApiOperation("Fetch all tenants")]
-        public async Task<IActionResult> GetTenantsAsync()
+        [OpenApiOperation("Fetch tenants with pagination")]
+        public async Task<IActionResult> GetTenantsAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var response = await Sender.Send(new GetTenantsQuery());
+            var pagination = new PaginationRequest
+            {
+                Page = page,
+                PageSize = pageSize
+            };
+
+            var response = await Sender.Send(new GetTenantsQuery { Pagination = pagination });
             return Ok(response);
         }
     }

@@ -2,10 +2,13 @@
 using Finbuckle.MultiTenant.Abstractions;
 using InteractiveLeads.Application.Feature.Tenancy;
 using InteractiveLeads.Application.Interfaces;
+using InteractiveLeads.Application.Models;
 using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Context.Application;
+using InteractiveLeads.Infrastructure.Context.Tenancy;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InteractiveLeads.Infrastructure.Tenancy
@@ -13,13 +16,19 @@ namespace InteractiveLeads.Infrastructure.Tenancy
     public class TenantService : ITenantService
     {
         private readonly IMultiTenantStore<InteractiveTenantInfo> _tenantStore;
+        private readonly TenantDbContext _tenantDbContext;
         private readonly ApplicationDbSeeder _dbSeeder;
         private readonly IServiceProvider _serviceProvider;
 
-        public TenantService(IMultiTenantStore<InteractiveTenantInfo> tenantStore, ApplicationDbSeeder dbSeeder, IServiceProvider serviceProvider)
+        public TenantService(
+            IMultiTenantStore<InteractiveTenantInfo> tenantStore, 
+            TenantDbContext tenantDbContext,
+            ApplicationDbSeeder dbSeeder, 
+            IServiceProvider serviceProvider)
         {
             _dbSeeder = dbSeeder;
             _tenantStore = tenantStore;
+            _tenantDbContext = tenantDbContext;
             _serviceProvider = serviceProvider;
         }
 
@@ -83,12 +92,23 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             return response;
         }
 
-        public async Task<ListResponse<TenantResponse>> GetTenantsAsync(CancellationToken ct)
+        public async Task<ListResponse<TenantResponse>> GetTenantsAsync(PaginationRequest pagination, CancellationToken ct)
         {
-            var tenantInDb = await _tenantStore.GetAllAsync();
-            var tenants = tenantInDb.Adapt<List<TenantResponse>>();
+            // Validate pagination parameters
+            if (!pagination.IsValid())
+            {
+                pagination = new PaginationRequest(); // Use default values if invalid
+            }
 
-            var response = new ListResponse<TenantResponse>(tenants, tenants.Count);
+            // Get total count efficiently from database
+            var totalTenants = await _tenantDbContext.TenantInfo.CountAsync(ct);
+
+            // Use Finbuckle's efficient pagination method
+            var paginatedTenants = await _tenantStore.GetAllAsync(pagination.PageSize, pagination.CalculateSkip());
+            
+            var tenants = paginatedTenants.Adapt<List<TenantResponse>>();
+
+            var response = new ListResponse<TenantResponse>(tenants, totalTenants);
             response.AddSuccessMessage("Tenants retrieved successfully", "tenants.retrieved_successfully");
             return response;
         }
