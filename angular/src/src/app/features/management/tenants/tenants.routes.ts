@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { permissionGuard } from '@shared/guards/permission.guard';
 import { TenantListComponent } from './components/tenant-list/tenant-list.component';
-import { TenantCreateComponent } from './components/tenant-create/tenant-create.component';
+import { TenantFormComponent } from './components/tenant-form/tenant-form.component';
 import { TenantDetailsComponent } from './components/tenant-details/tenant-details.component';
 
 export const tenantRoutes: Routes = [
@@ -17,7 +17,7 @@ export const tenantRoutes: Routes = [
       },
       {
         path: 'create',
-        component: TenantCreateComponent,
+        component: TenantFormComponent,
         data: { permissions: ['Permission.Tenants.Create'] },
         title: 'Create Tenant'
       },
@@ -28,7 +28,7 @@ export const tenantRoutes: Routes = [
       },
       {
         path: ':tenantId/edit',
-        component: TenantCreateComponent, // Reuse create component for editing
+        component: TenantFormComponent,
         data: { permissions: ['Permission.Tenants.Update'] },
         title: 'Edit Tenant'
       }

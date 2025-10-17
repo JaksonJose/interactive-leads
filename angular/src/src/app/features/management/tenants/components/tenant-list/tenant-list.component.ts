@@ -57,15 +57,15 @@ export class TenantListComponent implements OnInit {
   }
 
   createTenant(): void {
-    this.router.navigate(['/management/tenants/create']);
+    this.router.navigate(['/tenants/create']);
   }
 
   viewTenantDetails(tenant: Tenant): void {
-    this.router.navigate(['/management/tenants', tenant.identifier]);
+    this.router.navigate(['/tenants', tenant.identifier]);
   }
 
   editTenant(tenant: Tenant): void {
-    this.router.navigate(['/management/tenants', tenant.identifier, 'edit']);
+    this.router.navigate(['/tenants', tenant.identifier, 'edit']);
   }
 
   activateTenant(tenant: Tenant): void {

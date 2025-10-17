@@ -10,8 +10,19 @@ import { CreateTenantRequest, UpdateTenantRequest, Tenant } from '@feature/manag
 import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 
+interface TenantFormValue {
+  identifier: string;
+  name: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  expirationDate: Date;
+  isActive: boolean;
+  connectionString: string;
+}
+
 @Component({
-  selector: 'app-tenant-create',
+  selector: 'app-tenant-form',
   standalone: true,
   imports: [
     CommonModule,
@@ -19,10 +30,10 @@ import { PRIME_NG_MODULES } from '@shared/primeng-imports';
     TranslatePipe,
     ...PRIME_NG_MODULES
   ],
-  templateUrl: './tenant-create.component.html',
-  styleUrls: ['./tenant-create.component.scss']
+  templateUrl: './tenant-form.component.html',
+  styleUrls: ['./tenant-form.component.scss']
 })
-export class TenantCreateComponent implements OnInit {
+export class TenantFormComponent implements OnInit {
   private readonly tenantService = inject(TenantService);
   private readonly tenantRepository = inject(TenantRepository);
   private readonly router = inject(Router);
@@ -105,7 +116,7 @@ export class TenantCreateComponent implements OnInit {
       this.loading.set(true);
       this.messages.set([]);
 
-      const formValue = this.tenantForm.value;
+      const formValue = this.tenantForm.value as TenantFormValue;
       
       if (this.isEditMode()) {
         this.updateTenant(formValue);
@@ -121,7 +132,7 @@ export class TenantCreateComponent implements OnInit {
     }
   }
 
-  private createTenant(formValue: any): void {
+  private createTenant(formValue: TenantFormValue): void {
     const createRequest: CreateTenantRequest = {
       identifier: formValue.identifier,
       name: formValue.name,
@@ -141,10 +152,10 @@ export class TenantCreateComponent implements OnInit {
         }]);
         
         setTimeout(() => {
-          this.router.navigate(['/management/tenants']);
+          this.router.navigate(['/tenants']);
         }, 2000);
       },
-      error: (error) => {
+      error: () => {
         this.messages.set([{
           severity: 'error',
           content: 'Error creating tenant'
@@ -154,7 +165,7 @@ export class TenantCreateComponent implements OnInit {
     });
   }
 
-  private updateTenant(formValue: any): void {
+  private updateTenant(formValue: TenantFormValue): void {
     const updateRequest: UpdateTenantRequest = {
       identifier: formValue.identifier,
       name: formValue.name,
@@ -174,7 +185,7 @@ export class TenantCreateComponent implements OnInit {
         }]);
         
         setTimeout(() => {
-          this.router.navigate(['/management/tenants']);
+          this.router.navigate(['/tenants']);
         }, 2000);
       },
       error: (error) => {
@@ -188,7 +199,7 @@ export class TenantCreateComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/management/tenants']);
+    this.router.navigate(['/tenants']);
   }
 
   private markFormGroupTouched(): void {
