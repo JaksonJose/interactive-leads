@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { TenantService } from '../../services';
-import { TenantRepository } from '../../repositories';
-import { Tenant } from '../../models';
+import { TenantService } from '@feature/management/tenants/services';
+import { TenantRepository } from '@feature/management/tenants/repositories';
+import { Tenant } from '@feature/management/tenants/models';
 import { Response } from '@core/responses/response';
 import { SHARED_IMPORTS } from '@shared/shared-imports';
 import { AuthService } from '@authentication/services/auth.service';

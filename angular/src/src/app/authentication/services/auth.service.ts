@@ -60,7 +60,7 @@ export class AuthService {
 
     try {
       // Import AuthRepository dynamically to avoid circular dependency
-      const { AuthRepository } = await import('../repositories/auth.repository');
+      const { AuthRepository } = await import('@authentication/repositories/auth.repository');
       const authRepository = new AuthRepository();
       
       const refreshRequest = {
@@ -98,7 +98,7 @@ export class AuthService {
 
     try {
       // Import AuthRepository dynamically to avoid circular dependency
-      const { AuthRepository } = await import('../repositories/auth.repository');
+      const { AuthRepository } = await import('@authentication/repositories/auth.repository');
       const authRepository = new AuthRepository();
       
       const logoutRequest = {
@@ -123,7 +123,7 @@ export class AuthService {
   public async logoutFromAllDevices(): Promise<boolean> {
     try {
       // Import AuthRepository dynamically to avoid circular dependency
-      const { AuthRepository } = await import('../repositories/auth.repository');
+      const { AuthRepository } = await import('@authentication/repositories/auth.repository');
       const authRepository = new AuthRepository();
       
       await authRepository.logoutFromAllDevices().toPromise();

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
-import { AppbarComponent } from '../appbar/appbar.component';
-import { SidebarComponent } from '../sidebar/sidebar.component';
+import { SHARED_IMPORTS } from '@shared/shared-imports';
+import { AppbarComponent } from '@layout/appbar/appbar.component';
+import { SidebarComponent } from '@layout/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-layout',

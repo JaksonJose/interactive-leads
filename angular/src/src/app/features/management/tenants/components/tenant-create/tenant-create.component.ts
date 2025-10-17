@@ -4,9 +4,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { TenantService } from '../../services';
-import { TenantRepository } from '../../repositories';
-import { CreateTenantRequest, Tenant } from '../../models';
+import { TenantService } from '@feature/management/tenants/services';
+import { TenantRepository } from '@feature/management/tenants/repositories';
+import { CreateTenantRequest, Tenant } from '@feature/management/tenants/models';
 import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 

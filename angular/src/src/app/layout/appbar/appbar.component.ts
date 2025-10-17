@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
-import { AuthService } from '../../authentication/services/auth.service';
+import { SHARED_IMPORTS } from '@shared/shared-imports';
+import { AuthService } from '@authentication/services/auth.service';
 import { MessageService } from 'primeng/api';
 
 @Component({

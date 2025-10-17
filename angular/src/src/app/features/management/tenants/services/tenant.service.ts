@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Tenant } from '../models';
+import { Tenant } from '@feature/management/tenants/models';
 
 @Injectable({
   providedIn: 'root'

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Response } from '@core/responses/response';
-import { Tenant, CreateTenantRequest, UpdateSubscriptionRequest } from '../models';
+import { Tenant, CreateTenantRequest, UpdateSubscriptionRequest } from '@feature/management/tenants/models';
 import { environment } from '@environment/environment';
 
 @Injectable({

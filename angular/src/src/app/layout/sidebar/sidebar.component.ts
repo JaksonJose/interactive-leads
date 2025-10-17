@@ -3,9 +3,9 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgClass } from '@angular/common';
 
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
-import { MenuItemInterface } from '../../shared/interfaces/menu-item.interface';
-import { AuthService } from '../../authentication/services/auth.service';
+import { SHARED_IMPORTS } from '@shared/shared-imports';
+import { MenuItemInterface } from '@shared/interfaces/menu-item.interface';
+import { AuthService } from '@authentication/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',

@@ -19,7 +19,8 @@
       "@authentication/*": ["src/app/authentication/*"],
       "@core/*": ["src/app/core/*"],
       "@environment/*": ["src/environment/*"],
-      "@feature/*": ["src/app/feature/*"],
+      "@feature/*": ["src/app/features/*"],
+      "@layout/*": ["src/app/layout/*"],
       "@shared/*": ["src/app/shared/*"],
     }
   },
