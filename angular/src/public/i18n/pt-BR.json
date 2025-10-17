@@ -14,15 +14,8 @@
   },
   "menu": {
     "admin": "Admin",
-    "analytics": "Analíticos",
     "company": "Empresas",
     "consultants": "Consultores",
-    "dashboard": "Dashboard",
-    "graphics": "Gráficos",
-    "leads": "Leads",
-    "report": "Relatório",
-    "salespipelines": "Funil de Vendas",
-    "schedule": "Agendamentos",
     "tenants": "Tenants"
   },
   "auth": {

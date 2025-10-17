@@ -27,58 +27,16 @@ export class SidebarComponent implements OnInit {
 
   // TODO: Move to a file
   allMenuItems: MenuItemInterface[] = [
+    // Root Admin Menu - Only visible to users with tenant management permissions
     {
-      label: 'menu.dashboard',
-      icon: 'pi pi-th-large',
-      route: '/dashboard',
+      label: 'menu.tenants',
+      icon: 'pi pi-sitemap',
+      route: '/tenants',
       expanded: false,
-      permissions: [], // Dashboard accessible to all authenticated users
+      permissions: ['Permission.Tenants.Read'], // Only root admins can manage tenants
       children: []
     },
-    {
-      label: 'menu.leads',
-      icon: 'pi pi-users',
-      route: '/leads',
-      expanded: false,
-      permissions: [], // Leads accessible to all authenticated users
-      children: []
-    },
-    {
-      label: 'menu.salespipelines',
-      icon: 'pi pi-filter',
-      route: '/salespipelines',
-      expanded: false,
-      permissions: [], // Sales pipelines accessible to all authenticated users
-      children: []
-    },
-    {
-      label: 'menu.schedule',
-      icon: 'pi pi-calendar',
-      route: '/calendar',
-      expanded: false,
-      permissions: [], // Schedule accessible to all authenticated users
-      children: []
-    },
-    {
-      label: 'menu.report',
-      icon: 'pi pi-file',
-      expanded: false,
-      permissions: [], // Reports accessible to all authenticated users
-      children: [
-        {
-          label: 'menu.analytics',
-          icon: 'pi pi-chart-line',
-          route: '/analytics',
-          permissions: []
-        },
-        {
-          label: 'menu.graphics',
-          icon: 'pi pi-chart-bar',
-          route: '/graphics',
-          permissions: []
-        },
-      ]
-    },
+    // Tenant Admin Menu - Only visible to users with user management permissions within tenant
     {
       label: 'menu.admin',
       icon: 'pi pi-cog',
@@ -96,15 +54,12 @@ export class SidebarComponent implements OnInit {
           icon: 'pi pi-users',
           route: '/admin/consultants',
           permissions: ['Permission.Users.Read']
-        },
-        {
-          label: 'menu.tenants',
-          icon: 'pi pi-sitemap',
-          route: '/tenants',
-          permissions: ['Permission.Tenants.Read']
         }
       ]
     }
+    // Note: CRM features (Dashboard, Leads, Sales Pipelines, Schedule, Reports) 
+    // are not yet implemented and should be added when the corresponding 
+    // components and routes are created
   ];
 
   menuItems: MenuItemInterface[] = [];
@@ -126,34 +81,25 @@ export class SidebarComponent implements OnInit {
 
   private filterMenuItemsByPermissions(): void {
     this.menuItems = this.allMenuItems.filter(item => {
-      // If no permissions required, show the item
-      if (!item.permissions || item.permissions.length === 0) {
-        // Filter children if they exist
-        if (item.children && item.children.length > 0) {
-          item.children = item.children.filter(child => {
-            return !child.permissions || child.permissions.length === 0 || 
-                   this.authService.hasAnyPermission(child.permissions);
-          });
-          // Only show parent if it has visible children or no children required
-          return item.children.length > 0;
-        }
-        return true;
-      }
-
-      // Check if user has required permissions
+      // Check if user has required permissions for the main item
       const hasPermission = this.authService.hasAnyPermission(item.permissions);
       
-      if (hasPermission && item.children && item.children.length > 0) {
-        // Filter children based on their permissions
+      if (!hasPermission) {
+        return false;
+      }
+
+      // If item has children, filter them based on their permissions
+      if (item.children && item.children.length > 0) {
+        const originalChildren = [...item.children]; // Keep original for reference
         item.children = item.children.filter(child => {
-          return !child.permissions || child.permissions.length === 0 || 
-                 this.authService.hasAnyPermission(child.permissions);
+          return this.authService.hasAnyPermission(child.permissions);
         });
+        
         // Only show parent if it has visible children
         return item.children.length > 0;
       }
 
-      return hasPermission;
+      return true;
     });
   }
 

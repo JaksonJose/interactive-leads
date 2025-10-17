@@ -43,6 +43,9 @@
         border-radius: 8px;
         border: 1px solid transparent;
         transition: all 0.2s ease;
+        cursor: pointer;
+        user-select: none;  
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);        
       }
 
       // sub-item
@@ -67,9 +70,18 @@
       font-weight: 500;
       border: 1px solid var(--p-primary-200);
       opacity: 1 !important;
+      
+      // Hover para item ativo - mantém cor do texto visível
+      &:hover {
+        background-color: var(--p-primary-200);
+        color: var(--p-primary-800);
+        transform: translateX(2px);
+        border: 1px solid var(--p-primary-300);
+      }
     }
 
-    & .sidebar-menu-item:hover {
+    // Hover para itens normais
+    & .sidebar-menu-item:hover:not(.active):not(.p-highlight) {
       background-color: var(--p-surface-600);
       color: var(--p-surface-0);
       transform: translateX(2px);
@@ -80,10 +92,23 @@
     & > ul > li > .sidebar-menu-item.active,
     & > ul > li > .sidebar-menu-item.p-highlight {
       background-color: var(--p-primary-50);
+      color: var(--p-primary-700);
+      font-weight: 500;
+      border: 1px solid var(--p-primary-100);
       opacity: 1 !important;
+      
+      // Hover para subitem ativo
+      &:hover {
+        background-color: var(--p-primary-100);
+        color: var(--p-primary-800);
+        border: 1px solid var(--p-primary-200);
+      }
     }
 
-    & > ul > li > .sidebar-menu-item:hover {
+    // Hover para subitens normais
+    & > ul > li > .sidebar-menu-item:hover:not(.active):not(.p-highlight) {
+      background-color: var(--p-surface-600);
+      color: var(--p-surface-0);
       opacity: 1;
     }
 
@@ -93,9 +118,15 @@
     }
 
     & li .chevron-icon {
-      transition: transform 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       font-size: 0.8rem !important;
       margin-right: 0 !important;
+      opacity: 0.7;
+      
+      // Melhorar a aparência do chevron
+      &:hover {
+        opacity: 1;
+      }
     }
 
     &.collapsed {
@@ -120,6 +151,17 @@
     & .p-menuitem-text {
       font-size: 0.9rem;
       font-weight: 400;
+      color: inherit; // Herda a cor do elemento pai
+    }
+    
+    // Garantir que links dentro dos subitens herdem a cor corretamente
+    & a {
+      color: inherit;
+      text-decoration: none;
+      
+      &:hover {
+        color: inherit;
+      }
     }
   }
 }
