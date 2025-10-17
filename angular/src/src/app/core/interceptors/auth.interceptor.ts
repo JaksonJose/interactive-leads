@@ -1,13 +1,19 @@
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError, from } from 'rxjs';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@authentication/services/auth.service';
 import { environment } from '@environment/environment';
 
-export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
+/**
+ * Authentication interceptor that handles:
+ * 1. Adding JWT tokens to requests
+ * 2. Automatically refreshing tokens on 401 errors
+ * 3. Redirecting to login when refresh fails
+ */
+export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   const authService = inject(AuthService);
 
-  // Skip refresh token logic for login, refresh-token, and logout endpoints
+  // Skip authentication logic for specific endpoints
   const skipUrls = [
     `${environment.apiUrl}/login`, 
     `${environment.apiUrl}/refresh-token`,
@@ -27,7 +33,14 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<unkn
     return next(req);
   }
 
-  return next(req).pipe(
+  // Add JWT token to request
+  const authRequest = req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  return next(authRequest).pipe(
     catchError((error: HttpErrorResponse) => {
       // Only handle 401 Unauthorized errors
       if (error.status === 401) {
@@ -47,12 +60,12 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<unkn
               // Token refreshed successfully, retry the original request
               const newToken = authService.getAuthorizationToken();
               if (newToken) {
-                const authRequest = req.clone({
+                const newAuthRequest = req.clone({
                   setHeaders: {
                     Authorization: `Bearer ${newToken}`
                   }
                 });
-                return next(authRequest);
+                return next(newAuthRequest);
               }
             }
             
