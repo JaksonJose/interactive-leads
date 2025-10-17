@@ -2,17 +2,17 @@
   <!-- Header Section -->
   <div class="header-section">
     <div class="title-section">
-      <h1>{{ 'tenantManagement.createTenant' | translate }}</h1>
-      <p class="subtitle">{{ 'tenantManagement.createNewTenantOrganization' | translate }}</p>
+      <h1>{{ (isEditMode() ? 'tenantManagement.editTenant' : 'tenantManagement.createTenant') | translate }}</h1>
+      <p class="subtitle">{{ (isEditMode() ? 'tenantManagement.editTenantOrganization' : 'tenantManagement.createNewTenantOrganization') | translate }}</p>
     </div>
     
-    <button 
-      type="button" 
-      class="btn btn-secondary"
-      (click)="onCancel()">
-      <i class="pi pi-arrow-left"></i>
-      {{ 'tenantManagement.backToList' | translate }}
-    </button>
+    <p-button
+      type="button"
+      [label]="'tenantManagement.backToList' | translate"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      (onClick)="onCancel()">
+    </p-button>
   </div>
 
   <!-- Messages -->
@@ -24,43 +24,52 @@
     {{ message.content }}
   </p-message>
 
+  <!-- Loading State -->
+  <div *ngIf="loading() && isEditMode()" class="loading-container">
+    <div class="loading-content">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>{{ 'tenantManagement.loadingTenantData' | translate }}</p>
+    </div>
+  </div>
+
   <!-- Form -->
-  <div class="form-container">
+  <div class="form-container" *ngIf="!loading() || !isEditMode()">
     <form [formGroup]="tenantForm" (ngSubmit)="onSubmit()">
       <div class="form-row">
         <!-- Tenant Identifier -->
         <div class="form-group">
-          <label for="identifier" class="form-label">
+          <label for="identifier" class="p-label">
             {{ 'tenantManagement.tenantIdentifier' | translate }} *
           </label>
           <input
             type="text"
             id="identifier"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('identifier')"
+            pInputText
             formControlName="identifier"
-            placeholder="e.g., company-slug">
-          <div *ngIf="isFieldInvalid('identifier')" class="invalid-feedback">
+            [readonly]="isEditMode()"
+            placeholder="Digite o identificador do tenant"
+            [class.p-invalid]="isFieldInvalid('identifier')">
+          <div *ngIf="isFieldInvalid('identifier')" class="p-error mt-1">
             {{ getFieldError('identifier') }}
           </div>
-          <small class="form-text text-muted">
-            {{ 'tenantManagement.identifierHelpText' | translate }}
+          <small class="p-text-secondary mt-1">
+            {{ isEditMode() ? ('tenantManagement.identifierCannotBeChanged' | translate) : ('tenantManagement.identifierHelpText' | translate) }}
           </small>
         </div>
 
         <!-- Tenant Name -->
         <div class="form-group">
-          <label for="name" class="form-label">
+          <label for="name" class="p-label">
             {{ 'tenantManagement.tenantName' | translate }} *
           </label>
           <input
             type="text"
             id="name"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('name')"
+            pInputText
             formControlName="name"
-            placeholder="Company Name">
-          <div *ngIf="isFieldInvalid('name')" class="invalid-feedback">
+            placeholder="Digite o nome da empresa"
+            [class.p-invalid]="isFieldInvalid('name')">
+          <div *ngIf="isFieldInvalid('name')" class="p-error mt-1">
             {{ getFieldError('name') }}
           </div>
         </div>
@@ -69,34 +78,34 @@
       <div class="form-row">
         <!-- Admin First Name -->
         <div class="form-group">
-          <label for="firstName" class="form-label">
+          <label for="firstName" class="p-label">
             {{ 'tenantManagement.adminFirstName' | translate }} *
           </label>
           <input
             type="text"
             id="firstName"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('firstName')"
+            pInputText
             formControlName="firstName"
-            placeholder="John">
-          <div *ngIf="isFieldInvalid('firstName')" class="invalid-feedback">
+            placeholder="Digite o nome do administrador"
+            [class.p-invalid]="isFieldInvalid('firstName')">
+          <div *ngIf="isFieldInvalid('firstName')" class="p-error mt-1">
             {{ getFieldError('firstName') }}
           </div>
         </div>
 
         <!-- Admin Last Name -->
         <div class="form-group">
-          <label for="lastName" class="form-label">
+          <label for="lastName" class="p-label">
             {{ 'tenantManagement.adminLastName' | translate }} *
           </label>
           <input
             type="text"
             id="lastName"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('lastName')"
+            pInputText
             formControlName="lastName"
-            placeholder="Doe">
-          <div *ngIf="isFieldInvalid('lastName')" class="invalid-feedback">
+            placeholder="Digite o sobrenome do administrador"
+            [class.p-invalid]="isFieldInvalid('lastName')">
+          <div *ngIf="isFieldInvalid('lastName')" class="p-error mt-1">
             {{ getFieldError('lastName') }}
           </div>
         </div>
@@ -105,27 +114,27 @@
       <div class="form-row">
         <!-- Admin Email -->
         <div class="form-group">
-          <label for="email" class="form-label">
+          <label for="email" class="p-label">
             {{ 'tenantManagement.adminEmail' | translate }} *
           </label>
           <input
             type="email"
             id="email"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('email')"
+            pInputText
             formControlName="email"
-            placeholder="admin@company.com">
-          <div *ngIf="isFieldInvalid('email')" class="invalid-feedback">
+            placeholder="Digite o email do administrador"
+            [class.p-invalid]="isFieldInvalid('email')">
+          <div *ngIf="isFieldInvalid('email')" class="p-error mt-1">
             {{ getFieldError('email') }}
           </div>
-          <small class="form-text text-muted">
+          <small class="p-text-secondary mt-1">
             {{ 'tenantManagement.adminEmailHelpText' | translate }}
           </small>
         </div>
 
         <!-- Expiration Date -->
         <div class="form-group">
-          <label for="expirationDate" class="form-label">
+          <label for="expirationDate" class="p-label">
             {{ 'tenantManagement.subscriptionExpiration' | translate }} *
           </label>
           <p-datepicker
@@ -134,9 +143,10 @@
             [showIcon]="true"
             [minDate]="minDate"
             dateFormat="dd/mm/yy"
-            placeholder="Select expiration date">
+            placeholder="Selecione a data de expiração"
+            [class.p-invalid]="isFieldInvalid('expirationDate')">
           </p-datepicker>
-          <div *ngIf="isFieldInvalid('expirationDate')" class="invalid-feedback">
+          <div *ngIf="isFieldInvalid('expirationDate')" class="p-error mt-1">
             {{ getFieldError('expirationDate') }}
           </div>
         </div>
@@ -145,17 +155,17 @@
       <div class="form-row">
         <!-- Connection String -->
         <div class="form-group full-width">
-          <label for="connectionString" class="form-label">
+          <label for="connectionString" class="p-label">
             {{ 'tenantManagement.databaseConnectionString' | translate }}
           </label>
           <textarea
             id="connectionString"
-            class="form-control"
+            pInputTextarea
             formControlName="connectionString"
-            rows="3"
-            placeholder="Server=localhost;Database=TenantDB;... (Optional)">
+            placeholder="Digite a string de conexão do banco de dados (opcional)"
+            rows="3">
           </textarea>
-          <small class="form-text text-muted">
+          <small class="p-text-secondary mt-1">
             {{ 'tenantManagement.connectionStringHelpText' | translate }}
           </small>
         </div>
@@ -164,17 +174,17 @@
       <div class="form-row">
         <!-- Active Status -->
         <div class="form-group">
-          <div class="form-check">
-            <input
-              type="checkbox"
+          <div class="flex align-items-center gap-2">
+            <p-checkbox
               id="isActive"
-              class="form-check-input"
-              formControlName="isActive">
-            <label for="isActive" class="form-check-label">
+              formControlName="isActive"
+              [binary]="true">
+            </p-checkbox>
+            <label for="isActive" class="cursor-pointer">
               {{ 'tenantManagement.activateTenantImmediately' | translate }}
             </label>
           </div>
-          <small class="form-text text-muted">
+          <small class="p-text-secondary mt-1">
             {{ 'tenantManagement.activateTenantHelpText' | translate }}
           </small>
         </div>
@@ -182,21 +192,22 @@
 
       <!-- Form Actions -->
       <div class="form-actions">
-        <button 
-          type="button" 
-          class="btn btn-secondary"
-          (click)="onCancel()">
-          {{ 'tenantManagement.cancel' | translate }}
-        </button>
+        <p-button
+          type="button"
+          label="{{ 'tenantManagement.cancel' | translate }}"
+          icon="pi pi-times"
+          severity="secondary"
+          (onClick)="onCancel()">
+        </p-button>
         
-        <button 
-          type="submit" 
-          class="btn btn-primary"
+        <p-button
+          type="submit"
+          [label]="loading() ? 
+            (isEditMode() ? ('tenantManagement.updating' | translate) : ('tenantManagement.creating' | translate)) : 
+            (isEditMode() ? ('tenantManagement.updateTenant' | translate) : ('tenantManagement.createTenant' | translate))"
+          [icon]="loading() ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
           [disabled]="loading() || !tenantForm.valid">
-          <i *ngIf="loading()" class="pi pi-spin pi-spinner"></i>
-          <i *ngIf="!loading()" class="pi pi-check"></i>
-          {{ loading() ? ('tenantManagement.creating' | translate) : ('tenantManagement.createTenant' | translate) }}
-        </button>
+        </p-button>
       </div>
     </form>
   </div>

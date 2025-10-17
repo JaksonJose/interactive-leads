@@ -1,12 +1,12 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { TenantService } from '@feature/management/tenants/services';
 import { TenantRepository } from '@feature/management/tenants/repositories';
-import { CreateTenantRequest, Tenant } from '@feature/management/tenants/models';
+import { CreateTenantRequest, UpdateTenantRequest, Tenant } from '@feature/management/tenants/models';
 import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 
@@ -26,15 +26,62 @@ export class TenantCreateComponent implements OnInit {
   private readonly tenantService = inject(TenantService);
   private readonly tenantRepository = inject(TenantRepository);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
 
   tenantForm!: FormGroup;
   loading = signal<boolean>(false);
   messages = signal<{ severity: 'error' | 'success' | 'info' | 'warn' | 'secondary' | 'contrast'; content: string }[]>([]);
   minDate = new Date();
+  isEditMode = signal<boolean>(false);
+  tenantId = signal<string | null>(null);
+  currentTenant = signal<Tenant | null>(null);
 
   ngOnInit(): void {
     this.initializeForm();
+    this.checkEditMode();
+  }
+
+  private checkEditMode(): void {
+    const tenantId = this.route.snapshot.paramMap.get('tenantId');
+    if (tenantId) {
+      this.isEditMode.set(true);
+      this.tenantId.set(tenantId);
+      this.loadTenantForEdit(tenantId);
+    }
+  }
+
+  private loadTenantForEdit(tenantId: string): void {
+    this.loading.set(true);
+    this.tenantRepository.getTenantById(tenantId).subscribe({
+      next: (response: Response<Tenant>) => {
+        if (response.data) {
+          this.currentTenant.set(response.data);
+          this.populateFormWithTenantData(response.data);
+        }
+        this.loading.set(false);
+      },
+      error: () => {
+        this.messages.set([{
+          severity: 'error',
+          content: 'Error loading tenant data'
+        }]);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  private populateFormWithTenantData(tenant: Tenant): void {
+    this.tenantForm.patchValue({
+      identifier: tenant.identifier,
+      name: tenant.name,
+      email: tenant.email,
+      firstName: tenant.firstName,
+      lastName: tenant.lastName,
+      expirationDate: new Date(tenant.expirationDate),
+      isActive: tenant.isActive,
+      connectionString: tenant.connectionString || ''
+    });
   }
 
   private initializeForm(): void {
@@ -59,36 +106,12 @@ export class TenantCreateComponent implements OnInit {
       this.messages.set([]);
 
       const formValue = this.tenantForm.value;
-      const createRequest: CreateTenantRequest = {
-        identifier: formValue.identifier,
-        name: formValue.name,
-        email: formValue.email,
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
-        expirationDate: new Date(formValue.expirationDate),
-        isActive: formValue.isActive,
-        connectionString: formValue.connectionString || undefined
-      };
-
-      this.tenantRepository.createTenant(createRequest).subscribe({
-        next: (response: Response<Tenant>) => {
-          this.messages.set([{
-            severity: 'success',
-            content: 'Tenant created successfully'
-          }]);
-          
-          setTimeout(() => {
-            this.router.navigate(['/management/tenants']);
-          }, 2000);
-        },
-        error: (error) => {
-          this.messages.set([{
-            severity: 'error',
-            content: 'Error creating tenant'
-          }]);
-          this.loading.set(false);
-        }
-      });
+      
+      if (this.isEditMode()) {
+        this.updateTenant(formValue);
+      } else {
+        this.createTenant(formValue);
+      }
     } else {
       this.markFormGroupTouched();
       this.messages.set([{
@@ -96,6 +119,72 @@ export class TenantCreateComponent implements OnInit {
         content: 'Please fill in all required fields correctly'
       }]);
     }
+  }
+
+  private createTenant(formValue: any): void {
+    const createRequest: CreateTenantRequest = {
+      identifier: formValue.identifier,
+      name: formValue.name,
+      email: formValue.email,
+      firstName: formValue.firstName,
+      lastName: formValue.lastName,
+      expirationDate: new Date(formValue.expirationDate),
+      isActive: formValue.isActive,
+      connectionString: formValue.connectionString || undefined
+    };
+
+    this.tenantRepository.createTenant(createRequest).subscribe({
+      next: (response: Response<Tenant>) => {
+        this.messages.set([{
+          severity: 'success',
+          content: 'Tenant created successfully'
+        }]);
+        
+        setTimeout(() => {
+          this.router.navigate(['/management/tenants']);
+        }, 2000);
+      },
+      error: (error) => {
+        this.messages.set([{
+          severity: 'error',
+          content: 'Error creating tenant'
+        }]);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  private updateTenant(formValue: any): void {
+    const updateRequest: UpdateTenantRequest = {
+      identifier: formValue.identifier,
+      name: formValue.name,
+      email: formValue.email,
+      firstName: formValue.firstName,
+      lastName: formValue.lastName,
+      expirationDate: new Date(formValue.expirationDate),
+      isActive: formValue.isActive,
+      connectionString: formValue.connectionString || undefined
+    };
+
+    this.tenantRepository.updateTenant(this.tenantId()!, updateRequest).subscribe({
+      next: (response: Response<Tenant>) => {
+        this.messages.set([{
+          severity: 'success',
+          content: 'Tenant updated successfully'
+        }]);
+        
+        setTimeout(() => {
+          this.router.navigate(['/management/tenants']);
+        }, 2000);
+      },
+      error: (error) => {
+        this.messages.set([{
+          severity: 'error',
+          content: 'Error updating tenant'
+        }]);
+        this.loading.set(false);
+      }
+    });
   }
 
   onCancel(): void {

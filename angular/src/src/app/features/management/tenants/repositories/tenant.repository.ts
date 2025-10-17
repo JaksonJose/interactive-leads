@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Response } from '@core/responses/response';
-import { Tenant, CreateTenantRequest, UpdateSubscriptionRequest } from '@feature/management/tenants/models';
+import { Tenant, CreateTenantRequest, UpdateTenantRequest, UpdateSubscriptionRequest } from '@feature/management/tenants/models';
 import { environment } from '@environment/environment';
 
 @Injectable({
@@ -50,6 +50,14 @@ export class TenantRepository {
    */
   deactivateTenant(tenantId: string): Observable<Response<void>> {
     return this.http.put<Response<void>>(`${this.baseUrl}/${tenantId}/deactivate`, {});
+  }
+
+  /**
+   * Updates an existing tenant.
+   * Requires Permission.Tenants.Update
+   */
+  updateTenant(tenantId: string, request: UpdateTenantRequest): Observable<Response<Tenant>> {
+    return this.http.put<Response<Tenant>>(`${this.baseUrl}/${tenantId}`, request);
   }
 
   /**

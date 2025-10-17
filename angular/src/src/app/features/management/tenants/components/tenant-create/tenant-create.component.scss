@@ -1,15 +1,18 @@
 .tenant-create-container {
+  height: 100vh;
+  overflow-y: auto;
   padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 100%;
+  width: 100%;
 
   .header-section {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem auto;
     padding-bottom: 1rem;
     border-bottom: 1px solid #e9ecef;
+    max-width: 800px;
 
     .title-section {
       h1 {
@@ -27,11 +30,41 @@
     }
   }
 
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    max-width: 800px;
+
+    .loading-content {
+      text-align: center;
+      color: #6c757d;
+
+      i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+    }
+  }
+
   .form-container {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 2rem;
+    margin: 0 auto 3rem auto;
+    max-width: 800px;
 
     .form-row {
       display: grid;
@@ -52,47 +85,95 @@
         grid-column: 1 / -1;
       }
 
-      .form-label {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-      }
+      // PrimeNG Input styles
+      ::ng-deep {
 
-      .form-control {
-        padding: 0.75rem;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        font-size: 1rem;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-
-        &:focus {
-          outline: none;
-          border-color: #007bff;
-          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        &.is-invalid {
-          border-color: #dc3545;
+        .p-inputtext,
+        .p-inputtextarea {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #ced4da;
+          border-radius: 4px;
+          font-size: 1rem;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
           &:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+          }
+
+          &.p-invalid {
             border-color: #dc3545;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+
+            &:focus {
+              border-color: #dc3545;
+              box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+            }
+          }
+
+          &[readonly] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
           }
         }
 
-        &::placeholder {
-          color: #6c757d;
-          opacity: 1;
+        .p-inputtextarea {
+          resize: vertical;
+          min-height: 80px;
+        }
+
+        .p-datepicker {
+          width: 100%;
+
+          .p-inputtext {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+            &:focus {
+              outline: none;
+              border-color: #007bff;
+              box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+
+            &.p-invalid {
+              border-color: #dc3545;
+
+              &:focus {
+                border-color: #dc3545;
+                box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+              }
+            }
+          }
+
+          .p-datepicker-trigger {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            border-radius: 0 4px 4px 0;
+            border-left: none;
+
+            &:hover {
+              background-color: #0056b3;
+              border-color: #0056b3;
+            }
+          }
+        }
+
+        .p-checkbox {
+          .p-checkbox-box {
+            width: 1rem;
+            height: 1rem;
+          }
         }
       }
 
-      textarea.form-control {
-        resize: vertical;
-        min-height: 80px;
-      }
-
-      .invalid-feedback {
+      .p-error {
         display: block;
         width: 100%;
         margin-top: 0.25rem;
@@ -100,28 +181,18 @@
         color: #dc3545;
       }
 
-      .form-text {
+      .p-text-secondary {
         margin-top: 0.25rem;
         font-size: 0.875rem;
         color: #6c757d;
       }
 
-      .form-check {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
-        .form-check-input {
-          width: 1rem;
-          height: 1rem;
-          margin: 0;
-        }
-
-        .form-check-label {
-          margin: 0;
-          font-weight: 500;
-          color: #2c3e50;
-        }
+      .p-label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
       }
     }
 
@@ -135,43 +206,6 @@
     }
   }
 
-  .btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    &.btn-primary {
-      background-color: #007bff;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background-color: #0056b3;
-      }
-    }
-
-    &.btn-secondary {
-      background-color: #6c757d;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background-color: #545b62;
-      }
-    }
-  }
-
   .text-muted {
     color: #6c757d;
   }
@@ -181,19 +215,30 @@
 @media (max-width: 768px) {
   .tenant-create-container {
     padding: 1rem;
+    height: 100vh;
+    overflow-y: auto;
 
     .header-section {
       flex-direction: column;
       gap: 1rem;
       align-items: stretch;
+      margin: 0 auto 1rem auto;
+      max-width: 100%;
 
       .title-section {
         text-align: center;
       }
     }
 
+    .loading-container {
+      margin: 0 auto;
+      max-width: 100%;
+    }
+
     .form-container {
       padding: 1rem;
+      margin: 0 auto 1rem auto;
+      max-width: 100%;
 
       .form-row {
         grid-template-columns: 1fr;
@@ -204,7 +249,7 @@
         flex-direction: column-reverse;
         gap: 0.75rem;
 
-        .btn {
+        ::ng-deep .p-button {
           width: 100%;
           justify-content: center;
         }
@@ -213,29 +258,3 @@
   }
 }
 
-// PrimeNG Calendar Customizations
-::ng-deep {
-  .p-calendar {
-    width: 100%;
-
-    .p-inputtext {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      font-size: 1rem;
-
-      &:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-      }
-    }
-
-    .p-datepicker-trigger {
-      background-color: #007bff;
-      border-color: #007bff;
-      color: white;
-      border-radius: 0 4px 4px 0;
-    }
-  }
-}
