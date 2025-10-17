@@ -1,10 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
-import { Response } from '@core/responses/response';
-import { LoginModel, TokenResponse } from '@authentication/models';
-import { Observable } from 'rxjs';
-import { AuthRepository } from '../repositories/auth.repository';
+import { TokenResponse } from '@authentication/models';
 import { TokenStorageService } from './token-storage.service';
 
 interface ExtendedJwtPayload extends JwtPayload {
@@ -16,12 +13,7 @@ interface ExtendedJwtPayload extends JwtPayload {
   providedIn: 'root'
 })
 export class AuthService {
-  private authRepository = inject(AuthRepository);
   private tokenStorage = inject(TokenStorageService);
-
-  public AuthenticateUser(login: LoginModel): Observable<Response<TokenResponse>> {
-    return this.authRepository.autenticarUsuario(login);
-  }
 
   /**
    * Obtain the JWT token of the logged user

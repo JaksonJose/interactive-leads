@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { AuthService } from '@authentication/services/auth.service';
+import { AuthRepository } from '@authentication/repositories/auth.repository';
 import { LoginModel, TokenResponse } from '@authentication/models';
 import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
@@ -28,6 +29,7 @@ export class LoginComponent {
   loading = signal<boolean>(false);
 
   authService = inject(AuthService);
+  authRepository = inject(AuthRepository);
   router = inject(Router);
   fb = inject(FormBuilder);
   translate = inject(TranslateService);
@@ -48,7 +50,7 @@ export class LoginComponent {
       login.userName = this.loginForm.get('username')?.value;
       login.password = this.loginForm.get('password')?.value;
 
-      this.authService.AuthenticateUser(login).subscribe({
+      this.authRepository.autenticarUsuario(login).subscribe({
         next: (response: Response<TokenResponse>) => {
           this.loading.set(false);
           
