@@ -1,21 +1,19 @@
-import { Directive, Input, TemplateRef, ViewContainerRef,OnInit } from '@angular/core';
+import { Directive, Input, TemplateRef, ViewContainerRef, OnInit, inject } from '@angular/core';
 import { AuthService } from '@authentication/services/auth.service';
 
 /**
  * Structural directive that conditionally renders content based on user permissions.
- * Usage: *hasPermission="['Permission.Tenants.Create']" or *hasPermission="'Permission.Tenants.Read'"
+ * Usage: *appHasPermission="['Permission.Tenants.Create']" or *appHasPermission="'Permission.Tenants.Read'"
  */
 @Directive({
-  selector: '[hasPermission]'
+  selector: '[appHasPermission]'
 })
 export class HasPermissionDirective implements OnInit {
   @Input() hasPermission!: string | string[];
 
-  constructor(
-    private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef,
-    private authService: AuthService
-  ) {}
+  private readonly templateRef = inject(TemplateRef<any>);
+  private readonly viewContainer = inject(ViewContainerRef);
+  private readonly authService = inject(AuthService);
 
   ngOnInit() {
     if (!this.hasPermission) {

@@ -16,7 +16,7 @@
       </button>
       
       <button 
-        *hasPermission="['Permission.Tenants.Update']"
+        *appHasPermission="['Permission.Tenants.Update']"
         type="button" 
         class="btn btn-primary"
         (click)="editTenant()">
@@ -157,7 +157,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="action-buttons" *hasPermission="['Permission.Tenants.Update']">
+    <div class="action-buttons" *appHasPermission="['Permission.Tenants.Update']">
       <button 
         *ngIf="!tenant()?.isActive"
         type="button"

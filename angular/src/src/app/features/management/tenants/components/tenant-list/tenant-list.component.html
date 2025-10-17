@@ -8,7 +8,7 @@
     
     <div class="actions-section">
       <button 
-        *hasPermission="['Permission.Tenants.Create']"
+        *appHasPermission="['Permission.Tenants.Create']"
         type="button" 
         class="btn btn-primary"
         (click)="createTenant()">
@@ -118,7 +118,7 @@
               </button>
               
               <button 
-                *hasPermission="['Permission.Tenants.Update']"
+                *appHasPermission="['Permission.Tenants.Update']"
                 type="button"
                 class="btn btn-sm btn-outline-secondary"
                 (click)="editTenant(tenant)"
@@ -126,7 +126,7 @@
                 <i class="pi pi-pencil"></i>
               </button>
               
-              <ng-container *hasPermission="['Permission.Tenants.Update']">
+              <ng-container *appHasPermission="['Permission.Tenants.Update']">
                 <button 
                   *ngIf="!tenant.isActive"
                   type="button"
@@ -170,7 +170,7 @@
       <h3>{{ 'tenantManagement.noTenantsYet' | translate }}</h3>
       <p>{{ 'tenantManagement.getStartedByCreatingTenant' | translate }}</p>
       <button 
-        *hasPermission="['Permission.Tenants.Create']"
+        *appHasPermission="['Permission.Tenants.Create']"
         type="button" 
         class="btn btn-primary"
         (click)="createTenant()">
