@@ -6,24 +6,25 @@ import { AuthService } from '@authentication/services/auth.service';
  * Usage: *appHasPermission="['Permission.Tenants.Create']" or *appHasPermission="'Permission.Tenants.Read'"
  */
 @Directive({
-  selector: '[appHasPermission]'
+  selector: '[appHasPermission]',
+  standalone: true
 })
 export class HasPermissionDirective implements OnInit {
-  @Input() hasPermission!: string | string[];
+  @Input() appHasPermission!: string | string[];
 
-  private readonly templateRef = inject(TemplateRef<any>);
+  private readonly templateRef = inject(TemplateRef<unknown>);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly authService = inject(AuthService);
 
   ngOnInit() {
-    if (!this.hasPermission) {
+    if (!this.appHasPermission) {
       this.viewContainer.clear();
       return;
     }
 
-    const permissions = Array.isArray(this.hasPermission) 
-      ? this.hasPermission 
-      : [this.hasPermission];
+    const permissions = Array.isArray(this.appHasPermission) 
+      ? this.appHasPermission 
+      : [this.appHasPermission];
 
     const hasPermission = this.authService.hasAnyPermission(permissions);
 

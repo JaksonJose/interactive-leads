@@ -7,8 +7,7 @@ import { TenantService } from '../../services';
 import { TenantRepository } from '../../repositories';
 import { Tenant } from '../../models';
 import { Response } from '@core/responses/response';
-import { PRIME_NG_MODULES } from '@shared/primeng-imports';
-import { HasPermissionDirective } from '@shared/directives';
+import { SHARED_IMPORTS } from '@shared/shared-imports';
 
 @Component({
   selector: 'app-tenant-details',
@@ -16,8 +15,7 @@ import { HasPermissionDirective } from '@shared/directives';
   imports: [
     CommonModule,
     TranslatePipe,
-    HasPermissionDirective,
-    ...PRIME_NG_MODULES
+    ...SHARED_IMPORTS
   ],
   templateUrl: './tenant-details.component.html',
   styleUrls: ['./tenant-details.component.scss']
@@ -55,7 +53,7 @@ export class TenantDetailsComponent implements OnInit {
         this.tenant.set(response.data!);
         this.loading.set(false);
       },
-      error: (error) => {
+      error: () => {
         this.messages.set([{
           severity: 'error',
           content: 'Error loading tenant details'

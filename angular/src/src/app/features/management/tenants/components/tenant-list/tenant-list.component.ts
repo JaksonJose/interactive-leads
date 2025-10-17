@@ -8,8 +8,8 @@ import { TenantService } from '../../services';
 import { TenantRepository } from '../../repositories';
 import { Tenant } from '../../models';
 import { Response } from '@core/responses/response';
-import { PRIME_NG_MODULES } from '@shared/primeng-imports';
-import { HasPermissionDirective } from '@shared/directives';
+import { SHARED_IMPORTS } from '@shared/shared-imports';
+import { AuthService } from '@authentication/services/auth.service';
 
 @Component({
   selector: 'app-tenant-list',
@@ -18,8 +18,7 @@ import { HasPermissionDirective } from '@shared/directives';
     CommonModule,
     FormsModule,
     TranslatePipe,
-    HasPermissionDirective,
-    ...PRIME_NG_MODULES
+    ...SHARED_IMPORTS
   ],
   templateUrl: './tenant-list.component.html',
   styleUrls: ['./tenant-list.component.scss']
@@ -28,6 +27,7 @@ export class TenantListComponent implements OnInit {
   private readonly tenantService = inject(TenantService);
   private readonly tenantRepository = inject(TenantRepository);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   tenants = signal<Tenant[]>([]);
   loading = signal<boolean>(false);
@@ -126,5 +126,9 @@ export class TenantListComponent implements OnInit {
     }
     
     return 'success';
+  }
+
+  hasPermission(permissions: string[]): boolean {
+    return this.authService.hasAnyPermission(permissions);
   }
 }

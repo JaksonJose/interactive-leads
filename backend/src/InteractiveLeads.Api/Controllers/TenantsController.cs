@@ -127,6 +127,7 @@ namespace InteractiveLeads.Api.Controllers
             };
 
             var response = await Sender.Send(new GetTenantsQuery { Pagination = pagination });
+
             return Ok(response);
         }
     }
