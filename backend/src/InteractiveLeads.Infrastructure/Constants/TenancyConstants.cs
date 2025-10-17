@@ -21,7 +21,7 @@
         /// </remarks>
         public const string DefaultPassword = "P@ssw0rd@123";
 
-        /// <summary>
+        /// <summary>f
         /// Default first name for newly created admin users.
         /// </summary>
         public const string FirstName = "Jakson";

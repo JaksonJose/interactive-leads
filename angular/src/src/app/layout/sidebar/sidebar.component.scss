@@ -1,0 +1,125 @@
+:host {
+  height: 100%;
+
+  .sidebar {
+    width: 180px;
+    height: 100%;
+    transition: width 0.3s;
+    background-color: var(--p-surface-700);
+    border-right: 1px solid var(--p-surface-600);
+    color: var(--p-surface-0);
+    overflow: auto;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+
+    &.collapsed {
+      width: 60px;
+    }
+
+    & ul {
+      box-sizing: border-box;
+      list-style: none;
+      padding-block: 0;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      padding: 0;
+      width: 100%;
+      overflow: auto;
+    }
+
+    & li {
+      align-items: start;
+      justify-content: start;
+      padding: 0;
+      cursor: pointer;
+
+      white-space: nowrap;
+      overflow: hidden;
+
+      & > .sidebar-menu-item {
+        display: flex;
+        padding: 12px 12px;
+        width: calc(100% - 12px);
+        margin: 4px 8px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+      }
+
+      // sub-item
+      & > ul {
+        margin-top: 4px;
+        
+        & > li {
+          & > .sidebar-menu-item {
+            padding-left: 24px;
+            font-size: 0.85rem;
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+
+    // Selected item
+    & .sidebar-menu-item.active,
+    & .sidebar-menu-item.p-highlight {
+      background-color: var(--p-primary-100);
+      color: var(--p-primary-700);
+      font-weight: 500;
+      border: 1px solid var(--p-primary-200);
+      opacity: 1 !important;
+    }
+
+    & .sidebar-menu-item:hover {
+      background-color: var(--p-surface-600);
+      color: var(--p-surface-0);
+      transform: translateX(2px);
+      opacity: 1;
+    }
+
+    // Submenu specific styles
+    & > ul > li > .sidebar-menu-item.active,
+    & > ul > li > .sidebar-menu-item.p-highlight {
+      background-color: var(--p-primary-50);
+      opacity: 1 !important;
+    }
+
+    & > ul > li > .sidebar-menu-item:hover {
+      opacity: 1;
+    }
+
+    & li i {
+      margin-right: 12px;
+      font-size: 1.1rem;
+    }
+
+    & li .chevron-icon {
+      transition: transform 0.3s ease;
+      font-size: 0.8rem !important;
+      margin-right: 0 !important;
+    }
+
+    &.collapsed {
+      & li i {
+        margin-right: 0;
+        font-size: 1.1rem;
+      }
+
+      & .sidebar-menu-item {
+        justify-content: center;
+        padding: 12px;
+        width: calc(100% - 16px);
+      }
+    }
+
+    // Add padding to the sidebar content
+    & ul {
+      padding: 12px 0;
+    }
+
+    // Improve text styling
+    & .p-menuitem-text {
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+  }
+}

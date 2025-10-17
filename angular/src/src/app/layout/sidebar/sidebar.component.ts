@@ -1,18 +1,32 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { NgClass } from '@angular/common';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
-import { MenuItem } from 'primeng/api';
+import { MenuItemInterface } from '../../shared/interfaces/menu-item.interface';
 import { AuthService } from '../../authentication/services/auth.service';
 
 @Component({
-  selector: 'app-bar',
-  templateUrl: './app-bar.component.html',
-  styleUrls: ['./app-bar.component.scss'],
-  imports: [...SHARED_IMPORTS]
+  selector: 'app-sidebar',
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss'],
+  imports: [
+    ...SHARED_IMPORTS,
+    NgClass,
+    TranslatePipe,
+    RouterLink,
+    RouterLinkActive,
+  ]
 })
-export class AppBarComponent implements OnInit {
+export class SidebarComponent implements OnInit {
+  @Input() collapsed = true;
+  @Output() collapsedChange = new EventEmitter<boolean>();
+
+  currentRoute = '';
+
   // TODO: Move to a file
-  allMenuItems = [
+  allMenuItems: MenuItemInterface[] = [
     {
       label: 'menu.dashboard',
       icon: 'pi pi-th-large',
@@ -67,7 +81,7 @@ export class AppBarComponent implements OnInit {
     },
     {
       label: 'menu.admin',
-      icon: 'pi-cog',
+      icon: 'pi pi-cog',
       expanded: false,
       permissions: ['Permission.Users.Read'], // Admin section requires user management permission
       children: [
@@ -93,24 +107,19 @@ export class AppBarComponent implements OnInit {
     }
   ];
 
-  menuItems: any[] = [];
+  menuItems: MenuItemInterface[] = [];
 
-  userMenuItems: MenuItem[] = [
-    {
-      label: 'Edit Profile',
-      icon: 'pi pi-user-edit',
-      //command: () => this.onEditProfile()
-    },
-    {
-      label: 'Logout',
-      icon: 'pi pi-sign-out',
-      //command: () => this.onLogout()
-    }
-  ];
-
+  router = inject(Router);
   authService = inject(AuthService);
 
   ngOnInit(): void {
+    // It always updates the current route when navigation changes
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.currentRoute = event.urlAfterRedirects;
+      }
+    });
+
     // Filter menu items based on user permissions
     this.filterMenuItemsByPermissions();
   }
@@ -146,5 +155,25 @@ export class AppBarComponent implements OnInit {
 
       return hasPermission;
     });
+  }
+
+  isActive(route: string | undefined): boolean {
+    return this.currentRoute === route;
+  }
+
+  toggleSubMenu(item: MenuItemInterface) {
+    if (item.expanded !== undefined) {
+      item.expanded = !item.expanded;
+    }
+  }
+
+  onMouseEnter() {
+    this.collapsed = false;
+    this.collapsedChange.emit(false);
+  }
+
+  onMouseLeave() {
+    this.collapsed = true;
+    this.collapsedChange.emit(true);
   }
 }

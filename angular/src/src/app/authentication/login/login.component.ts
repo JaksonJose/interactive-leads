@@ -51,11 +51,12 @@ export class LoginComponent {
       this.authService.AuthenticateUser(login).subscribe({
         next: (response: Response<TokenResponse>) => {
           this.loading.set(false);
-          if (response.isSuccessful && response.data) {
+          
+          if (response.data) {
             this.authService.storeTokens(response.data);
             this.router.navigate(['/']);          
           } else {
-            const errorCode = response.messages?.[0]?.code || 'LOGIN_ERROR';
+            const errorCode = response.messages?.[0]?.code || 'auth.login_error';
             const errorMessage = this.translate.instant(errorCode) || 'Login error';
             this.messages.set([{
               severity: 'error',
@@ -65,7 +66,7 @@ export class LoginComponent {
         },
         error: (error) => {
           this.loading.set(false);
-          const errorCode = error.error?.messages?.[0]?.code || 'CONNECTION_ERROR';
+          const errorCode = error.error?.messages?.[0]?.code || 'general.connection_error';
             const errorMessage = this.translate.instant(errorCode) || 'Connection error';
           this.messages.set([{
             severity: 'error',

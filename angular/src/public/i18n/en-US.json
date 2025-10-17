@@ -38,7 +38,8 @@
     "user_not_active": "User not active. Contact administrator.",
     "subscription_expired": "Subscription has expired. Contact administrator.",
     "authentication_failed": "Authentication failed.",
-    "invalid_token": "Invalid token provided. Failed to generate new token."
+    "invalid_token": "Invalid token provided. Failed to generate new token.",
+    "login_error": "Login error"
   },
   "tenant": {
     "subscription_not_active": "Tenant subscription is not active. Contact administrator."
@@ -48,7 +49,8 @@
     "resource_not_found": "Resource not found",
     "access_denied": "Access denied",
     "unauthorized": "Unauthorized",
-    "something_went_wrong": "Something went wrong"
+    "something_went_wrong": "Something went wrong",
+    "connection_error": "Connection error"
   },
   "identity": {
     "permission_denied": "Identity error"

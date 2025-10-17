@@ -38,7 +38,8 @@
     "user_not_active": "Usuário inativo. Entre em contato com o administrador.",
     "subscription_expired": "Assinatura expirada. Entre em contato com o administrador.",
     "authentication_failed": "Falha na autenticação.",
-    "invalid_token": "Token inválido fornecido. Falha ao gerar novo token."
+    "invalid_token": "Token inválido fornecido. Falha ao gerar novo token.",
+    "login_error": "Erro no login"
   },
   "tenant": {
     "subscription_not_active": "Assinatura do tenant não está ativa. Entre em contato com o administrador."
@@ -48,7 +49,8 @@
     "resource_not_found": "Recurso não encontrado",
     "access_denied": "Acesso negado",
     "unauthorized": "Não autorizado",
-    "something_went_wrong": "Algo deu errado"
+    "something_went_wrong": "Algo deu errado",
+    "connection_error": "Erro de conexão"
   },
   "identity": {
     "permission_denied": "Erro de identidade"
