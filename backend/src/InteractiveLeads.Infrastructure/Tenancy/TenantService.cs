@@ -11,6 +11,7 @@ using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
 
 namespace InteractiveLeads.Infrastructure.Tenancy
 {
@@ -55,11 +56,14 @@ namespace InteractiveLeads.Infrastructure.Tenancy
 
         public async Task<ResultResponse> CreateTenantAsync(CreateTenantRequest createTenantRequest, CancellationToken ct)
         {
+            // Generate unique identifier based on company name
+            string uniqueIdentifier = await GenerateUniqueTenantIdentifier(createTenantRequest.Name);
+
             var newTenant = new InteractiveTenantInfo
             {
-                Id = createTenantRequest.Identifier,
+                Id = uniqueIdentifier,
                 Name = createTenantRequest.Name,
-                Identifier = createTenantRequest.Identifier,
+                Identifier = uniqueIdentifier,
                 IsActive = createTenantRequest.IsActive,
                 ConnectionString = createTenantRequest.ConnectionString,
                 Email = createTenantRequest.Email,
@@ -69,7 +73,12 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             };
 
             bool isSuccess = await _tenantStore.TryAddAsync(newTenant);
-            //if (!isSuccess) throw custom exception
+            if (!isSuccess)
+            {
+                var errorResponse = new ResultResponse();
+                errorResponse.AddErrorMessage("Failed to create tenant. Identifier may already exist.");
+                return errorResponse;
+            }
 
             // Seeding tenant data
             await using var scope = _serviceProvider.CreateAsyncScope();
@@ -122,15 +131,15 @@ namespace InteractiveLeads.Infrastructure.Tenancy
                 .Where(t => t.Identifier != TenancyConstants.Root.Id)
                 .CountAsync(ct);
 
-            // Get all tenants and filter out root tenant, then apply pagination manually
-            var allTenants = await _tenantStore.GetAllAsync();
-            var filteredTenants = allTenants
+            // Get paginated tenants directly from database, excluding root tenant
+            var paginatedTenants = await _tenantDbContext.TenantInfo
                 .Where(t => t.Identifier != TenancyConstants.Root.Id)
+                .OrderBy(t => t.Name) // Add consistent ordering
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
-                .ToList();
+                .ToListAsync(ct);
             
-            var tenants = filteredTenants.Adapt<List<TenantResponse>>();
+            var tenants = paginatedTenants.Adapt<List<TenantResponse>>();
 
             var response = new ListResponse<TenantResponse>(tenants, totalTenants);
             response.AddSuccessMessage("Tenants retrieved successfully", "tenants.retrieved_successfully");
@@ -180,6 +189,67 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             var response = new ResultResponse();
             response.AddSuccessMessage("Tenant subscription updated successfully", "tenant.subscription_updated_successfully");
             return response;
+        }
+
+        /// <summary>
+        /// Generates a unique identifier for the tenant based on the company name.
+        /// Combines the name slug with a unique identifier (GUID or number) to ensure uniqueness.
+        /// </summary>
+        /// <param name="companyName">Company name</param>
+        /// <returns>Unique identifier for the tenant</returns>
+        private async Task<string> GenerateUniqueTenantIdentifier(string companyName)
+        {
+            // Generate slug based on company name
+            string baseSlug = GenerateSlugFromCompanyName(companyName);
+
+            return await GenerateUniqueIdentifier(baseSlug);
+        }
+
+        /// <summary>
+        /// Converts the company name into a valid slug for identifier.
+        /// Takes only the first word of the company name for simplicity.
+        /// </summary>
+        /// <param name="companyName">Company name</param>
+        /// <returns>Slug generated from the first word</returns>
+        private static string GenerateSlugFromCompanyName(string companyName)
+        {
+            // Get the first word of the company name
+            string firstWord = companyName
+                .ToLowerInvariant()
+                .Trim()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .First();
+
+            // Clean up the first word - keep only letters and numbers
+            string cleaned = Regex.Replace(firstWord, @"[^a-z0-9]", "");
+            
+            // Limit size to 20 characters (leaving room for timestamp)
+            return cleaned.Length > 20 ? cleaned.Substring(0, 20) : cleaned;
+        }
+
+        /// <summary>
+        /// Generates a unique identifier by adding a Unix timestamp suffix to the base slug.
+        /// Uses milliseconds for maximum uniqueness and collision avoidance.
+        /// </summary>
+        /// <param name="baseSlug">Base slug</param>
+        /// <returns>Unique identifier</returns>
+        private async Task<string> GenerateUniqueIdentifier(string baseSlug)
+        {
+            // Use Unix timestamp in milliseconds for maximum uniqueness
+            long unixTimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            string identifierWithTimestamp = $"{baseSlug}-{unixTimestampMs}";
+            
+            // Verify uniqueness (practically impossible to conflict with millisecond precision)
+            var existingTenant = await _tenantStore.TryGetAsync(identifierWithTimestamp);
+            if (existingTenant == null)
+            {
+                return identifierWithTimestamp;
+            }
+
+            // If somehow there's a conflict (extremely rare), add a small random number
+            // This should never happen with millisecond precision, but provides extra safety
+            int randomSuffix = new Random().Next(100, 999);
+            return $"{baseSlug}-{unixTimestampMs}-{randomSuffix}";
         }
     }
 }

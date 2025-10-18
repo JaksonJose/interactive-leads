@@ -19,14 +19,6 @@ namespace InteractiveLeads.Application.Feature.Tenancy.Validators
 
             When(request => request.CreateTenant != null, () =>
             {
-                RuleFor(request => request.CreateTenant.Identifier)
-                    .NotEmpty()
-                    .WithMessage("tenancy.identifier_required:Tenant identifier is required")
-                    .MaximumLength(50)
-                    .WithMessage("tenancy.identifier_max_length:Identifier must have a maximum of 50 characters")
-                    .Matches("^[a-zA-Z0-9_-]+$")
-                    .WithMessage("tenancy.identifier_format:Identifier must contain only letters, numbers, hyphens and underscores");
-
                 RuleFor(request => request.CreateTenant.Name)
                     .NotEmpty()
                     .WithMessage("tenancy.name_required:Tenant name is required")

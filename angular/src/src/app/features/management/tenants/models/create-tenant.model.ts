@@ -2,9 +2,6 @@
  * Request model for creating a new tenant in the multi-tenant system.
  */
 export interface CreateTenantRequest {
-  /** The unique identifier for the tenant. */
-  identifier: string;
-
   /** The display name of the tenant organization. */
   name: string;
 

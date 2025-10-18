@@ -16,8 +16,12 @@ export class TenantRepository {
    * Retrieves all tenants in the system.
    * Requires Permission.Tenants.Read
    */
-  getAllTenants(): Observable<Response<Tenant[]>> {
-    return this.http.get<Response<Tenant[]>>(`${this.baseUrl}/all`);
+  getAllTenants(page: number = 1, pageSize: number = 10): Observable<Response<Tenant[]>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      pageSize: pageSize.toString()
+    });
+    return this.http.get<Response<Tenant[]>>(`${this.baseUrl}/all?${params.toString()}`);
   }
 
   /**

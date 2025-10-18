@@ -6,13 +6,10 @@
     /// <remarks>
     /// Contains all necessary information to set up a new tenant including
     /// identification details, database connection, and admin user information.
+    /// The tenant identifier will be generated automatically based on the company name.
     /// </remarks>
     public class CreateTenantRequest
     {
-        /// <summary>
-        /// Gets or sets the unique identifier for the tenant.
-        /// </summary>
-        public string Identifier { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the display name of the tenant organization.

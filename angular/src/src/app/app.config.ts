@@ -96,7 +96,7 @@ export const appConfig: ApplicationConfig = {
     }),
     providePrimeNG({
       theme: {
-      preset: MyPreset,
+        preset: MyPreset,
         options: {
           darkModeSelector: false,
           prefix: 'p'

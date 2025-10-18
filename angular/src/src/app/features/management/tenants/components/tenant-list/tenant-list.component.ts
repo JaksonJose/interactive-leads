@@ -43,10 +43,14 @@ export class TenantListComponent implements OnInit {
 
     this.tenantRepository.getAllTenants().subscribe({
       next: (response: Response<Tenant[]>) => {
-        this.tenants.set(response.data || []);
+        const tenantsData = response.items || [];
+
+        const flatTenants = Array.isArray(tenantsData) ? tenantsData.flat() : [];
+        this.tenants.set(flatTenants as Tenant[]);
         this.loading.set(false);
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error loading tenants:', error);
         this.messages.set([{
           severity: 'error',
           content: 'Error loading tenants'

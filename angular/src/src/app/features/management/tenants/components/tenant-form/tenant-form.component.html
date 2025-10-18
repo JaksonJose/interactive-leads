@@ -15,14 +15,6 @@
     </p-button>
   </div>
 
-  <!-- Messages -->
-  <p-message
-    *ngFor="let message of messages()"
-    [severity]="message.severity"
-    [closable]="true"
-    (onClose)="messages.set([])">
-    {{ message.content }}
-  </p-message>
 
   <!-- Loading State -->
   <div *ngIf="loading() && isEditMode()" class="loading-container">
@@ -36,27 +28,6 @@
   <div class="form-container" *ngIf="!loading() || !isEditMode()">
     <form [formGroup]="tenantForm" (ngSubmit)="onSubmit()">
       <div class="form-row">
-        <!-- Tenant Identifier -->
-        <div class="form-group">
-          <label for="identifier" class="p-label">
-            {{ 'tenantManagement.tenantIdentifier' | translate }} *
-          </label>
-          <input
-            type="text"
-            id="identifier"
-            pInputText
-            formControlName="identifier"
-            [readonly]="isEditMode()"
-            placeholder="Digite o identificador do tenant"
-            [class.p-invalid]="isFieldInvalid('identifier')">
-          <div *ngIf="isFieldInvalid('identifier')" class="p-error mt-1">
-            {{ getFieldError('identifier') }}
-          </div>
-          <small class="p-text-secondary mt-1">
-            {{ isEditMode() ? ('tenantManagement.identifierCannotBeChanged' | translate) : ('tenantManagement.identifierHelpText' | translate) }}
-          </small>
-        </div>
-
         <!-- Tenant Name -->
         <div class="form-group">
           <label for="name" class="p-label">
@@ -86,7 +57,7 @@
             id="firstName"
             pInputText
             formControlName="firstName"
-            placeholder="Digite o nome do administrador"
+            placeholder="Digite o nome do administrador da empresa"
             [class.p-invalid]="isFieldInvalid('firstName')">
           <div *ngIf="isFieldInvalid('firstName')" class="p-error mt-1">
             {{ getFieldError('firstName') }}
@@ -103,7 +74,7 @@
             id="lastName"
             pInputText
             formControlName="lastName"
-            placeholder="Digite o sobrenome do administrador"
+            placeholder="Digite o sobrenome do administrador da empresa"
             [class.p-invalid]="isFieldInvalid('lastName')">
           <div *ngIf="isFieldInvalid('lastName')" class="p-error mt-1">
             {{ getFieldError('lastName') }}
@@ -122,7 +93,7 @@
             id="email"
             pInputText
             formControlName="email"
-            placeholder="Digite o email do administrador"
+            placeholder="Digite o email do administrador da empresa"
             [class.p-invalid]="isFieldInvalid('email')">
           <div *ngIf="isFieldInvalid('email')" class="p-error mt-1">
             {{ getFieldError('email') }}

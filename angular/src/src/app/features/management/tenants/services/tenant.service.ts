@@ -25,14 +25,14 @@ export class TenantService {
    */
   getTenantStatusDescription(tenant: Tenant): string {
     if (!tenant.isActive) {
-      return 'Inactive';
+      return 'tenantManagement.statusLabels.inactive';
     }
     
     if (this.isTenantExpired(tenant)) {
-      return 'Expired';
+      return 'tenantManagement.statusLabels.expired';
     }
     
-    return 'Active';
+    return 'tenantManagement.statusLabels.active';
   }
 
   /**

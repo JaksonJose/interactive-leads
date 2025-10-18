@@ -39,17 +39,17 @@
   }
 
   <!-- Tenants Table -->
-  @if (!loading() && tenants().length > 0) {
+  @if (!loading()) {
     <div class="table-container">
     <p-table 
       [value]="tenants()" 
       [paginator]="true" 
       [rows]="10"
       [showCurrentPageReport]="true"
-      currentPageReportTemplate="{{ 'tenantManagement.showingResults' | translate }}"
+      currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} resultados"
       [globalFilterFields]="['name', 'email', 'firstName', 'lastName']"
-      class="p-datatable-sm"
-      styleClass="p-datatable-striped">
+      styleClass="p-datatable-striped"
+      #dt>
       
       <ng-template pTemplate="caption">
         <div class="table-header d-flex justify-content-between align-items-center p-3">
@@ -60,9 +60,7 @@
               pInputText 
               type="text" 
               placeholder="{{ 'tenantManagement.searchTenants' | translate }}"
-              (input)="$event.target && $any($event.target).value && $any($event.target).value.length > 0 ? $any($event.target).value : ''"
-              #searchInput
-              class="form-control">
+              (input)="dt.filterGlobal($any($event.target).value, 'contains')">
           </span>
         </div>
       </ng-template>
@@ -109,9 +107,8 @@
             </span>
           </td>
           <td>
-            <p-tag 
-              [value]="getTenantStatusDescription(tenant)"
-              [severity]="getStatusSeverity(tenant)">
+            <p-tag [severity]="getStatusSeverity(tenant)">
+              {{ getTenantStatusDescription(tenant) | translate }}
             </p-tag>
           </td>
           <td>
@@ -176,23 +173,6 @@
         </tr>
       </ng-template>
     </p-table>
-    </div>
-  }
-
-  <!-- Empty State -->
-  @if (!loading() && tenants().length === 0) {
-    <div class="empty-container">
-    <div class="empty-state text-center p-5">
-      <i class="pi pi-building mb-4" style="font-size: 4rem; color: #ccc;"></i>
-      <h3 class="mb-3">{{ 'tenantManagement.noTenantsYet' | translate }}</h3>
-      <p class="text-muted mb-4">{{ 'tenantManagement.getStartedByCreatingTenant' | translate }}</p>
-      <p-button
-        *appHasPermission="['Permission.Tenants.Create']"
-        [label]="'tenantManagement.createFirstTenant' | translate"
-        icon="pi pi-plus"
-        (onClick)="createTenant()">
-      </p-button>
-    </div>
     </div>
   }
 </div>

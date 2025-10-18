@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { TenantService } from '@feature/management/tenants/services';
 import { TenantRepository } from '@feature/management/tenants/repositories';
@@ -11,7 +11,6 @@ import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 
 interface TenantFormValue {
-  identifier: string;
   name: string;
   email: string;
   firstName: string;
@@ -39,10 +38,10 @@ export class TenantFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
+  private readonly translateService = inject(TranslateService);
 
   tenantForm!: FormGroup;
   loading = signal<boolean>(false);
-  messages = signal<{ severity: 'error' | 'success' | 'info' | 'warn' | 'secondary' | 'contrast'; content: string }[]>([]);
   minDate = new Date();
   isEditMode = signal<boolean>(false);
   tenantId = signal<string | null>(null);
@@ -73,10 +72,6 @@ export class TenantFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.messages.set([{
-          severity: 'error',
-          content: 'Error loading tenant data'
-        }]);
         this.loading.set(false);
       }
     });
@@ -84,7 +79,6 @@ export class TenantFormComponent implements OnInit {
 
   private populateFormWithTenantData(tenant: Tenant): void {
     this.tenantForm.patchValue({
-      identifier: tenant.identifier,
       name: tenant.name,
       email: tenant.email,
       firstName: tenant.firstName,
@@ -100,7 +94,6 @@ export class TenantFormComponent implements OnInit {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     this.tenantForm = this.fb.group({
-      identifier: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^[a-z0-9-_]+$/)]],
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       email: ['', [Validators.required, Validators.email]],
       firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
@@ -114,7 +107,6 @@ export class TenantFormComponent implements OnInit {
   onSubmit(): void {
     if (this.tenantForm.valid) {
       this.loading.set(true);
-      this.messages.set([]);
 
       const formValue = this.tenantForm.value as TenantFormValue;
       
@@ -125,16 +117,11 @@ export class TenantFormComponent implements OnInit {
       }
     } else {
       this.markFormGroupTouched();
-      this.messages.set([{
-        severity: 'warn',
-        content: 'Please fill in all required fields correctly'
-      }]);
     }
   }
 
   private createTenant(formValue: TenantFormValue): void {
     const createRequest: CreateTenantRequest = {
-      identifier: formValue.identifier,
       name: formValue.name,
       email: formValue.email,
       firstName: formValue.firstName,
@@ -145,21 +132,11 @@ export class TenantFormComponent implements OnInit {
     };
 
     this.tenantRepository.createTenant(createRequest).subscribe({
-      next: (response: Response<Tenant>) => {
-        this.messages.set([{
-          severity: 'success',
-          content: 'Tenant created successfully'
-        }]);
-        
-        setTimeout(() => {
-          this.router.navigate(['/tenants']);
-        }, 2000);
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/tenants']);
       },
       error: () => {
-        this.messages.set([{
-          severity: 'error',
-          content: 'Error creating tenant'
-        }]);
         this.loading.set(false);
       }
     });
@@ -167,7 +144,7 @@ export class TenantFormComponent implements OnInit {
 
   private updateTenant(formValue: TenantFormValue): void {
     const updateRequest: UpdateTenantRequest = {
-      identifier: formValue.identifier,
+      identifier: this.currentTenant()!.identifier,
       name: formValue.name,
       email: formValue.email,
       firstName: formValue.firstName,
@@ -178,21 +155,11 @@ export class TenantFormComponent implements OnInit {
     };
 
     this.tenantRepository.updateTenant(this.tenantId()!, updateRequest).subscribe({
-      next: (response: Response<Tenant>) => {
-        this.messages.set([{
-          severity: 'success',
-          content: 'Tenant updated successfully'
-        }]);
-        
-        setTimeout(() => {
-          this.router.navigate(['/tenants']);
-        }, 2000);
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/tenants']);
       },
-      error: (error) => {
-        this.messages.set([{
-          severity: 'error',
-          content: 'Error updating tenant'
-        }]);
+      error: () => {
         this.loading.set(false);
       }
     });
@@ -213,20 +180,29 @@ export class TenantFormComponent implements OnInit {
     const control = this.tenantForm.get(fieldName);
     
     if (control?.errors && control.touched) {
+      const fieldKey = fieldName === 'email' ? 'emailField' : fieldName;
+      const fieldDisplayName = this.translateService.instant(`validation.${fieldKey}`);
+      
       if (control.errors['required']) {
-        return `${fieldName} is required`;
+        return this.translateService.instant('validation.required', { fieldName: fieldDisplayName });
       }
       if (control.errors['email']) {
-        return 'Invalid email format';
+        return this.translateService.instant('validation.email');
       }
       if (control.errors['minlength']) {
-        return `${fieldName} must be at least ${control.errors['minlength'].requiredLength} characters`;
+        return this.translateService.instant('validation.minlength', { 
+          fieldName: fieldDisplayName, 
+          requiredLength: control.errors['minlength'].requiredLength 
+        });
       }
       if (control.errors['maxlength']) {
-        return `${fieldName} must not exceed ${control.errors['maxlength'].requiredLength} characters`;
+        return this.translateService.instant('validation.maxlength', { 
+          fieldName: fieldDisplayName, 
+          requiredLength: control.errors['maxlength'].requiredLength 
+        });
       }
       if (control.errors['pattern']) {
-        return `${fieldName} contains invalid characters`;
+        return this.translateService.instant('validation.pattern', { fieldName: fieldDisplayName });
       }
     }
     
