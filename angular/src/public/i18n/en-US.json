@@ -104,7 +104,22 @@
       "active": "Active",
       "inactive": "Inactive",
       "expired": "Expired"
-    }
+    },
+    "tenantIdRequired": "Tenant ID is required",
+    "errorLoadingTenantDetails": "Error loading tenant details",
+    "tenantActivatedSuccessfully": "Tenant activated successfully",
+    "tenantDeactivatedSuccessfully": "Tenant deactivated successfully",
+    "errorActivatingTenant": "Error activating tenant",
+    "errorDeactivatingTenant": "Error deactivating tenant",
+    "connectionTypes": {
+      "isolated": "Isolated Database",
+      "shared": "Shared Database"
+    },
+    "databaseDescription": "Database Description",
+    "isolatedDatabaseDescription": "This company has an isolated and dedicated database for enhanced security and performance",
+    "copyConnectionString": "Copy Connection String",
+    "connectionStringCopied": "Connection string copied to clipboard",
+    "errorCopyingConnectionString": "Error copying connection string"
   },
   "validation": {
     "required": "{{fieldName}} is required",

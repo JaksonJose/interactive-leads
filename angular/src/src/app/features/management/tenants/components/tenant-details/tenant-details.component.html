@@ -7,22 +7,20 @@
     </div>
     
     <div class="header-actions">
-      <button 
-        type="button" 
-        class="btn btn-secondary"
-        (click)="backToList()">
-        <i class="pi pi-arrow-left"></i>
-        {{ 'tenantManagement.backToList' | translate }}
-      </button>
+      <p-button 
+        [label]="'tenantManagement.backToList' | translate"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        (onClick)="backToList()">
+      </p-button>
       
-      <button 
+      <p-button 
         *appHasPermission="['Permission.Tenants.Update']"
-        type="button" 
-        class="btn btn-primary"
-        (click)="editTenant()">
-        <i class="pi pi-pencil"></i>
-        {{ 'tenantManagement.editTenant' | translate }}
-      </button>
+        [label]="'tenantManagement.editTenant' | translate"
+        icon="pi pi-pencil"
+        severity="info"
+        (onClick)="editTenant()">
+      </p-button>
     </div>
   </div>
 
@@ -32,7 +30,7 @@
     [severity]="message.severity"
     [closable]="true"
     (onClose)="messages.set([])">
-    {{ message.content }}
+    {{ message.content | translate }}
   </p-message>
 
   <!-- Loading State -->
@@ -51,9 +49,8 @@
       <div class="detail-card">
         <div class="card-header">
           <h3>{{ 'tenantManagement.basicInformation' | translate }}</h3>
-          <p-tag 
-            [value]="getTenantStatusDescription()"
-            [severity]="getStatusSeverity()">
+          <p-tag [severity]="getStatusSeverity()">
+            {{ getTenantStatusDescription() | translate }}
           </p-tag>
         </div>
         
@@ -72,7 +69,7 @@
             <div class="detail-label">{{ 'tenantManagement.status' | translate }}</div>
             <div class="detail-value">
               <span [class]="isTenantExpired() ? 'text-danger' : ''">
-                {{ getTenantStatusDescription() }}
+                {{ getTenantStatusDescription() | translate }}
               </span>
             </div>
           </div>
@@ -119,14 +116,32 @@
           <div class="detail-row">
             <div class="detail-label">{{ 'tenantManagement.connectionType' | translate }}</div>
             <div class="detail-value">
-              <p-tag value="Isolated Database" severity="info"></p-tag>
+               <p-tag severity="info">
+                 {{ 'tenantManagement.connectionTypes.isolated' | translate }}
+               </p-tag>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.databaseDescription' | translate }}</div>
+            <div class="detail-value">
+              {{ 'tenantManagement.isolatedDatabaseDescription' | translate }}
             </div>
           </div>
           
           <div class="detail-row">
             <div class="detail-label">{{ 'tenantManagement.connectionString' | translate }}</div>
             <div class="detail-value">
-              <code class="connection-string">{{ tenant()?.connectionString }}</code>
+              <div class="connection-string-container">
+                <code class="connection-string">{{ tenant()?.connectionString }}</code>
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-outline-secondary copy-btn"
+                  (click)="copyConnectionString()"
+                  [title]="'tenantManagement.copyConnectionString' | translate">
+                  <i class="pi pi-copy"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -142,14 +157,16 @@
           <div class="detail-row">
             <div class="detail-label">{{ 'tenantManagement.connectionType' | translate }}</div>
             <div class="detail-value">
-              <p-tag value="Shared Database" severity="success"></p-tag>
+               <p-tag severity="success">
+                 {{ 'tenantManagement.connectionTypes.shared' | translate }}
+               </p-tag>
             </div>
           </div>
           
           <div class="detail-row">
-            <div class="detail-label">{{ 'tenantManagement.sharedDatabaseDescription' | translate }}</div>
+            <div class="detail-label">{{ 'tenantManagement.databaseDescription' | translate }}</div>
             <div class="detail-value">
-              {{ 'SHARED_DATABASE_DESCRIPTION' | translate }}
+              {{ 'tenantManagement.sharedDatabaseDescription' | translate }}
             </div>
           </div>
         </div>
@@ -158,23 +175,21 @@
 
     <!-- Action Buttons -->
     <div class="action-buttons" *appHasPermission="['Permission.Tenants.Update']">
-      <button 
+      <p-button 
         *ngIf="!tenant()?.isActive"
-        type="button"
-        class="btn btn-success"
-        (click)="activateTenant()">
-        <i class="pi pi-check"></i>
-        {{ 'tenantManagement.activateTenant' | translate }}
-      </button>
+        [label]="'tenantManagement.activateTenant' | translate"
+        icon="pi pi-check"
+        severity="success"
+        (onClick)="activateTenant()">
+      </p-button>
       
-      <button 
+      <p-button 
         *ngIf="tenant()?.isActive"
-        type="button"
-        class="btn btn-warning"
-        (click)="deactivateTenant()">
-        <i class="pi pi-times"></i>
-        {{ 'tenantManagement.deactivateTenant' | translate }}
-      </button>
+        [label]="'tenantManagement.deactivateTenant' | translate"
+        icon="pi pi-times"
+        severity="danger"
+        (onClick)="deactivateTenant()">
+      </p-button>
     </div>
   </div>
 
@@ -184,13 +199,12 @@
       <i class="pi pi-exclamation-triangle" style="font-size: 4rem; color: #dc3545;"></i>
       <h3>{{ 'tenantManagement.tenantNotFound' | translate }}</h3>
       <p>{{ 'tenantManagement.tenantNotFoundMessage' | translate }}</p>
-      <button 
-        type="button" 
-        class="btn btn-primary"
-        (click)="backToList()">
-        <i class="pi pi-arrow-left"></i>
-        {{ 'tenantManagement.backToList' | translate }}
-      </button>
+      <p-button 
+        [label]="'tenantManagement.backToList' | translate"
+        icon="pi pi-arrow-left"
+        severity="info"
+        (onClick)="backToList()">
+      </p-button>
     </div>
   </div>
 </div>

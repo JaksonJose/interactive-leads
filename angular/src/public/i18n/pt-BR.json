@@ -104,7 +104,22 @@
       "active": "Ativo",
       "inactive": "Inativo",
       "expired": "Expirado"
-    }
+    },
+    "tenantIdRequired": "ID da empresa é obrigatório",
+    "errorLoadingTenantDetails": "Erro ao carregar detalhes da empresa",
+    "tenantActivatedSuccessfully": "Empresa ativada com sucesso",
+    "tenantDeactivatedSuccessfully": "Empresa desativada com sucesso",
+    "errorActivatingTenant": "Erro ao ativar empresa",
+    "errorDeactivatingTenant": "Erro ao desativar empresa",
+    "connectionTypes": {
+      "isolated": "Banco Isolado",
+      "shared": "Banco Compartilhado"
+    },
+    "databaseDescription": "Descrição do Banco",
+    "isolatedDatabaseDescription": "Esta empresa possui um banco de dados isolado e dedicado para maior segurança e performance",
+    "copyConnectionString": "Copiar String de Conexão",
+    "connectionStringCopied": "String de conexão copiada para a área de transferência",
+    "errorCopyingConnectionString": "Erro ao copiar string de conexão"
   },
   "validation": {
     "required": "{{fieldName}} é obrigatório",

@@ -40,7 +40,7 @@ export class TenantDetailsComponent implements OnInit {
     if (!tenantId) {
       this.messages.set([{
         severity: 'error',
-        content: 'Tenant ID not provided'
+        content: 'tenantManagement.tenantIdRequired'
       }]);
       return;
     }
@@ -56,7 +56,7 @@ export class TenantDetailsComponent implements OnInit {
       error: () => {
         this.messages.set([{
           severity: 'error',
-          content: 'Error loading tenant details'
+          content: 'tenantManagement.errorLoadingTenantDetails'
         }]);
         this.loading.set(false);
       }
@@ -66,7 +66,7 @@ export class TenantDetailsComponent implements OnInit {
   editTenant(): void {
     const tenant = this.tenant();
     if (tenant) {
-      this.router.navigate(['/management/tenants', tenant.identifier, 'edit']);
+      this.router.navigate(['/tenants', tenant.identifier, 'edit']);
     }
   }
 
@@ -79,13 +79,13 @@ export class TenantDetailsComponent implements OnInit {
         tenant.isActive = true;
         this.messages.set([{
           severity: 'success',
-          content: 'Tenant activated successfully'
+          content: 'tenantManagement.tenantActivatedSuccessfully'
         }]);
       },
       error: () => {
         this.messages.set([{
           severity: 'error',
-          content: 'Error activating tenant'
+          content: 'tenantManagement.errorActivatingTenant'
         }]);
       }
     });
@@ -100,20 +100,20 @@ export class TenantDetailsComponent implements OnInit {
         tenant.isActive = false;
         this.messages.set([{
           severity: 'success',
-          content: 'Tenant deactivated successfully'
+          content: 'tenantManagement.tenantDeactivatedSuccessfully'
         }]);
       },
       error: () => {
         this.messages.set([{
           severity: 'error',
-          content: 'Error deactivating tenant'
+          content: 'tenantManagement.errorDeactivatingTenant'
         }]);
       }
     });
   }
 
   backToList(): void {
-    this.router.navigate(['/management/tenants']);
+    this.router.navigate(['/tenants']);
   }
 
   getTenantAdminFullName(): string {
@@ -144,5 +144,22 @@ export class TenantDetailsComponent implements OnInit {
     }
     
     return 'success';
+  }
+
+  copyConnectionString(): void {
+    const tenant = this.tenant();
+    if (tenant?.connectionString) {
+      navigator.clipboard.writeText(tenant.connectionString).then(() => {
+        this.messages.set([{
+          severity: 'success',
+          content: 'tenantManagement.connectionStringCopied'
+        }]);
+      }).catch(() => {
+        this.messages.set([{
+          severity: 'error',
+          content: 'tenantManagement.errorCopyingConnectionString'
+        }]);
+      });
+    }
   }
 }
