@@ -2,7 +2,6 @@ import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError, from } from 'rxjs';
 import { AuthService } from '@authentication/services/auth.service';
-import { environment } from '@environment/environment';
 
 /**
  * Authentication interceptor that handles:

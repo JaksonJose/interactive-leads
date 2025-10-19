@@ -6,7 +6,7 @@ import { AuthService } from '@authentication/services/auth.service';
  * Guard that checks if the user has the required permissions to access a route.
  * Redirects to login if not authenticated or to unauthorized if missing permissions.
  */
-export const permissionGuard: CanActivateFn = (route, state) => {
+export const permissionGuard: CanActivateFn = (route) => {
   const router = inject(Router);
   const authService = inject(AuthService);
 
