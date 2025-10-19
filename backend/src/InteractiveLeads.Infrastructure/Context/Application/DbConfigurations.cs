@@ -21,7 +21,7 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                 builder.Property(u => u.TenantId)
                        .HasMaxLength(64)
                        .IsRequired()
-                       .HasComment("ID do tenant ao qual este usuário pertence");
+                       .HasComment("ID of the tenant to which this user belongs");
 
                 // Composite index for performance - ensures unique email per tenant
                 builder.HasIndex(u => new { u.TenantId, u.Email })
@@ -66,6 +66,12 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                     builder.HasIndex(r => r.NormalizedName)
                            .HasFilter("\"NormalizedName\" IS NOT NULL")
                            .IsUnique(false);
+
+                    // Configure relationship with role claims
+                    builder.HasMany(r => r.Claims)
+                           .WithOne()
+                           .HasForeignKey(rc => rc.RoleId)
+                           .OnDelete(DeleteBehavior.Cascade);
 
                     // Audit fields configuration
                     builder.Property(r => r.CreatedAt)

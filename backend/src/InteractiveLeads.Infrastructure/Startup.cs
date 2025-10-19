@@ -10,6 +10,7 @@ using InteractiveLeads.Infrastructure.Identity.Auth;
 using InteractiveLeads.Infrastructure.Identity.Models;
 using InteractiveLeads.Infrastructure.Identity.Roles;
 using InteractiveLeads.Infrastructure.Identity.Tokens;
+using InteractiveLeads.Infrastructure.Identity;
 using InteractiveLeads.Infrastructure.Identity.Users;
 using InteractiveLeads.Infrastructure.OpenApi;
 using InteractiveLeads.Infrastructure.Tenancy;
@@ -62,12 +63,18 @@ namespace InteractiveLeads.Infrastructure
 
             services.AddTransient<ITenantDbSeeder, TenantDbSeeder>();
             services.AddTransient<ApplicationDbSeeder>();
+            services.AddTransient<RoleSeeder>();
 
             // Register application services
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
+
+            // Register cross-tenant services
+            services.AddScoped<ICrossTenantService, CrossTenantService>();
+            services.AddScoped<ICrossTenantAuthorizationService, CrossTenantAuthorizationService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             services.AddOpenApiDocumentation(config);
 

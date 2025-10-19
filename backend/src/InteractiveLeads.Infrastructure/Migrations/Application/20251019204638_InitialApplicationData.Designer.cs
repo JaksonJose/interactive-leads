@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InteractiveLeads.Infrastructure.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251014204812_InitialDbApplication")]
-    partial class InitialDbApplication
+    [Migration("20251019204638_InitialApplicationData")]
+    partial class InitialApplicationData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -187,7 +187,7 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
-                        .HasComment("ID do tenant ao qual este usuário pertence");
+                        .HasComment("ID of the tenant to which this user belongs");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
@@ -399,7 +399,7 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
             modelBuilder.Entity("InteractiveLeads.Infrastructure.Identity.Models.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("InteractiveLeads.Infrastructure.Identity.Models.ApplicationRole", null)
-                        .WithMany()
+                        .WithMany("Claims")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -456,6 +456,11 @@ namespace InteractiveLeads.Infrastructure.Migrations.Application
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("InteractiveLeads.Infrastructure.Identity.Models.ApplicationRole", b =>
+                {
+                    b.Navigation("Claims");
                 });
 
             modelBuilder.Entity("InteractiveLeads.Infrastructure.Identity.Models.ApplicationUser", b =>

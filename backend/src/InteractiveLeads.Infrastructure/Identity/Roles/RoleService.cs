@@ -68,10 +68,10 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 throw new NotFoundException(notFoundResponse);
             }
 
-            if (RoleConstants.IsDefaultRole(roleInDb.Name!))
+            if (RoleConstants.IsDefaultRole(roleInDb.Name!) || RoleConstants.IsSystemRole(roleInDb.Name!))
             {
                 var conflictResponse = new ResultResponse();
-                conflictResponse.AddErrorMessage($"Not allowed to delete '{roleInDb.Name}' role.", "role.delete_default_forbidden");
+                conflictResponse.AddErrorMessage($"Not allowed to delete '{roleInDb.Name}' role.", "role.delete_system_forbidden");
 
                 throw new ConflictException(conflictResponse);
             }
@@ -164,10 +164,10 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 throw new NotFoundException(notFoundResponse);
             }
 
-            if (RoleConstants.IsDefaultRole(roleInDb.Name!))
+            if (RoleConstants.IsDefaultRole(roleInDb.Name!) || RoleConstants.IsSystemRole(roleInDb.Name!))
             {
                 var conflictResponse = new ResultResponse();
-                conflictResponse.AddErrorMessage($"Changes not allowed on system role '{roleInDb.Name}'.", "role.update_default_forbidden");
+                conflictResponse.AddErrorMessage($"Changes not allowed on system role '{roleInDb.Name}'.", "role.update_system_forbidden");
                 throw new ConflictException(conflictResponse);
             }
 
@@ -203,10 +203,10 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 throw new NotFoundException(notFoundResponse);
             }
 
-            if (roleInDb.Name == RoleConstants.Admin)
+            if (RoleConstants.IsSystemRole(roleInDb.Name!) || roleInDb.Name == RoleConstants.Owner)
             {
                 var conflictResponse = new ResultResponse();
-                conflictResponse.AddErrorMessage($"Not allowed to change permissions for '{roleInDb.Name}' role.", "role.update_admin_permissions_forbidden");
+                conflictResponse.AddErrorMessage($"Not allowed to change permissions for '{roleInDb.Name}' role.", "role.update_system_permissions_forbidden");
                 
                 throw new ConflictException(conflictResponse);
             }

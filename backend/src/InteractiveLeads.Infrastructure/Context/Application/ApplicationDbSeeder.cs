@@ -3,6 +3,7 @@ using Finbuckle.MultiTenant.Abstractions;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Context.Tenancy;
 using InteractiveLeads.Infrastructure.Identity.Models;
+using InteractiveLeads.Infrastructure.Identity.Roles;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +17,15 @@ namespace InteractiveLeads.Infrastructure.Context.Application
         RoleManager<ApplicationRole> roleManager,
         UserManager<ApplicationUser> userManager,
         ApplicationDbContext applicationDbContext,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        RoleSeeder roleSeeder)
     {
         private readonly IMultiTenantContextAccessor<InteractiveTenantInfo> _tenantInfoContextAccessor = tenantInfoContextAccessor;
         private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly ApplicationDbContext _applicationDbContext = applicationDbContext;
         private readonly IServiceProvider _serviceProvider = serviceProvider;
+        private readonly RoleSeeder _roleSeeder = roleSeeder;
 
         public async Task InitializeDatabaseAsync(CancellationToken cancellationToken)
         {
@@ -35,67 +38,14 @@ namespace InteractiveLeads.Infrastructure.Context.Application
 
                 if (await _applicationDbContext.Database.CanConnectAsync(cancellationToken))
                 {
-                    await InitializeDefaultRoleAsync(cancellationToken);
+                    // Use the new RoleSeeder for comprehensive role initialization
+                    await _roleSeeder.SeedRolesAsync(cancellationToken);
                     await InitializeAdminUserAsync();
                 }
             }
         }
 
-        private async Task InitializeDefaultRoleAsync(CancellationToken cancellationToken)
-        {
-            foreach (var roleName in RoleConstants.DefaultRoles)
-            {
-                if (await _roleManager.Roles.SingleOrDefaultAsync(role => role.Name == roleName, cancellationToken) is not ApplicationRole incomingRole)
-                {
-                    incomingRole = new ApplicationRole()
-                    {
-                        Name = roleName,
-                        Description = $"{roleName} Role",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                    };
-
-                    await _roleManager.CreateAsync(incomingRole);
-                }
-
-                // Assign permissions
-                if (roleName == RoleConstants.Basic)
-                {
-                    await AssignPermissionsToRole(InteractivePermissions.Basic, incomingRole, cancellationToken);
-                }
-                else if (roleName == RoleConstants.Admin)
-                {
-                    await AssignPermissionsToRole(InteractivePermissions.Admin, incomingRole, cancellationToken);
-
-                    if (_tenantInfoContextAccessor.MultiTenantContext.TenantInfo?.Id == TenancyConstants.Root.Id)
-                    {
-                        await AssignPermissionsToRole(InteractivePermissions.Root, incomingRole, cancellationToken);
-                    }
-                }
-            }
-        }
-
-        private async Task AssignPermissionsToRole(IReadOnlyList<InteractivePermission> rolePermissions, ApplicationRole role, CancellationToken cancellationToken)
-        {
-            IList<Claim> currentClaims = await _roleManager.GetClaimsAsync(role);
-
-            foreach (var rolePermission in rolePermissions)
-            {
-                if (!currentClaims.Any(c => c.Type == ClaimConstants.Permission && c.Value == rolePermission.Name))
-                {
-                    await _applicationDbContext.RoleClaims.AddAsync(new ApplicationRoleClaim
-                    {
-                        RoleId = role.Id,
-                        ClaimType = ClaimConstants.Permission,
-                        ClaimValue = rolePermission.Name,
-                        Description = rolePermission.Description,
-                        Group = rolePermission.group,
-                    }, cancellationToken);
-
-                    await _applicationDbContext.SaveChangesAsync(cancellationToken);
-                }
-            }
-        }
+        // Legacy methods kept for backward compatibility but now handled by RoleSeeder
         private async Task InitializeAdminUserAsync()
         {
             if (string.IsNullOrEmpty(_tenantInfoContextAccessor.MultiTenantContext.TenantInfo?.Email)) return;
@@ -125,9 +75,14 @@ namespace InteractiveLeads.Infrastructure.Context.Application
                 await CreateUserTenantMappingAsync(incomingUser.Email, incomingUser.TenantId);
             }
 
-            if (!await _userManager.IsInRoleAsync(incomingUser, RoleConstants.Admin))
+            // Assign appropriate role based on tenant type
+            string roleToAssign = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo?.Id == TenancyConstants.Root.Id 
+                ? RoleConstants.SysAdmin 
+                : RoleConstants.Owner;
+
+            if (!await _userManager.IsInRoleAsync(incomingUser, roleToAssign))
             {
-                await _userManager.AddToRoleAsync(incomingUser, RoleConstants.Admin);
+                await _userManager.AddToRoleAsync(incomingUser, roleToAssign);
             }
         }
 
