@@ -119,7 +119,15 @@
     "isolatedDatabaseDescription": "Esta empresa possui um banco de dados isolado e dedicado para maior segurança e performance",
     "copyConnectionString": "Copiar String de Conexão",
     "connectionStringCopied": "String de conexão copiada para a área de transferência",
-    "errorCopyingConnectionString": "Erro ao copiar string de conexão"
+    "errorCopyingConnectionString": "Erro ao copiar string de conexão",
+    "placeholders": {
+      "enterCompanyName": "Digite o nome da empresa",
+      "enterAdminFirstName": "Digite o nome do administrador da empresa",
+      "enterAdminLastName": "Digite o sobrenome do administrador da empresa",
+      "enterAdminEmail": "Digite o email do administrador da empresa",
+      "selectExpirationDate": "Selecione a data de expiração",
+      "enterConnectionString": "Digite a string de conexão do banco de dados (opcional)"
+    }
   },
   "validation": {
     "required": "{{fieldName}} é obrigatório",

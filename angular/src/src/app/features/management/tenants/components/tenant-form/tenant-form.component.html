@@ -38,7 +38,7 @@
             id="name"
             pInputText
             formControlName="name"
-            placeholder="Digite o nome da empresa"
+            [placeholder]="'tenantManagement.placeholders.enterCompanyName' | translate"
             [class.p-invalid]="isFieldInvalid('name')">
           <div *ngIf="isFieldInvalid('name')" class="p-error mt-1">
             {{ getFieldError('name') }}
@@ -57,7 +57,7 @@
             id="firstName"
             pInputText
             formControlName="firstName"
-            placeholder="Digite o nome do administrador da empresa"
+            [placeholder]="'tenantManagement.placeholders.enterAdminFirstName' | translate"
             [class.p-invalid]="isFieldInvalid('firstName')">
           <div *ngIf="isFieldInvalid('firstName')" class="p-error mt-1">
             {{ getFieldError('firstName') }}
@@ -74,7 +74,7 @@
             id="lastName"
             pInputText
             formControlName="lastName"
-            placeholder="Digite o sobrenome do administrador da empresa"
+            [placeholder]="'tenantManagement.placeholders.enterAdminLastName' | translate"
             [class.p-invalid]="isFieldInvalid('lastName')">
           <div *ngIf="isFieldInvalid('lastName')" class="p-error mt-1">
             {{ getFieldError('lastName') }}
@@ -93,7 +93,7 @@
             id="email"
             pInputText
             formControlName="email"
-            placeholder="Digite o email do administrador da empresa"
+            [placeholder]="'tenantManagement.placeholders.enterAdminEmail' | translate"
             [class.p-invalid]="isFieldInvalid('email')">
           <div *ngIf="isFieldInvalid('email')" class="p-error mt-1">
             {{ getFieldError('email') }}
@@ -114,7 +114,7 @@
             [showIcon]="true"
             [minDate]="minDate"
             dateFormat="dd/mm/yy"
-            placeholder="Selecione a data de expiração"
+            [placeholder]="'tenantManagement.placeholders.selectExpirationDate' | translate"
             [class.p-invalid]="isFieldInvalid('expirationDate')">
           </p-datepicker>
           <div *ngIf="isFieldInvalid('expirationDate')" class="p-error mt-1">
@@ -133,7 +133,7 @@
             id="connectionString"
             pInputTextarea
             formControlName="connectionString"
-            placeholder="Digite a string de conexão do banco de dados (opcional)"
+            [placeholder]="'tenantManagement.placeholders.enterConnectionString' | translate"
             rows="3">
           </textarea>
           <small class="p-text-secondary mt-1">

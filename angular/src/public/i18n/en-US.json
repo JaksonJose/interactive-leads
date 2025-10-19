@@ -119,7 +119,15 @@
     "isolatedDatabaseDescription": "This company has an isolated and dedicated database for enhanced security and performance",
     "copyConnectionString": "Copy Connection String",
     "connectionStringCopied": "Connection string copied to clipboard",
-    "errorCopyingConnectionString": "Error copying connection string"
+    "errorCopyingConnectionString": "Error copying connection string",
+    "placeholders": {
+      "enterCompanyName": "Enter company name",
+      "enterAdminFirstName": "Enter administrator first name",
+      "enterAdminLastName": "Enter administrator last name",
+      "enterAdminEmail": "Enter administrator email",
+      "selectExpirationDate": "Select expiration date",
+      "enterConnectionString": "Enter database connection string (optional)"
+    }
   },
   "validation": {
     "required": "{{fieldName}} is required",
