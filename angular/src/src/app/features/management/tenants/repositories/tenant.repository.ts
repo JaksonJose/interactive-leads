@@ -10,18 +10,18 @@ import { environment } from '@environment/environment';
 })
 export class TenantRepository {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/${environment.apiVersion}/tenants`;
+  private readonly baseUrl = `${environment.apiUrl}/${environment.apiVersion}/crosstenant`;
 
   /**
    * Retrieves all tenants in the system.
    * Requires Permission.Tenants.Read
    */
-  getAllTenants(page: number = 1, pageSize: number = 10): Observable<Response<Tenant[]>> {
+  getAllTenants(page = 1, pageSize = 10): Observable<Response<Tenant[]>> {
     const params = new URLSearchParams({
       page: page.toString(),
       pageSize: pageSize.toString()
     });
-    return this.http.get<Response<Tenant[]>>(`${this.baseUrl}/all?${params.toString()}`);
+    return this.http.get<Response<Tenant[]>>(`${this.baseUrl}/tenants?${params.toString()}`);
   }
 
   /**
@@ -29,7 +29,7 @@ export class TenantRepository {
    * Requires Permission.Tenants.Read
    */
   getTenantById(tenantId: string): Observable<Response<Tenant>> {
-    return this.http.get<Response<Tenant>>(`${this.baseUrl}/${tenantId}`);
+    return this.http.get<Response<Tenant>>(`${this.baseUrl}/tenants/${tenantId}`);
   }
 
   /**

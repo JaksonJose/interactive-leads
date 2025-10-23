@@ -1,4 +1,6 @@
-﻿namespace InteractiveLeads.Application.Feature.Tenancy
+﻿using InteractiveLeads.Application.Feature.Users;
+
+namespace InteractiveLeads.Application.Feature.Tenancy
 {
     /// <summary>
     /// Response model containing tenant information.
@@ -48,5 +50,7 @@
         /// Gets or sets a value indicating whether the tenant is active.
         /// </summary>
         public bool IsActive { get; set; }
+
+        public UserResponse User { get; set; } = default!;
     }
 }

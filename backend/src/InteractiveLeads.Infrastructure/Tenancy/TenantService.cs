@@ -1,5 +1,6 @@
 ﻿using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
+using InteractiveLeads.Application.Exceptions;
 using InteractiveLeads.Application.Feature.Tenancy;
 using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Models;
@@ -145,15 +146,15 @@ namespace InteractiveLeads.Infrastructure.Tenancy
 
         public async Task<SingleResponse<TenantResponse>> GetTenantsByIdAsync(string id, CancellationToken ct)
         {
-            // Block access to root tenant
             if (id == TenancyConstants.Root.Id)
             {
-                var errorResponse = new SingleResponse<TenantResponse>(null);
+                ResultResponse errorResponse = new();
                 errorResponse.AddErrorMessage("Access to root tenant is not allowed", "tenant.root_access_denied");
-                return errorResponse;
+
+                throw new UnauthorizedException(errorResponse);
             }
 
-            var tenantInDb = await _tenantStore.TryGetAsync(id);
+            var tenantInDb = await _tenantStore.TryGetAsync(id) ?? throw new NotFoundException();
 
             var newTenant = new InteractiveTenantInfo
             {
@@ -167,7 +168,6 @@ namespace InteractiveLeads.Infrastructure.Tenancy
                 ExpirationDate = tenantInDb.ExpirationDate
             };
 
-            // Mapster
             var tenantResponse = tenantInDb.Adapt<TenantResponse>();
             
             var response = new SingleResponse<TenantResponse>(tenantResponse);

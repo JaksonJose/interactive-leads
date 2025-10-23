@@ -71,6 +71,14 @@ namespace InteractiveLeads.Application.Interfaces
         Task<SingleResponse<UserResponse>> GetByIdAsync(Guid userId, CancellationToken ct);
 
         /// <summary>
+        /// Retrieves a user by their email address.
+        /// </summary>
+        /// <param name="email">Email address of the user.</param>
+        /// <param name="ct">Cancellation token for the async operation.</param>
+        /// <returns>User data if found.</returns>
+        Task<SingleResponse<UserResponse>> GetByEmailAsync(string email, CancellationToken ct);
+
+        /// <summary>
         /// Retrieves all roles assigned to a user.
         /// </summary>
         /// <param name="userId">Unique identifier of the user.</param>

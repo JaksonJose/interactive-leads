@@ -211,6 +211,22 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
             return response;
         }
 
+        public async Task<SingleResponse<UserResponse>> GetByEmailAsync(string email, CancellationToken ct)
+        {
+            var userInDb = await _userManager.FindByEmailAsync(email);
+            if (userInDb == null)
+            {
+                var notFoundResponse = new SingleResponse<UserResponse>();
+                notFoundResponse.AddErrorMessage("User not found with the provided email.", "user.not_found");
+                return notFoundResponse;
+            }
+
+            var userResponse = userInDb.Adapt<UserResponse>();
+            var response = new SingleResponse<UserResponse>(userResponse);
+            response.AddSuccessMessage("User retrieved successfully", "user.retrieved_successfully");
+            return response;
+        }
+
         public async Task<ListResponse<string>> GetUserPermissionsAsync(Guid userId, CancellationToken ct)
         {
             var userInDb = await GetUserAsync(userId);

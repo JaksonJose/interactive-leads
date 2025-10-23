@@ -4,10 +4,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { TenantService } from '@feature/management/tenants/services';
 import { TenantRepository } from '@feature/management/tenants/repositories';
 import { CreateTenantRequest, UpdateTenantRequest, Tenant } from '@feature/management/tenants/models';
-import { Response } from '@core/responses/response';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 
 interface TenantFormValue {
@@ -33,7 +31,6 @@ interface TenantFormValue {
   styleUrls: ['./tenant-form.component.scss']
 })
 export class TenantFormComponent implements OnInit {
-  private readonly tenantService = inject(TenantService);
   private readonly tenantRepository = inject(TenantRepository);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -63,17 +60,13 @@ export class TenantFormComponent implements OnInit {
 
   private loadTenantForEdit(tenantId: string): void {
     this.loading.set(true);
-    this.tenantRepository.getTenantById(tenantId).subscribe({
-      next: (response: Response<Tenant>) => {
-        if (response.data) {
-          this.currentTenant.set(response.data);
-          this.populateFormWithTenantData(response.data);
-        }
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
+    this.tenantRepository.getTenantById(tenantId).subscribe(response => {
+      if (response.data) {
+        this.currentTenant.set(response.data);
+        this.populateFormWithTenantData(response.data);
       }
+
+      this.loading.set(false);
     });
   }
 

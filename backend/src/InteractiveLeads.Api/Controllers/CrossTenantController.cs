@@ -188,6 +188,25 @@ namespace InteractiveLeads.Api.Controllers
         }
 
         /// <summary>
+        /// Gets a specific tenant with its associated user - available for SysAdmin and Support.
+        /// </summary>
+        /// <param name="tenantId">The ID of the tenant to retrieve.</param>
+        /// <returns>Tenant information with its associated user.</returns>
+        /// <remarks>
+        /// Requires Read permission for CrossTenantTenants feature.
+        /// Returns tenant details and finds the associated user by matching the tenant's email.
+        /// </remarks>
+        [HttpGet("tenants/{tenantId}")]
+        [ShouldHavePermission(InteractiveAction.Read, InteractiveFeature.CrossTenantTenants)]
+        [OpenApiOperation("Get a specific tenant with its associated user")]
+        public async Task<IActionResult> GetTenantWithUserAsync(string tenantId)
+        {
+            var response = await Sender.Send(new GetTenantWithUserQuery { TenantId = tenantId });
+            
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Gets all tenants accessible to the current user.
         /// </summary>
         /// <param name="pageNumber">Page number for pagination (default: 1).</param>
