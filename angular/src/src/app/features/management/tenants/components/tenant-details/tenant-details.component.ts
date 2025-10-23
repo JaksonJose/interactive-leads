@@ -8,6 +8,7 @@ import { TenantRepository } from '@feature/management/tenants/repositories';
 import { Tenant } from '@feature/management/tenants/models';
 import { Response } from '@core/responses/response';
 import { SHARED_IMPORTS } from '@shared/shared-imports';
+import { AuthService } from '@authentication/services/auth.service';
 
 @Component({
   selector: 'app-tenant-details',
@@ -25,6 +26,7 @@ export class TenantDetailsComponent implements OnInit {
   private readonly tenantRepository = inject(TenantRepository);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   tenant = signal<Tenant | null>(null);
   loading = signal<boolean>(false);
@@ -161,5 +163,9 @@ export class TenantDetailsComponent implements OnInit {
         }]);
       });
     }
+  }
+
+  hasPermission(permissions: string[]): boolean {
+    return this.authService.hasAnyPermission(permissions);
   }
 }

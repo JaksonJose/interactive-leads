@@ -14,36 +14,41 @@
         (onClick)="backToList()">
       </p-button>
       
-      <p-button 
-        *appHasPermission="['Permission.Tenants.Update']"
-        [label]="'tenantManagement.editTenant' | translate"
-        icon="pi pi-pencil"
-        severity="info"
-        (onClick)="editTenant()">
-      </p-button>
+      @if (hasPermission(['Permission.Tenants.Update'])) {
+        <p-button 
+          [label]="'tenantManagement.editTenant' | translate"
+          icon="pi pi-pencil"
+          severity="info"
+          (onClick)="editTenant()">
+        </p-button>
+      }
     </div>
   </div>
 
   <!-- Messages -->
-  <p-message
-    *ngFor="let message of messages()"
-    [severity]="message.severity"
-    [closable]="true"
-    (onClose)="messages.set([])">
-    {{ message.content | translate }}
-  </p-message>
+  @for (message of messages(); track message) {
+    <p-message
+      [severity]="message.severity"
+      [closable]="true"
+      (onClose)="messages.set([])">
+      {{ message.content | translate }}
+    </p-message>
+  }
 
   <!-- Loading State -->
-  <div *ngIf="loading()" class="loading-container">
-    <div class="skeleton-card">
-      <p-skeleton height="2rem" class="mb-2"></p-skeleton>
-      <p-skeleton height="1.5rem" class="mb-4"></p-skeleton>
-      <p-skeleton height="10rem"></p-skeleton>
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="skeleton-card">
+        <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+        <p-skeleton height="1.5rem" class="mb-4"></p-skeleton>
+        <p-skeleton height="10rem"></p-skeleton>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Tenant Details -->
-  <div *ngIf="!loading() && tenant()" class="details-container">
+  @if (!loading() && tenant()) {
+    <div class="details-container">
     <div class="details-grid">
       <!-- Basic Information Card -->
       <div class="detail-card">
@@ -107,7 +112,8 @@
       </div>
 
       <!-- Database Information Card -->
-      <div class="detail-card" *ngIf="tenant()?.connectionString">
+      @if (tenant()?.connectionString) {
+        <div class="detail-card">
         <div class="card-header">
           <h3>{{ 'tenantManagement.databaseInformation' | translate }}</h3>
         </div>
@@ -145,10 +151,12 @@
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      }
 
       <!-- Database Information Card (Shared) -->
-      <div class="detail-card" *ngIf="!tenant()?.connectionString">
+      @if (!tenant()?.connectionString) {
+        <div class="detail-card">
         <div class="card-header">
           <h3>{{ 'tenantManagement.databaseInformation' | translate }}</h3>
         </div>
@@ -170,41 +178,49 @@
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      }
     </div>
 
     <!-- Action Buttons -->
-    <div class="action-buttons" *appHasPermission="['Permission.Tenants.Update']">
-      <p-button 
-        *ngIf="!tenant()?.isActive"
-        [label]="'tenantManagement.activateTenant' | translate"
-        icon="pi pi-check"
-        severity="success"
-        (onClick)="activateTenant()">
-      </p-button>
+    @if (hasPermission(['Permission.Tenants.Update'])) {
+      <div class="action-buttons">
+      @if (!tenant()?.isActive) {
+        <p-button 
+          [label]="'tenantManagement.activateTenant' | translate"
+          icon="pi pi-check"
+          severity="success"
+          (onClick)="activateTenant()">
+        </p-button>
+      }
       
-      <p-button 
-        *ngIf="tenant()?.isActive"
-        [label]="'tenantManagement.deactivateTenant' | translate"
-        icon="pi pi-times"
-        severity="danger"
-        (onClick)="deactivateTenant()">
-      </p-button>
+      @if (tenant()?.isActive) {
+        <p-button 
+          [label]="'tenantManagement.deactivateTenant' | translate"
+          icon="pi pi-times"
+          severity="danger"
+          (onClick)="deactivateTenant()">
+        </p-button>
+      }
+      </div>
+    }
     </div>
-  </div>
+  }
 
   <!-- Error State -->
-  <div *ngIf="!loading() && !tenant()" class="error-container">
-    <div class="error-state">
-      <i class="pi pi-exclamation-triangle" style="font-size: 4rem; color: #dc3545;"></i>
-      <h3>{{ 'tenantManagement.tenantNotFound' | translate }}</h3>
-      <p>{{ 'tenantManagement.tenantNotFoundMessage' | translate }}</p>
-      <p-button 
-        [label]="'tenantManagement.backToList' | translate"
-        icon="pi pi-arrow-left"
-        severity="info"
-        (onClick)="backToList()">
-      </p-button>
+  @if (!loading() && !tenant()) {
+    <div class="error-container">
+      <div class="error-state">
+        <i class="pi pi-exclamation-triangle" style="font-size: 4rem; color: #dc3545;"></i>
+        <h3>{{ 'tenantManagement.tenantNotFound' | translate }}</h3>
+        <p>{{ 'tenantManagement.tenantNotFoundMessage' | translate }}</p>
+        <p-button 
+          [label]="'tenantManagement.backToList' | translate"
+          icon="pi pi-arrow-left"
+          severity="info"
+          (onClick)="backToList()">
+        </p-button>
+      </div>
     </div>
-  </div>
+  }
 </div>
