@@ -120,21 +120,18 @@ namespace InteractiveLeads.Infrastructure.Tenancy
 
         public async Task<ListResponse<TenantResponse>> GetTenantsAsync(PaginationRequest pagination, CancellationToken ct)
         {
-            // Validate pagination parameters
             if (!pagination.IsValid())
             {
-                pagination = new PaginationRequest(); // Use default values if invalid
+                pagination = new PaginationRequest();
             }
 
-            // Get total count efficiently from database, excluding root tenant
             var totalTenants = await _tenantDbContext.TenantInfo
                 .Where(t => t.Identifier != TenancyConstants.Root.Id)
                 .CountAsync(ct);
 
-            // Get paginated tenants directly from database, excluding root tenant
             var paginatedTenants = await _tenantDbContext.TenantInfo
                 .Where(t => t.Identifier != TenancyConstants.Root.Id)
-                .OrderBy(t => t.Name) // Add consistent ordering
+                .OrderBy(t => t.Name)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync(ct);
@@ -174,7 +171,7 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             var tenantResponse = tenantInDb.Adapt<TenantResponse>();
             
             var response = new SingleResponse<TenantResponse>(tenantResponse);
-            response.AddSuccessMessage("Tenant retrieved successfully", "tenant.retrieved_successfully");
+
             return response;
         }
 

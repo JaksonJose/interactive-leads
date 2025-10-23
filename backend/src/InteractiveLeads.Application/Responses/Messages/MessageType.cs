@@ -5,24 +5,44 @@ namespace InteractiveLeads.Application.Responses.Messages
     /// </summary>
     public enum MessageType
     {
-        /// <summary>
-        /// Error message - indicates operation failure.
+        /// 
+        /// <summary> None, default 
         /// </summary>
-        Error,
+        None,
 
-        /// <summary>
-        /// Success message - indicates successful operation.
+        /// 
+        /// <summary> Success Message 
         /// </summary>
         Success,
 
-        /// <summary>
-        /// Informational message - provides additional information.
+        /// <summary> 
+        /// Informational Message 
         /// </summary>
         Info,
 
-        /// <summary>
-        /// Warning message - indicates a situation that requires attention.
+        /// <summary> 
+        /// Warning message 
         /// </summary>
-        Warning
+        Warning,
+
+        /// <summary> 
+        /// Error message  
+        /// </summary>
+        Error,
+
+        /// <summary> 
+        /// Fatal message, it is also considered a System error. 
+        /// </summary>
+        Fatal,
+
+        /// <summary> 
+        /// Exception message, it is also considered a System error. 
+        /// </summary>
+        Exception,
+
+        /// <summary> 
+        /// Validation message  
+        /// </summary>
+        Validation
     }
 }

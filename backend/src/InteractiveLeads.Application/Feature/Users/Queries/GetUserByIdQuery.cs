@@ -1,5 +1,4 @@
-﻿using Application.Features.Identity.Users;
-using InteractiveLeads.Application.Interfaces;
+﻿using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Pipelines;
 using InteractiveLeads.Application.Responses;
 using MediatR;

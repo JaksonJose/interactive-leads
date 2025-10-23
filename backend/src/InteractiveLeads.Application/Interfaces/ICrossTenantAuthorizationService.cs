@@ -35,20 +35,6 @@ namespace InteractiveLeads.Application.Interfaces
         Task<bool> CanPerformActionInTenantAsync(Guid userId, string tenantId, string permission);
 
         /// <summary>
-        /// Gets the list of tenants that a user can access.
-        /// </summary>
-        /// <param name="userId">The ID of the user.</param>
-        /// <returns>An array of tenant IDs that the user can access.</returns>
-        /// <remarks>
-        /// Returns different tenant lists based on the user's role:
-        /// - SysAdmin: All tenants
-        /// - Support: All tenants
-        /// - PartnerAdmin: Specific partner tenants
-        /// - Regular users: Only their own tenant
-        /// </remarks>
-        Task<string[]> GetAccessibleTenantsAsync(Guid userId);
-
-        /// <summary>
         /// Determines whether a user is a system administrator.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>

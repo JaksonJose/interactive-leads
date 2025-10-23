@@ -1,10 +1,13 @@
+using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
-using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Exceptions;
+using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Models;
 using InteractiveLeads.Application.Responses;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Tenancy.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace InteractiveLeads.Infrastructure.Tenancy
 {
@@ -22,6 +25,8 @@ namespace InteractiveLeads.Infrastructure.Tenancy
         private readonly IMultiTenantContextSetter _tenantContextSetter;
         private readonly ITenantService _tenantService;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ILogger<CrossTenantService> _logger;
 
         /// <summary>
         /// Initializes a new instance of the CrossTenantService class.
@@ -31,18 +36,24 @@ namespace InteractiveLeads.Infrastructure.Tenancy
         /// <param name="tenantContextSetter">The multi-tenant context setter.</param>
         /// <param name="tenantService">The tenant service for tenant operations.</param>
         /// <param name="currentUserService">The current user service.</param>
+        /// <param name="serviceScopeFactory">The service scope factory for creating scoped services.</param>
+        /// <param name="logger">The logger for cross-tenant operations.</param>
         public CrossTenantService(
             ICrossTenantAuthorizationService authService,
             IMultiTenantContextAccessor<InteractiveTenantInfo> tenantContextAccessor,
             IMultiTenantContextSetter tenantContextSetter,
             ITenantService tenantService,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            IServiceScopeFactory serviceScopeFactory,
+            ILogger<CrossTenantService> logger)
         {
             _authService = authService;
             _tenantContextAccessor = tenantContextAccessor;
             _tenantContextSetter = tenantContextSetter;
             _tenantService = tenantService;
             _currentUserService = currentUserService;
+            _serviceScopeFactory = serviceScopeFactory;
+            _logger = logger;
         }
 
         /// <summary>
@@ -52,7 +63,7 @@ namespace InteractiveLeads.Infrastructure.Tenancy
         /// <param name="tenantId">The ID of the tenant to execute the operation in.</param>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>The result of the operation.</returns>
-        public async Task<T> ExecuteInTenantContextAsync<T>(string tenantId, Func<Task<T>> operation)
+        public async Task<T> ExecuteInTenantContextAsync<T>(string tenantId, Func<IServiceProvider, Task<T>> operation)
         {
             var currentUserIdString = _currentUserService.GetUserId();
             if (!Guid.TryParse(currentUserIdString, out var currentUserId))
@@ -66,23 +77,82 @@ namespace InteractiveLeads.Infrastructure.Tenancy
                 throw new ForbiddenException();
             }
 
-            // For now, we'll execute the operation directly
-            // In a full implementation, you would switch tenant context here
-            // This is a simplified version that maintains the current structure
+            // Store the original tenant context
+            var originalTenantContext = _tenantContextAccessor.MultiTenantContext;
             
             try
             {
-                var result = await operation();
+                // Get the target tenant information
+                var tenantResponse = await _tenantService.GetTenantsByIdAsync(tenantId, CancellationToken.None);
+                if (tenantResponse.HasAnyErrorMessage || tenantResponse.Data == null)
+                {
+                    ResultResponse response = new();
+                    response.AddErrorMessage($"Tenant with ID '{tenantId}' not found");
+
+                    throw new NotFoundException(response);
+                }
                 
-                // Log the cross-tenant operation for audit
-                await LogCrossTenantOperationAsync(currentUserId, null, tenantId, operation.Method.Name, true);
+                var tenantData = tenantResponse.Data;
+
+                // Convert TenantResponse to InteractiveTenantInfo
+                var targetTenant = new InteractiveTenantInfo
+                {
+                    Id = tenantData.Identifier,
+                    Identifier = tenantData.Identifier,
+                    Name = tenantData.Name,
+                    Email = tenantData.Email,
+                    FirstName = tenantData.FirstName,
+                    LastName = tenantData.LastName,
+                    IsActive = tenantData.IsActive,
+                    ExpirationDate = tenantData.ExpirationDate,
+                    ConnectionString = tenantData.ConnectionString
+                };
+
+                // Validate tenant is active and not expired
+                if (!targetTenant.IsActive)
+                {
+                    ResultResponse response = new();
+                    response.AddErrorMessage($"Tenant with ID '{tenantId}' is not active.");
+
+                    throw new ForbiddenException(response);
+                }
+
+                if (targetTenant.ExpirationDate < DateTime.UtcNow)
+                {
+                    ResultResponse response = new();
+                    response.AddErrorMessage($"Tenant with ID '{tenantId}' has expired.");
+
+                    throw new ForbiddenException();
+                }
+
+                // Create a new scope for the target tenant context
+                using var scope = _serviceScopeFactory.CreateScope();
+                
+                // Switch to the target tenant context within the scope
+                var scopeTenantContextSetter = scope.ServiceProvider.GetRequiredService<IMultiTenantContextSetter>();
+                scopeTenantContextSetter.MultiTenantContext = new MultiTenantContext<InteractiveTenantInfo>
+                {
+                    TenantInfo = targetTenant
+                };
+
+                _logger.LogInformation("Executing cross-tenant operation for user {UserId} from tenant '{OriginalTenantId}' to tenant '{TargetTenantId}'", 
+                    currentUserId, originalTenantContext?.TenantInfo?.Id, tenantId);
+
+                // Execute the operation in the new tenant context
+                var result = await operation(scope.ServiceProvider);
+                
+                // Log the successful cross-tenant operation for audit
+                await LogCrossTenantOperationAsync(currentUserId, originalTenantContext?.TenantInfo?.Id, tenantId, operation.Method.Name, true);
                 
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Cross-tenant operation failed for user {UserId} from tenant '{OriginalTenantId}' to tenant '{TargetTenantId}'", 
+                    currentUserId, originalTenantContext?.TenantInfo?.Id, tenantId);
+                
                 // Log the failed operation
-                await LogCrossTenantOperationAsync(currentUserId, null, tenantId, operation.Method.Name, false);
+                await LogCrossTenantOperationAsync(currentUserId, originalTenantContext?.TenantInfo?.Id, tenantId, operation.Method.Name, false);
                 throw;
             }
         }
@@ -93,12 +163,43 @@ namespace InteractiveLeads.Infrastructure.Tenancy
         /// <param name="tenantId">The ID of the tenant to execute the operation in.</param>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task ExecuteInTenantContextAsync(string tenantId, Func<IServiceProvider, Task> operation)
+        {
+            await ExecuteInTenantContextAsync(tenantId, async (serviceProvider) =>
+            {
+                await operation(serviceProvider);
+                return true; // Dummy return value
+            });
+        }
+
+        /// <summary>
+        /// Executes an operation in the context of a specific tenant (legacy method for backward compatibility).
+        /// </summary>
+        /// <typeparam name="T">The return type of the operation.</typeparam>
+        /// <param name="tenantId">The ID of the tenant to execute the operation in.</param>
+        /// <param name="operation">The operation to execute.</param>
+        /// <returns>The result of the operation.</returns>
+        [Obsolete("Use the overload that accepts IServiceProvider parameter for better DbContext management")]
+        public async Task<T> ExecuteInTenantContextAsync<T>(string tenantId, Func<Task<T>> operation)
+        {
+            return await ExecuteInTenantContextAsync(tenantId, async (serviceProvider) =>
+            {
+                return await operation();
+            });
+        }
+
+        /// <summary>
+        /// Executes an operation in the context of a specific tenant (legacy method for backward compatibility).
+        /// </summary>
+        /// <param name="tenantId">The ID of the tenant to execute the operation in.</param>
+        /// <param name="operation">The operation to execute.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        [Obsolete("Use the overload that accepts IServiceProvider parameter for better DbContext management")]
         public async Task ExecuteInTenantContextAsync(string tenantId, Func<Task> operation)
         {
-            await ExecuteInTenantContextAsync(tenantId, async () =>
+            await ExecuteInTenantContextAsync(tenantId, async (serviceProvider) =>
             {
                 await operation();
-                return true; // Dummy return value
             });
         }
 
@@ -113,16 +214,22 @@ namespace InteractiveLeads.Infrastructure.Tenancy
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task LogCrossTenantOperationAsync(Guid userId, string? originalTenantId, string targetTenantId, string operation, bool result = true)
         {
-            // TODO: Implement logging to database or external logging service
-            // For now, we'll just use console logging
             var logMessage = $"Cross-Tenant Operation: User {userId} from tenant '{originalTenantId}' performed '{operation}' on tenant '{targetTenantId}' - Result: {(result ? "Success" : "Failure")}";
             
-            // In a real implementation, you would log this to:
-            // - Database audit table
+            if (result)
+            {
+                _logger.LogInformation("Cross-tenant operation completed successfully: {LogMessage}", logMessage);
+            }
+            else
+            {
+                _logger.LogWarning("Cross-tenant operation failed: {LogMessage}", logMessage);
+            }
+            
+            // TODO: Implement additional logging to:
+            // - Database audit table for compliance
             // - External logging service (Serilog, Application Insights, etc.)
             // - Event bus for real-time monitoring
-            
-            Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {logMessage}");
+            // - Security information and event management (SIEM) system
             
             await Task.CompletedTask; // Placeholder for async logging implementation
         }

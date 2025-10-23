@@ -1,9 +1,8 @@
 using InteractiveLeads.Api.Controllers.Base;
+using InteractiveLeads.Application.Feature.CrossTenant.Commands;
+using InteractiveLeads.Application.Feature.CrossTenant.Queries;
+using InteractiveLeads.Application.Feature.Tenancy.Queries;
 using InteractiveLeads.Application.Feature.Users;
-using InteractiveLeads.Application.Feature.Users.Commands;
-using Application.Features.Identity.Users.Queries;
-using InteractiveLeads.Application.Feature.Users.Queries;
-using InteractiveLeads.Application.Interfaces;
 using InteractiveLeads.Application.Models;
 using InteractiveLeads.Infrastructure.Constants;
 using InteractiveLeads.Infrastructure.Identity.Auth;
@@ -21,24 +20,11 @@ namespace InteractiveLeads.Api.Controllers
     /// </remarks>
     public class CrossTenantController : BaseApiController
     {
-        private readonly ICrossTenantService _crossTenantService;
-        private readonly ICrossTenantAuthorizationService _authService;
-        private readonly ICurrentUserService _currentUserService;
-
         /// <summary>
         /// Initializes a new instance of the CrossTenantController class.
         /// </summary>
-        /// <param name="crossTenantService">The cross-tenant service for context switching.</param>
-        /// <param name="authService">The authorization service for cross-tenant operations.</param>
-        /// <param name="currentUserService">The current user service.</param>
-        public CrossTenantController(
-            ICrossTenantService crossTenantService,
-            ICrossTenantAuthorizationService authService,
-            ICurrentUserService currentUserService)
+        public CrossTenantController()
         {
-            _crossTenantService = crossTenantService;
-            _authService = authService;
-            _currentUserService = currentUserService;
         }
 
         /// <summary>
@@ -54,8 +40,7 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("List users in a specific tenant")]
         public async Task<IActionResult> GetUsersInTenantAsync(string tenantId)
         {
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new GetAllUsersQuery()));
+            var response = await Sender.Send(new GetUsersInTenantQuery { TenantId = tenantId });
             
             return Ok(response);
         }
@@ -74,8 +59,7 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Get a specific user from a tenant")]
         public async Task<IActionResult> GetUserInTenantAsync(string tenantId, Guid userId)
         {
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new GetUserByIdQuery { UserId = userId }));
+            var response = await Sender.Send(new GetUserInTenantQuery { TenantId = tenantId, UserId = userId });
             
             return Ok(response);
         }
@@ -95,19 +79,11 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Create a user in a specific tenant")]
         public async Task<IActionResult> CreateUserInTenantAsync(string tenantId, [FromBody] CreateUserRequest createUser)
         {
-            // Additional verification: only SysAdmin can create users
-            var userIdString = _currentUserService.GetUserId();
-            if (!Guid.TryParse(userIdString, out var userId))
-            {
-                return Forbid("Invalid user ID");
-            }
-            if (!await _authService.IsSystemAdminAsync(userId))
-            {
-                return Forbid("Only system administrators can create users in other tenants");
-            }
-
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new CreateUserCommand { CreateUser = createUser }));
+            var response = await Sender.Send(new CreateUserInTenantCommand 
+            { 
+                TenantId = tenantId, 
+                CreateUser = createUser 
+            });
             
             return Ok(response);
         }
@@ -127,8 +103,12 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Update a user in a specific tenant")]
         public async Task<IActionResult> UpdateUserInTenantAsync(string tenantId, Guid userId, [FromBody] UpdateUserRequest updateUser)
         {
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new UpdateUserCommand { UpdateUser = updateUser }));
+            var response = await Sender.Send(new UpdateUserInTenantCommand 
+            { 
+                TenantId = tenantId, 
+                UserId = userId, 
+                UpdateUser = updateUser 
+            });
             
             return Ok(response);
         }
@@ -148,8 +128,12 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Change user status in a specific tenant")]
         public async Task<IActionResult> ChangeUserStatusInTenantAsync(string tenantId, Guid userId, [FromBody] ChangeUserStatusRequest changeUserStatus)
         {
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new UpdateUserStatusCommand { ChangeUserStatus = changeUserStatus }));
+            var response = await Sender.Send(new ChangeUserStatusInTenantCommand 
+            { 
+                TenantId = tenantId, 
+                UserId = userId, 
+                ChangeUserStatus = changeUserStatus 
+            });
             
             return Ok(response);
         }
@@ -169,8 +153,12 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Update user roles in a specific tenant")]
         public async Task<IActionResult> UpdateUserRolesInTenantAsync(string tenantId, Guid userId, [FromBody] UserRolesRequest userRolesRequest)
         {
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new UpdateUserRolesCommand { UserRolesRequest = userRolesRequest, UserId = userId }));
+            var response = await Sender.Send(new UpdateUserRolesInTenantCommand 
+            { 
+                TenantId = tenantId, 
+                UserId = userId, 
+                UserRolesRequest = userRolesRequest 
+            });
             
             return Ok(response);
         }
@@ -190,19 +178,11 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Delete a user from a specific tenant")]
         public async Task<IActionResult> DeleteUserInTenantAsync(string tenantId, Guid userId)
         {
-            // Additional verification: only SysAdmin can delete users
-            var userIdString2 = _currentUserService.GetUserId();
-            if (!Guid.TryParse(userIdString2, out var userId2))
-            {
-                return Forbid("Invalid user ID");
-            }
-            if (!await _authService.IsSystemAdminAsync(userId2))
-            {
-                return Forbid("Only system administrators can delete users from other tenants");
-            }
-
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new DeleteUserCommand { UserId = userId }));
+            var response = await Sender.Send(new DeleteUserInTenantCommand 
+            { 
+                TenantId = tenantId, 
+                UserId = userId 
+            });
             
             return Ok(response);
         }
@@ -215,39 +195,22 @@ namespace InteractiveLeads.Api.Controllers
         /// <returns>List of accessible tenant IDs with pagination info.</returns>
         /// <remarks>
         /// Returns different tenant lists based on the user's role.
-        /// For cross-tenant users, returns "*" indicating access to all tenants.
+        /// For cross-tenant users, returns all tenants. For regular users, returns only their tenant.
         /// </remarks>
         [HttpGet("tenants")]
         [ShouldHavePermission(InteractiveAction.Read, InteractiveFeature.CrossTenantTenants)]
         [OpenApiOperation("Get accessible tenants for current user")]
         public async Task<IActionResult> GetAccessibleTenantsAsync(int pageNumber = 1, int pageSize = 50)
         {
-            var userIdString = _currentUserService.GetUserId();
-            if (!Guid.TryParse(userIdString, out var userId))
+            var pagination = new PaginationRequest
             {
-                return BadRequest("Invalid user ID");
-            }
+                Page = pageNumber,
+                PageSize = pageSize
+            };
 
-            // Check if user has cross-tenant access
-            var hasAllTenantsAccess = await _authService.HasAllTenantsAccessAsync(userId);
-            
-            if (hasAllTenantsAccess)
-            {
-                // For cross-tenant users, return special marker
-                return Ok(new { 
-                    TenantIds = new[] { "*" }, 
-                    HasMore = false,
-                    Message = "User has access to all tenants" 
-                });
-            }
+            var response = await Sender.Send(new GetAccessibleTenantsQuery { Pagination = pagination });
 
-            // For regular users, get their specific tenant
-            var accessibleTenants = await _authService.GetAccessibleTenantsAsync(userId);
-            return Ok(new { 
-                TenantIds = accessibleTenants, 
-                HasMore = false,
-                Message = "User has access to specific tenants" 
-            });
+            return Ok(response);
         }
 
         /// <summary>
@@ -264,8 +227,11 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Get user permissions in a specific tenant")]
         public async Task<IActionResult> GetUserPermissionsInTenantAsync(string tenantId, Guid userId)
         {
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new GetUserPermissionsQuery { UserId = userId }));
+            var response = await Sender.Send(new GetUserPermissionsInTenantQuery 
+            { 
+                TenantId = tenantId, 
+                UserId = userId 
+            });
             
             return Ok(response);
         }
@@ -284,8 +250,11 @@ namespace InteractiveLeads.Api.Controllers
         [OpenApiOperation("Get user roles in a specific tenant")]
         public async Task<IActionResult> GetUserRolesInTenantAsync(string tenantId, Guid userId)
         {
-            var response = await _crossTenantService.ExecuteInTenantContextAsync(tenantId,
-                async () => await Sender.Send(new GetUserRolesQuery { UserId = userId }));
+            var response = await Sender.Send(new GetUserRolesInTenantQuery 
+            { 
+                TenantId = tenantId, 
+                UserId = userId 
+            });
             
             return Ok(response);
         }

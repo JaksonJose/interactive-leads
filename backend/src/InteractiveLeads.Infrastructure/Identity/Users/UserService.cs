@@ -197,7 +197,7 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
 
             var userResponses = usersInDb.Adapt<List<UserResponse>>();
             var response = new ListResponse<UserResponse>(userResponses, userResponses.Count);
-            response.AddSuccessMessage("Users retrieved successfully", "users.retrieved_successfully");
+
             return response;
         }
 

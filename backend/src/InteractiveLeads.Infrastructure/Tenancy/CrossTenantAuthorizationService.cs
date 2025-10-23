@@ -117,40 +117,6 @@ namespace InteractiveLeads.Infrastructure.Tenancy
         }
 
         /// <summary>
-        /// Gets the list of tenants that a user can access.
-        /// </summary>
-        /// <param name="userId">The ID of the user.</param>
-        /// <returns>An array of tenant IDs that the user can access.</returns>
-        public async Task<string[]> GetAccessibleTenantsAsync(Guid userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-                return Array.Empty<string>();
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-            
-            // Cross-tenant roles can access all tenants
-            if (RoleConstants.CrossTenantRoles.Any(role => userRoles.Contains(role)))
-            {
-                // For performance reasons, we don't load all tenants at once
-                // Instead, we return a special marker indicating "all tenants" access
-                // The actual tenant validation should be done at the operation level
-                return new[] { "*" }; // Special marker for "all tenants"
-            }
-            
-            // Tenant-specific roles can only access their own tenant
-            if (RoleConstants.TenantRoles.Any(role => userRoles.Contains(role)))
-                return new[] { user.TenantId };
-            
-            // Legacy roles - same as tenant-specific
-            if (userRoles.Contains(RoleConstants.Admin) || userRoles.Contains(RoleConstants.Basic))
-                return new[] { user.TenantId };
-            
-            // Default: users can only access their own tenant
-            return new[] { user.TenantId };
-        }
-
-        /// <summary>
         /// Checks if a user has access to all tenants (cross-tenant access).
         /// </summary>
         /// <param name="userId">The ID of the user.</param>

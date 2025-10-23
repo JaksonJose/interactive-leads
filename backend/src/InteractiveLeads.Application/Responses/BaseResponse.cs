@@ -17,6 +17,46 @@ namespace InteractiveLeads.Application.Responses
         /// </summary>
         public List<Message> Messages { get; set; } = [];
 
+        public bool HasAnyErrorMessage
+        {
+            get
+            {
+                return HasMessageType(MessageType.Error)
+                    || HasMessageType(MessageType.Exception)
+                    || HasMessageType(MessageType.Fatal);
+            }
+        }
+
+        /// <summary>
+        /// Validates if has any error message
+        /// </summary>
+        public bool HasErrorMessage { get { return HasMessageType(MessageType.Error); } }
+
+        /// <summary>
+        /// Validates if has any exception message
+        /// </summary>
+        public bool HasExceptionMessage { get { return HasMessageType(MessageType.Exception); } }
+
+        /// <summary>
+        /// Validate if has any fatal message
+        /// </summary>
+        public bool HasFatalMessage { get { return HasMessageType(MessageType.Fatal); } }
+
+        /// <summary>
+        /// Validates if has any info message
+        /// </summary>
+        public bool HasInfoMessage { get { return HasMessageType(MessageType.Info); } }
+
+        /// <summary>
+        /// Validates if has any info message
+        /// </summary>
+        public bool HasSuccessMessage { get { return HasMessageType(MessageType.Success); } }
+
+        /// <summary>
+        /// Validate if has any warning message
+        /// </summary>
+        public bool HasWarningMessage { get { return HasMessageType(MessageType.Warning); } }
+
         /// <summary>
         /// Initializes a new instance of the ResponseWrapper class.
         /// </summary>
@@ -46,6 +86,11 @@ namespace InteractiveLeads.Application.Responses
         {
             Messages.Add(new Message() { Text = message, Code = code, Type = MessageType.Warning });
             return this;
+        }
+
+        private bool HasMessageType(MessageType messageType)
+        {
+            return Messages.Any(message => message.Type == messageType);
         }
     }
 }
