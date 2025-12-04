@@ -183,27 +183,36 @@
     </div>
 
     <!-- Action Buttons -->
-    @if (hasPermission(['Permission.Tenants.Update'])) {
-      <div class="action-buttons">
-      @if (!tenant()?.isActive) {
+    <div class="action-buttons">
+      @if (hasPermission(['Permission.CrossTenantUsers.Read'])) {
         <p-button 
-          [label]="'tenantManagement.activateTenant' | translate"
-          icon="pi pi-check"
-          severity="success"
-          (onClick)="activateTenant()">
+          [label]="'userManagement.manageUsers' | translate"
+          icon="pi pi-users"
+          severity="info"
+          (onClick)="navigateToUsers()">
         </p-button>
       }
       
-      @if (tenant()?.isActive) {
-        <p-button 
-          [label]="'tenantManagement.deactivateTenant' | translate"
-          icon="pi pi-times"
-          severity="danger"
-          (onClick)="deactivateTenant()">
-        </p-button>
+      @if (hasPermission(['Permission.Tenants.Update'])) {
+        @if (!tenant()?.isActive) {
+          <p-button 
+            [label]="'tenantManagement.activateTenant' | translate"
+            icon="pi pi-check"
+            severity="success"
+            (onClick)="activateTenant()">
+          </p-button>
+        }
+        
+        @if (tenant()?.isActive) {
+          <p-button 
+            [label]="'tenantManagement.deactivateTenant' | translate"
+            icon="pi pi-times"
+            severity="danger"
+            (onClick)="deactivateTenant()">
+          </p-button>
+        }
       }
-      </div>
-    }
+    </div>
     </div>
   }
 

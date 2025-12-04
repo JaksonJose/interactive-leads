@@ -127,6 +127,51 @@
       "enterAdminEmail": "Digite o email do administrador da empresa",
       "selectExpirationDate": "Selecione a data de expiração",
       "enterConnectionString": "Digite a string de conexão do banco de dados (opcional)"
+    },
+    "manageUsers": "Gerenciar Usuários"
+  },
+  "userManagement": {
+    "title": "Gerenciamento de Usuários",
+    "subtitle": "Gerencie usuários da empresa",
+    "createUser": "Criar Usuário",
+    "editUser": "Editar Usuário",
+    "updateUser": "Atualizar Usuário",
+    "usersList": "Lista de Usuários",
+    "searchUsers": "Buscar usuários...",
+    "name": "Nome",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "email": "Email",
+    "userName": "Nome de Usuário",
+    "phoneNumber": "Telefone",
+    "password": "Senha",
+    "confirmPassword": "Confirmar Senha",
+    "isActive": "Usuário Ativo",
+    "status": "Status",
+    "actions": "Ações",
+    "viewDetails": "Ver Detalhes",
+    "noUsersFound": "Nenhum usuário encontrado",
+    "backToList": "Voltar à Lista",
+    "backToTenant": "Voltar à Empresa",
+    "createNewUser": "Criar novo usuário",
+    "editUserInformation": "Editar informações do usuário",
+    "loadingUserData": "Carregando dados do usuário...",
+    "emailCannotBeChanged": "O email não pode ser alterado após a criação",
+    "cancel": "Cancelar",
+    "tenantIdRequired": "ID da empresa é obrigatório",
+    "errorLoadingUsers": "Erro ao carregar usuários",
+    "statusLabels": {
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "manageUsers": "Gerenciar Usuários",
+    "placeholders": {
+      "enterFirstName": "Digite o nome",
+      "enterLastName": "Digite o sobrenome",
+      "enterEmail": "Digite o email",
+      "enterPhoneNumber": "Digite o telefone",
+      "enterPassword": "Digite a senha",
+      "confirmPassword": "Confirme a senha"
     }
   },
   "validation": {
@@ -140,6 +185,7 @@
     "emailField": "Email do Administrador",
     "firstName": "Nome do Administrador",
     "lastName": "Sobrenome do Administrador",
-    "expirationDate": "Data de Expiração"
+    "expirationDate": "Data de Expiração",
+    "passwordMismatch": "As senhas não coincidem"
   }
 }

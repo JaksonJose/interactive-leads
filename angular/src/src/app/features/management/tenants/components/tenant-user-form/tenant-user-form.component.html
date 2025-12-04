@@ -1,0 +1,207 @@
+<div class="tenant-user-form-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>{{ (isEditMode() ? 'userManagement.editUser' : 'userManagement.createUser') | translate }}</h1>
+      <p class="subtitle">{{ (isEditMode() ? 'userManagement.editUserInformation' : 'userManagement.createNewUser') | translate }}</p>
+    </div>
+    
+    <p-button
+      type="button"
+      [label]="'userManagement.backToList' | translate"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      (onClick)="onCancel()">
+    </p-button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading() && isEditMode()) {
+    <div class="loading-container">
+      <div class="loading-content">
+        <i class="pi pi-spin pi-spinner"></i>
+        <p>{{ 'userManagement.loadingUserData' | translate }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading() || !isEditMode()) {
+    <div class="form-container">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <!-- First Name -->
+        <div class="form-group">
+          <label for="firstName" class="p-label">
+            {{ 'userManagement.firstName' | translate }} *
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            pInputText
+            formControlName="firstName"
+            [placeholder]="'userManagement.placeholders.enterFirstName' | translate"
+            [class.p-invalid]="isFieldInvalid('firstName')">
+          @if (isFieldInvalid('firstName')) {
+            <div class="p-error mt-1">
+              {{ getFieldError('firstName') }}
+            </div>
+          }
+        </div>
+
+        <!-- Last Name -->
+        <div class="form-group">
+          <label for="lastName" class="p-label">
+            {{ 'userManagement.lastName' | translate }} *
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            pInputText
+            formControlName="lastName"
+            [placeholder]="'userManagement.placeholders.enterLastName' | translate"
+            [class.p-invalid]="isFieldInvalid('lastName')">
+          @if (isFieldInvalid('lastName')) {
+            <div class="p-error mt-1">
+              {{ getFieldError('lastName') }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email" class="p-label">
+            {{ 'userManagement.email' | translate }} *
+          </label>
+          <input
+            type="email"
+            id="email"
+            pInputText
+            formControlName="email"
+            [placeholder]="'userManagement.placeholders.enterEmail' | translate"
+            [class.p-invalid]="isFieldInvalid('email')"
+            [readonly]="isEditMode()">
+          @if (isFieldInvalid('email')) {
+            <div class="p-error mt-1">
+              {{ getFieldError('email') }}
+            </div>
+          }
+          @if (isEditMode()) {
+            <small class="p-text-secondary">{{ 'userManagement.emailCannotBeChanged' | translate }}</small>
+          }
+        </div>
+
+        <!-- Phone Number -->
+        <div class="form-group">
+          <label for="phoneNumber" class="p-label">
+            {{ 'userManagement.phoneNumber' | translate }}
+          </label>
+          <input
+            type="tel"
+            id="phoneNumber"
+            pInputText
+            formControlName="phoneNumber"
+            [placeholder]="'userManagement.placeholders.enterPhoneNumber' | translate"
+            [class.p-invalid]="isFieldInvalid('phoneNumber')">
+          @if (isFieldInvalid('phoneNumber')) {
+            <div class="p-error mt-1">
+              {{ getFieldError('phoneNumber') }}
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (!isEditMode()) {
+        <div class="form-row">
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password" class="p-label">
+              {{ 'userManagement.password' | translate }} *
+            </label>
+            <p-password
+              id="password"
+              formControlName="password"
+              [placeholder]="'userManagement.placeholders.enterPassword' | translate"
+              [toggleMask]="true"
+              [feedback]="true"
+              [class.p-invalid]="isFieldInvalid('password')"
+              styleClass="w-full">
+            </p-password>
+            @if (isFieldInvalid('password')) {
+              <div class="p-error mt-1">
+                {{ getFieldError('password') }}
+              </div>
+            }
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label for="confirmPassword" class="p-label">
+              {{ 'userManagement.confirmPassword' | translate }} *
+            </label>
+            <p-password
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              [placeholder]="'userManagement.placeholders.confirmPassword' | translate"
+              [toggleMask]="true"
+              [class.p-invalid]="isFieldInvalid('confirmPassword')"
+              styleClass="w-full">
+            </p-password>
+            @if (isFieldInvalid('confirmPassword')) {
+              <div class="p-error mt-1">
+                {{ getFieldError('confirmPassword') }}
+              </div>
+            }
+            @if (userForm.errors?.['passwordMismatch'] && userForm.get('confirmPassword')?.touched) {
+              <div class="p-error mt-1">
+                {{ getFieldError('confirmPassword') }}
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (!isEditMode()) {
+        <div class="form-row">
+          <!-- Is Active -->
+          <div class="form-group">
+            <div class="flex align-items-center gap-2">
+              <p-checkbox
+                formControlName="isActive"
+                [binary]="true"
+                inputId="isActive">
+              </p-checkbox>
+              <label for="isActive" class="p-label">
+                {{ 'userManagement.isActive' | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <p-button
+          type="button"
+          [label]="'userManagement.cancel' | translate"
+          icon="pi pi-times"
+          severity="secondary"
+          (onClick)="onCancel()"
+          [disabled]="loading()">
+        </p-button>
+        
+        <p-button
+          type="submit"
+          [label]="(isEditMode() ? 'userManagement.updateUser' : 'userManagement.createUser') | translate"
+          icon="pi pi-check"
+          [loading]="loading()"
+          [disabled]="userForm.invalid">
+        </p-button>
+      </div>
+    </form>
+    </div>
+  }
+</div>
+

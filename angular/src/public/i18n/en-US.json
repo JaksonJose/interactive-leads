@@ -127,6 +127,51 @@
       "enterAdminEmail": "Enter administrator email",
       "selectExpirationDate": "Select expiration date",
       "enterConnectionString": "Enter database connection string (optional)"
+    },
+    "manageUsers": "Manage Users"
+  },
+  "userManagement": {
+    "title": "User Management",
+    "subtitle": "Manage company users",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "updateUser": "Update User",
+    "usersList": "Users List",
+    "searchUsers": "Search users...",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "userName": "Username",
+    "phoneNumber": "Phone Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "isActive": "User Active",
+    "status": "Status",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "noUsersFound": "No users found",
+    "backToList": "Back to List",
+    "backToTenant": "Back to Company",
+    "createNewUser": "Create new user",
+    "editUserInformation": "Edit user information",
+    "loadingUserData": "Loading user data...",
+    "emailCannotBeChanged": "Email cannot be changed after creation",
+    "cancel": "Cancel",
+    "tenantIdRequired": "Tenant ID is required",
+    "errorLoadingUsers": "Error loading users",
+    "statusLabels": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "manageUsers": "Manage Users",
+    "placeholders": {
+      "enterFirstName": "Enter first name",
+      "enterLastName": "Enter last name",
+      "enterEmail": "Enter email",
+      "enterPhoneNumber": "Enter phone number",
+      "enterPassword": "Enter password",
+      "confirmPassword": "Confirm password"
     }
   },
   "validation": {
@@ -140,6 +185,7 @@
     "emailField": "Administrator Email",
     "firstName": "Administrator First Name",
     "lastName": "Administrator Last Name",
-    "expirationDate": "Expiration Date"
+    "expirationDate": "Expiration Date",
+    "passwordMismatch": "Passwords do not match"
   }
 }

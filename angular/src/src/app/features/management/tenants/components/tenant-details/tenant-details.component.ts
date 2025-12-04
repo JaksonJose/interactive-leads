@@ -168,4 +168,11 @@ export class TenantDetailsComponent implements OnInit {
   hasPermission(permissions: string[]): boolean {
     return this.authService.hasAnyPermission(permissions);
   }
+
+  navigateToUsers(): void {
+    const tenant = this.tenant();
+    if (tenant) {
+      this.router.navigate(['/tenants', tenant.identifier, 'users']);
+    }
+  }
 }
