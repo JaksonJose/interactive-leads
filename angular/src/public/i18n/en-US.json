@@ -136,6 +136,8 @@
     "createUser": "Create User",
     "editUser": "Edit User",
     "updateUser": "Update User",
+    "creating": "Creating...",
+    "updating": "Updating...",
     "usersList": "Users List",
     "searchUsers": "Search users...",
     "name": "Name",

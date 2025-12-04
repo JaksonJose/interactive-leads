@@ -16,8 +16,8 @@ export class TenantUserRepository {
    * Retrieves all users in a specific tenant.
    * Requires Permission.CrossTenantUsers.Read
    */
-  getUsersInTenant(tenantId: string): Observable<Response<User[]>> {
-    return this.http.get<Response<User[]>>(`${this.baseUrl}/tenants/${tenantId}/users`);
+  getUsersInTenant(tenantId: string): Observable<Response<User>> {
+    return this.http.get<Response<User>>(`${this.baseUrl}/tenants/${tenantId}/users`);
   }
 
   /**

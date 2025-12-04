@@ -185,19 +185,19 @@
       <div class="form-actions">
         <p-button
           type="button"
-          [label]="'userManagement.cancel' | translate"
+          label="{{ 'userManagement.cancel' | translate }}"
           icon="pi pi-times"
           severity="secondary"
-          (onClick)="onCancel()"
-          [disabled]="loading()">
+          (onClick)="onCancel()">
         </p-button>
         
         <p-button
           type="submit"
-          [label]="(isEditMode() ? 'userManagement.updateUser' : 'userManagement.createUser') | translate"
-          icon="pi pi-check"
-          [loading]="loading()"
-          [disabled]="userForm.invalid">
+          [label]="loading() ? 
+            (isEditMode() ? ('userManagement.updating' | translate) : ('userManagement.creating' | translate)) : 
+            (isEditMode() ? ('userManagement.updateUser' | translate) : ('userManagement.createUser' | translate))"
+          [icon]="loading() ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+          [disabled]="loading() || !userForm.valid">
         </p-button>
       </div>
     </form>

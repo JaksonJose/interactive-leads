@@ -68,10 +68,10 @@ export class TenantUsersListComponent implements OnInit {
     this.messages.set([]);
 
     this.tenantUserRepository.getUsersInTenant(tenantId).subscribe({
-      next: (response: Response<User[]>) => {
-        if (response.data) {
-          this.users.set(response.data);
-        }
+      next: (response: Response<User>) => {
+        // API returns data in 'items' property for list responses
+        const users = response.items || (response.data ? [response.data] : []);
+        this.users.set(users);
         this.loading.set(false);
       },
       error: () => {

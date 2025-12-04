@@ -145,6 +145,14 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
                 throw new ConflictException(conflictResponse);
             }
 
+            var tenantId = _tenantContextAccessor.MultiTenantContext.TenantInfo?.Id;
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                var errorResponse = new ResultResponse();
+                errorResponse.AddErrorMessage("Tenant context is not available.", "tenant.context_not_available");
+                throw new ConflictException(errorResponse);
+            }
+
             var newUser = new ApplicationUser
             {
                 FirstName = request.FirstName,
@@ -153,7 +161,8 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
                 PhoneNumber = request.PhoneNumber,
                 IsActive = request.IsActive,
                 UserName = request.Email,
-                EmailConfirmed = true                
+                EmailConfirmed = true,
+                TenantId = tenantId
             };
 
             var result = await _userManager.CreateAsync(newUser, request.Password);

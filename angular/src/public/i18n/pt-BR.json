@@ -136,6 +136,8 @@
     "createUser": "Criar Usuário",
     "editUser": "Editar Usuário",
     "updateUser": "Atualizar Usuário",
+    "creating": "Criando...",
+    "updating": "Atualizando...",
     "usersList": "Lista de Usuários",
     "searchUsers": "Buscar usuários...",
     "name": "Nome",
