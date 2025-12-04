@@ -175,6 +175,44 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             return response;
         }
 
+        public async Task<ResultResponse> UpdateTenantAsync(UpdateTenantRequest updateTenantRequest, CancellationToken ct = default)
+        {
+            // Block operations on root tenant
+            if (updateTenantRequest.Identifier == TenancyConstants.Root.Id)
+            {
+                var errorResponse = new ResultResponse();
+                errorResponse.AddErrorMessage("Cannot modify root tenant", "tenant.root_modification_denied");
+                return errorResponse;
+            }
+
+            var tenantInDb = await _tenantStore.TryGetAsync(updateTenantRequest.Identifier);
+            if (tenantInDb == null)
+            {
+                var errorResponse = new ResultResponse();
+                errorResponse.AddErrorMessage("Tenant not found", "tenant.not_found");
+                return errorResponse;
+            }
+
+            // Update tenant properties
+            tenantInDb.Name = updateTenantRequest.Name;
+            tenantInDb.Email = updateTenantRequest.Email;
+            tenantInDb.FirstName = updateTenantRequest.FirstName;
+            tenantInDb.LastName = updateTenantRequest.LastName;
+            tenantInDb.ExpirationDate = updateTenantRequest.ExpirationDate;
+            tenantInDb.IsActive = updateTenantRequest.IsActive;
+            
+            if (!string.IsNullOrWhiteSpace(updateTenantRequest.ConnectionString))
+            {
+                tenantInDb.ConnectionString = updateTenantRequest.ConnectionString;
+            }
+
+            await _tenantStore.TryUpdateAsync(tenantInDb);
+
+            var response = new ResultResponse();
+            response.AddSuccessMessage("Tenant updated successfully", "tenant.updated_successfully");
+            return response;
+        }
+
         public async Task<ResultResponse> UpdateSubscriptionAsync(UpdateTenantSubscriptionRequest updateTenantSubscriptionRequest, CancellationToken ct = default)
         {
             var tenantInDb = await _tenantStore.TryGetAsync(updateTenantSubscriptionRequest.TenantId);

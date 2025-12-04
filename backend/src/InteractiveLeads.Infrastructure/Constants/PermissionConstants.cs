@@ -217,7 +217,10 @@ namespace InteractiveLeads.Infrastructure.Constants
             new InteractivePermission(InteractiveAction.Read, InteractiveFeature.CrossTenantRoles, "Read Roles Across All Tenants", "CrossTenant", PermissionType: InteractivePermissionType.System),
             new InteractivePermission(InteractiveAction.Update, InteractiveFeature.CrossTenantRoles, "Update Roles Across All Tenants", "CrossTenant", PermissionType: InteractivePermissionType.System),
             
+            new InteractivePermission(InteractiveAction.Create, InteractiveFeature.CrossTenantTenants, "Create Tenants", "CrossTenant", PermissionType: InteractivePermissionType.System),
             new InteractivePermission(InteractiveAction.Read, InteractiveFeature.CrossTenantTenants, "Read All Tenants", "CrossTenant", PermissionType: InteractivePermissionType.System),
+            new InteractivePermission(InteractiveAction.Update, InteractiveFeature.CrossTenantTenants, "Update Tenants", "CrossTenant", PermissionType: InteractivePermissionType.System),
+            new InteractivePermission(InteractiveAction.Delete, InteractiveFeature.CrossTenantTenants, "Delete Tenants", "CrossTenant", PermissionType: InteractivePermissionType.System),
             
             new InteractivePermission(InteractiveAction.Read, InteractiveFeature.SystemLogs, "Read System Logs", "SystemManagement", PermissionType: InteractivePermissionType.System),
             new InteractivePermission(InteractiveAction.Read, InteractiveFeature.SystemMonitoring, "Read System Monitoring", "SystemManagement", PermissionType: InteractivePermissionType.System),

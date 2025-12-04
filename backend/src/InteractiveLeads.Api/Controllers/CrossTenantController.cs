@@ -1,6 +1,8 @@
 using InteractiveLeads.Api.Controllers.Base;
 using InteractiveLeads.Application.Feature.CrossTenant.Commands;
 using InteractiveLeads.Application.Feature.CrossTenant.Queries;
+using InteractiveLeads.Application.Feature.Tenancy;
+using InteractiveLeads.Application.Feature.Tenancy.Commands;
 using InteractiveLeads.Application.Feature.Tenancy.Queries;
 using InteractiveLeads.Application.Feature.Users;
 using InteractiveLeads.Application.Models;
@@ -25,6 +27,81 @@ namespace InteractiveLeads.Api.Controllers
         /// </summary>
         public CrossTenantController()
         {
+        }
+
+        /// <summary>
+        /// Creates a new tenant in the system - SysAdmin only.
+        /// </summary>
+        /// <param name="request">The tenant creation request containing tenant details.</param>
+        /// <returns>Result of the tenant creation operation.</returns>
+        /// <remarks>
+        /// Requires Create permission for CrossTenantTenants feature.
+        /// Only SysAdmin users can create tenants.
+        /// </remarks>
+        [HttpPost("add")]
+        [ShouldHavePermission(InteractiveAction.Create, InteractiveFeature.CrossTenantTenants)]
+        [OpenApiOperation("Create a new tenant")]
+        public async Task<IActionResult> CreateTenantAsync([FromBody] CreateTenantRequest request)
+        {
+            var response = await Sender.Send(new CreateTenantCommand { CreateTenant = request });
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Updates an existing tenant in the system - SysAdmin only.
+        /// </summary>
+        /// <param name="tenantId">The ID of the tenant to update.</param>
+        /// <param name="request">The tenant update request containing updated tenant details.</param>
+        /// <returns>Result of the tenant update operation.</returns>
+        /// <remarks>
+        /// Requires Update permission for CrossTenantTenants feature.
+        /// Only SysAdmin users can update tenants.
+        /// </remarks>
+        [HttpPut("{tenantId}")]
+        [ShouldHavePermission(InteractiveAction.Update, InteractiveFeature.CrossTenantTenants)]
+        [OpenApiOperation("Update an existing tenant")]
+        public async Task<IActionResult> UpdateTenantAsync(string tenantId, [FromBody] UpdateTenantRequest request)
+        {
+            // Ensure the identifier in the request matches the tenantId in the route
+            request.Identifier = tenantId;
+            var response = await Sender.Send(new UpdateTenantCommand { UpdateTenant = request });
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Activates an existing tenant in the system - SysAdmin only.
+        /// </summary>
+        /// <param name="tenantId">The ID of the tenant to activate.</param>
+        /// <returns>Result of the tenant activation operation.</returns>
+        /// <remarks>
+        /// Requires Update permission for CrossTenantTenants feature.
+        /// Only SysAdmin users can activate tenants.
+        /// </remarks>
+        [HttpPut("{tenantId}/activate")]
+        [ShouldHavePermission(InteractiveAction.Update, InteractiveFeature.CrossTenantTenants)]
+        [OpenApiOperation("Activate an existing tenant")]
+        public async Task<IActionResult> ActivateTenantAsync(string tenantId)
+        {
+            var response = await Sender.Send(new ActivateTenantCommand { TenantId = tenantId });
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Deactivates an existing tenant in the system - SysAdmin only.
+        /// </summary>
+        /// <param name="tenantId">The ID of the tenant to deactivate.</param>
+        /// <returns>Result of the tenant deactivation operation.</returns>
+        /// <remarks>
+        /// Requires Update permission for CrossTenantTenants feature.
+        /// Only SysAdmin users can deactivate tenants.
+        /// </remarks>
+        [HttpPut("{tenantId}/deactivate")]
+        [ShouldHavePermission(InteractiveAction.Update, InteractiveFeature.CrossTenantTenants)]
+        [OpenApiOperation("Deactivate an existing tenant")]
+        public async Task<IActionResult> DeactivateTenantAsync(string tenantId)
+        {
+            var response = await Sender.Send(new DeactivateTenantCommand { TenantId = tenantId });
+            return Ok(response);
         }
 
         /// <summary>

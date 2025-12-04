@@ -37,6 +37,14 @@ namespace InteractiveLeads.Application.Interfaces
         Task<ResultResponse> DeactivateAsync(string id, CancellationToken ct = default);
 
         /// <summary>
+        /// Updates an existing tenant with the provided information.
+        /// </summary>
+        /// <param name="updateTenantRequest">The request containing updated tenant details.</param>
+        /// <param name="ct">Cancellation token for the async operation.</param>
+        /// <returns>Result of the tenant update operation.</returns>
+        Task<ResultResponse> UpdateTenantAsync(UpdateTenantRequest updateTenantRequest, CancellationToken ct = default);
+
+        /// <summary>
         /// Updates the subscription information for a tenant.
         /// </summary>
         /// <param name="updateTenantSubscriptionRequest">The request containing updated subscription details.</param>
