@@ -142,14 +142,14 @@ namespace InteractiveLeads.Api.Controllers
         }
 
         /// <summary>
-        /// Creates a new user in a specific tenant - SysAdmin only.
+        /// Creates a new user in a specific tenant - available for SysAdmin and Support.
         /// </summary>
         /// <param name="tenantId">The ID of the tenant to create the user in.</param>
         /// <param name="createUser">User data to be created.</param>
         /// <returns>Result of the user creation operation.</returns>
         /// <remarks>
         /// Requires Create permission for CrossTenantUsers feature.
-        /// Only SysAdmin users can create users in other tenants.
+        /// SysAdmin and Support users can create users in other tenants.
         /// </remarks>
         [HttpPost("tenants/{tenantId}/users")]
         [ShouldHavePermission(InteractiveAction.Create, InteractiveFeature.CrossTenantUsers)]

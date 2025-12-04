@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace InteractiveLeads.Application.Feature.CrossTenant.Commands
 {
     /// <summary>
-    /// Command for creating a new user in a specific tenant - SysAdmin only.
+    /// Command for creating a new user in a specific tenant - available for SysAdmin and Support.
     /// </summary>
     /// <remarks>
     /// This command implements the CQRS pattern for cross-tenant user creation operations.
@@ -33,7 +33,7 @@ namespace InteractiveLeads.Application.Feature.CrossTenant.Commands
     /// </summary>
     /// <remarks>
     /// Executes the user creation operation in the specified tenant context.
-    /// Validates that only SysAdmin users can create users in other tenants.
+    /// Validates that SysAdmin and Support users can create users in other tenants.
     /// </remarks>
     public sealed class CreateUserInTenantCommandHandler : IRequestHandler<CreateUserInTenantCommand, IResponse>
     {
@@ -74,10 +74,13 @@ namespace InteractiveLeads.Application.Feature.CrossTenant.Commands
                 throw new UnauthorizedException(resultResponse);
             }
             
-            if (!await _authService.IsSystemAdminAsync(userId))
+            var isSystemAdmin = await _authService.IsSystemAdminAsync(userId);
+            var isSupportUser = await _authService.IsSupportUserAsync(userId);
+            
+            if (!isSystemAdmin && !isSupportUser)
             {
                 ResultResponse resultResponse = new();
-                resultResponse.AddErrorMessage("Only system administrators can create users from other tenants");
+                resultResponse.AddErrorMessage("Only system administrators and support users can create users from other tenants");
 
                 throw new ForbiddenException(resultResponse);
             }

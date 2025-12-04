@@ -479,7 +479,6 @@ public async Task<IActionResult> CreateTenant([FromBody] CreateTenantCommand com
 Controllers/
 ├── Base/
 │   └── BaseApiController.cs         # Base controller with MediatR
-├── TenantsController.cs             # Tenant management endpoints
 └── TokenController.cs               # Authentication endpoints
 
 Middleware/
@@ -501,12 +500,7 @@ Feature/
     ├── Commands/
     │   ├── CreateTenantCommand.cs   # Create tenant CQRS command
     │   ├── ActivateTenantCommand.cs
-    │   ├── DeactivateTenantCommand.cs
-    │   └── UpdateSubscriptionCommand.cs
-    │
-    ├── Queries/
-    │   ├── GetTenantsQuery.cs       # Get all tenants query
-    │   └── GetTenantByIdQuery.cs    # Get single tenant query
+    │   └── DeactivateTenantCommand.cs
     │
     ├── CreateTenantRequest.cs       # DTOs
     ├── TenantResponse.cs
