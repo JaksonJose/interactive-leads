@@ -150,6 +150,7 @@
     "confirmPassword": "Confirmar Senha",
     "isActive": "Usuário Ativo",
     "status": "Status",
+    "roles": "Funções",
     "actions": "Ações",
     "viewDetails": "Ver Detalhes",
     "noUsersFound": "Nenhum usuário encontrado",
@@ -162,6 +163,10 @@
     "cancel": "Cancelar",
     "tenantIdRequired": "ID da empresa é obrigatório",
     "errorLoadingUsers": "Erro ao carregar usuários",
+    "selectRoles": "Selecione as funções",
+    "selectRole": "Selecione a função",
+    "noRolesAvailable": "Nenhuma função disponível",
+    "roleCannotBeChanged": "Esta função não pode ser alterada",
     "statusLabels": {
       "active": "Ativo",
       "inactive": "Inativo"

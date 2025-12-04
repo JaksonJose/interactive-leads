@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Response } from '@core/responses/response';
-import { User, CreateUserRequest, UpdateUserRequest } from '@feature/management/tenants/models';
+import { User, CreateUserRequest, UpdateUserRequest, Role } from '@feature/management/tenants/models';
 import { environment } from '@environment/environment';
 
 @Injectable({
@@ -42,6 +42,14 @@ export class TenantUserRepository {
    */
   updateUserInTenant(tenantId: string, userId: string, request: UpdateUserRequest): Observable<Response<User>> {
     return this.http.put<Response<User>>(`${this.baseUrl}/tenants/${tenantId}/users/${userId}`, request);
+  }
+
+  /**
+   * Retrieves all available roles in a specific tenant.
+   * Requires Permission.CrossTenantRoles.Read
+   */
+  getRolesInTenant(tenantId: string): Observable<Response<Role>> {
+    return this.http.get<Response<Role>>(`${this.baseUrl}/tenants/${tenantId}/roles`);
   }
 }
 

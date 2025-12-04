@@ -354,5 +354,23 @@ namespace InteractiveLeads.Api.Controllers
             
             return Ok(response);
         }
+
+        /// <summary>
+        /// Gets all available roles in a specific tenant - available for SysAdmin and Support.
+        /// </summary>
+        /// <param name="tenantId">The ID of the tenant to get roles from.</param>
+        /// <returns>List of available roles.</returns>
+        /// <remarks>
+        /// Requires Read permission for CrossTenantRoles feature.
+        /// </remarks>
+        [HttpGet("tenants/{tenantId}/roles")]
+        [ShouldHavePermission(InteractiveAction.Read, InteractiveFeature.CrossTenantRoles)]
+        [OpenApiOperation("Get all available roles in a specific tenant")]
+        public async Task<IActionResult> GetRolesInTenantAsync(string tenantId)
+        {
+            var response = await Sender.Send(new GetRolesInTenantQuery { TenantId = tenantId });
+            
+            return Ok(response);
+        }
     }
 }

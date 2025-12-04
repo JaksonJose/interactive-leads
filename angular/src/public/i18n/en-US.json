@@ -150,6 +150,7 @@
     "confirmPassword": "Confirm Password",
     "isActive": "User Active",
     "status": "Status",
+    "roles": "Roles",
     "actions": "Actions",
     "viewDetails": "View Details",
     "noUsersFound": "No users found",
@@ -162,6 +163,10 @@
     "cancel": "Cancel",
     "tenantIdRequired": "Tenant ID is required",
     "errorLoadingUsers": "Error loading users",
+    "selectRoles": "Select roles",
+    "selectRole": "Select role",
+    "noRolesAvailable": "No roles available",
+    "roleCannotBeChanged": "This role cannot be changed"
     "statusLabels": {
       "active": "Active",
       "inactive": "Inactive"

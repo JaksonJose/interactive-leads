@@ -176,6 +176,36 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
                 throw new IdentityException(identityResponse);
             }
 
+            // Assign roles if provided
+            if (request.Roles != null && request.Roles.Any())
+            {
+                // Filter out restricted roles (SysAdmin, Support, Owner cannot be assigned through this feature)
+                var restrictedRoles = new[] { RoleConstants.SysAdmin, RoleConstants.Support, RoleConstants.Owner };
+                var restrictedRolesInRequest = request.Roles.Intersect(restrictedRoles).ToList();
+                
+                if (restrictedRolesInRequest.Any())
+                {
+                    var conflictResponse = new ResultResponse();
+                    conflictResponse.AddErrorMessage($"Cannot assign restricted roles: {string.Join(", ", restrictedRolesInRequest)}", "user.restricted_roles_not_allowed");
+                    throw new ConflictException(conflictResponse);
+                }
+
+                var allowedRoles = request.Roles.Except(restrictedRoles).ToList();
+                if (allowedRoles.Any())
+                {
+                    var roleResult = await _userManager.AddToRolesAsync(newUser, allowedRoles);
+                    if (!roleResult.Succeeded)
+                    {
+                        var identityResponse = new ResultResponse();
+                        foreach (var error in IdentityHelper.GetIdentityResultErrorDescriptions(roleResult))
+                        {
+                            identityResponse.AddErrorMessage($"Failed to assign role: {error}", "user.role_assignment_failed");
+                        }
+                        throw new IdentityException(identityResponse);
+                    }
+                }
+            }
+
             var response = new ResultResponse();
             response.AddSuccessMessage("User created successfully", "user.created_successfully");
             return response;
@@ -205,6 +235,18 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
             var usersInDb = await _userManager.Users.ToListAsync(ct);
 
             var userResponses = usersInDb.Adapt<List<UserResponse>>();
+            
+            // Populate roles for each user
+            foreach (var userResponse in userResponses)
+            {
+                var user = usersInDb.FirstOrDefault(u => u.Id.ToString() == userResponse.Id);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    userResponse.Roles = roles.ToList();
+                }
+            }
+            
             var response = new ListResponse<UserResponse>(userResponses, userResponses.Count);
 
             return response;
@@ -215,6 +257,11 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
             var userInDb = await GetUserAsync(userId);
 
             var userResponse = userInDb.Adapt<UserResponse>();
+            
+            // Populate roles for the user
+            var roles = await _userManager.GetRolesAsync(userInDb);
+            userResponse.Roles = roles.ToList();
+            
             var response = new SingleResponse<UserResponse>(userResponse);
             response.AddSuccessMessage("User retrieved successfully", "user.retrieved_successfully");
             return response;
@@ -231,6 +278,11 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
             }
 
             var userResponse = userInDb.Adapt<UserResponse>();
+            
+            // Populate roles for the user
+            var roles = await _userManager.GetRolesAsync(userInDb);
+            userResponse.Roles = roles.ToList();
+            
             var response = new SingleResponse<UserResponse>(userResponse);
             response.AddSuccessMessage("User retrieved successfully", "user.retrieved_successfully");
             return response;
@@ -315,6 +367,86 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
                     identityResponse.AddErrorMessage(error, "identity.operation_failed");
                 }
                 throw new IdentityException(identityResponse);
+            }
+
+            // Update roles if provided
+            if (request.Roles != null)
+            {
+                var currentRoles = await _userManager.GetRolesAsync(userInDb);
+                
+                // Roles that cannot be assigned (but can be preserved if user already has them)
+                var nonAssignableRoles = new[] { RoleConstants.SysAdmin, RoleConstants.Support };
+                // Owner cannot be assigned, but can be preserved if user already has it
+                var ownerRole = RoleConstants.Owner;
+                
+                // Check if trying to assign non-assignable roles
+                var nonAssignableInRequest = request.Roles.Intersect(nonAssignableRoles).ToList();
+                if (nonAssignableInRequest.Any())
+                {
+                    var conflictResponse = new ResultResponse();
+                    conflictResponse.AddErrorMessage($"Cannot assign restricted roles: {string.Join(", ", nonAssignableInRequest)}", "user.restricted_roles_not_allowed");
+                    throw new ConflictException(conflictResponse);
+                }
+                
+                // Check if trying to assign Owner to someone who doesn't have it
+                var requestingOwner = request.Roles.Contains(ownerRole);
+                var hasOwner = currentRoles.Contains(ownerRole);
+                if (requestingOwner && !hasOwner)
+                {
+                    var conflictResponse = new ResultResponse();
+                    conflictResponse.AddErrorMessage($"Cannot assign Owner role through this feature", "user.owner_role_not_allowed");
+                    throw new ConflictException(conflictResponse);
+                }
+                
+                // Preserve Owner if user already has it (even if not in request)
+                var rolesToProcess = request.Roles.ToList();
+                if (hasOwner && !rolesToProcess.Contains(ownerRole))
+                {
+                    rolesToProcess.Add(ownerRole);
+                }
+                
+                // Preserve other restricted roles that user already has
+                var currentRestrictedRoles = currentRoles.Intersect(nonAssignableRoles).ToList();
+                var editableRoles = rolesToProcess.Union(currentRestrictedRoles).ToList();
+                
+                var rolesToAdd = editableRoles.Except(currentRoles).ToList();
+                var rolesToRemove = currentRoles.Except(editableRoles).ToList();
+                
+                // Prevent removal of restricted roles
+                var allRestrictedRoles = nonAssignableRoles.Union(new[] { ownerRole }).ToList();
+                var restrictedRolesToRemove = rolesToRemove.Intersect(allRestrictedRoles).ToList();
+                if (restrictedRolesToRemove.Any())
+                {
+                    rolesToRemove = rolesToRemove.Except(allRestrictedRoles).ToList();
+                }
+
+                if (rolesToRemove.Any())
+                {
+                    var removeResult = await _userManager.RemoveFromRolesAsync(userInDb, rolesToRemove);
+                    if (!removeResult.Succeeded)
+                    {
+                        var identityResponse = new ResultResponse();
+                        foreach (var error in IdentityHelper.GetIdentityResultErrorDescriptions(removeResult))
+                        {
+                            identityResponse.AddErrorMessage($"Failed to remove role: {error}", "user.role_update_failed");
+                        }
+                        throw new IdentityException(identityResponse);
+                    }
+                }
+
+                if (rolesToAdd.Any())
+                {
+                    var addResult = await _userManager.AddToRolesAsync(userInDb, rolesToAdd);
+                    if (!addResult.Succeeded)
+                    {
+                        var identityResponse = new ResultResponse();
+                        foreach (var error in IdentityHelper.GetIdentityResultErrorDescriptions(addResult))
+                        {
+                            identityResponse.AddErrorMessage($"Failed to add role: {error}", "user.role_update_failed");
+                        }
+                        throw new IdentityException(identityResponse);
+                    }
+                }
             }
 
             var response = new ResultResponse();

@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { TenantUserRepository } from '@feature/management/tenants/repositories';
-import { CreateUserRequest, UpdateUserRequest, User } from '@feature/management/tenants/models';
+import { CreateUserRequest, UpdateUserRequest, User, Role } from '@feature/management/tenants/models';
 import { PRIME_NG_MODULES } from '@shared/primeng-imports';
 import { Response } from '@core/responses/response';
 
@@ -17,6 +17,7 @@ interface UserFormValue {
   confirmPassword?: string;
   phoneNumber: string;
   isActive: boolean;
+      role?: string;
 }
 
 @Component({
@@ -44,6 +45,8 @@ export class TenantUserFormComponent implements OnInit {
   tenantId = signal<string | null>(null);
   userId = signal<string | null>(null);
   currentUser = signal<User | null>(null);
+  availableRoles = signal<Role[]>([]);
+  loadingRoles = signal<boolean>(false);
 
   ngOnInit(): void {
     this.initializeForm();
@@ -56,6 +59,7 @@ export class TenantUserFormComponent implements OnInit {
     
     if (tenantId) {
       this.tenantId.set(tenantId);
+      this.loadAvailableRoles();
     }
 
     if (userId) {
@@ -72,8 +76,19 @@ export class TenantUserFormComponent implements OnInit {
     this.tenantUserRepository.getUserInTenant(tenantId, userId).subscribe({
       next: (response: Response<User>) => {
         if (response.data) {
-          this.currentUser.set(response.data);
-          this.populateFormWithUserData(response.data);
+          const userData = response.data;
+          this.currentUser.set(userData);
+          // Wait for roles to be loaded before populating form
+          if (this.availableRoles().length > 0) {
+            this.populateFormWithUserData(userData);
+          } else {
+            // If roles not loaded yet, wait a bit and try again
+            setTimeout(() => {
+              if (userData) {
+                this.populateFormWithUserData(userData);
+              }
+            }, 100);
+          }
         }
         this.loading.set(false);
       },
@@ -84,13 +99,30 @@ export class TenantUserFormComponent implements OnInit {
   }
 
   private populateFormWithUserData(user: User): void {
+    // Get the first role (since users have only one role due to hierarchical permissions)
+    // Owner can be displayed but not changed
+    const restrictedRoles = ['SysAdmin', 'Support'];
+    const userRoles = user.roles || [];
+    const userRole = userRoles[0] || '';
+    
+    // Ensure the role exists in available roles (Owner will be included if user has it)
+    const availableRoleNames = this.availableRoles().map(r => r.name);
+    const roleToSet = availableRoleNames.includes(userRole) ? userRole : '';
+    
     this.userForm.patchValue({
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       phoneNumber: user.phoneNumber || '',
-      isActive: user.isActive
+      isActive: user.isActive,
+      roles: roleToSet
     });
+    
+    // Disable roles field if user has Owner, SysAdmin, or Support (cannot be changed)
+    const nonEditableRoles = ['Owner', 'SysAdmin', 'Support'];
+    if (userRoles.some(role => nonEditableRoles.includes(role))) {
+      this.userForm.get('roles')?.disable();
+    }
     
     // Remove password validators in edit mode
     this.userForm.get('password')?.clearValidators();
@@ -107,8 +139,50 @@ export class TenantUserFormComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
       phoneNumber: [''],
-      isActive: [true]
+      isActive: [true],
+      roles: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
+  }
+
+
+  private loadAvailableRoles(): void {
+    const tenantId = this.tenantId();
+    if (!tenantId) return;
+
+    // Roles that cannot be assigned through this feature (but Owner can be displayed if user already has it)
+    const restrictedRoles = ['SysAdmin', 'Support'];
+
+    this.loadingRoles.set(true);
+    this.tenantUserRepository.getRolesInTenant(tenantId).subscribe({
+      next: (response: Response<Role>) => {
+        const allRoles = response.items || (response.data ? [response.data] : []);
+        // Filter out restricted roles (SysAdmin, Support)
+        let filteredRoles = allRoles.filter(role => !restrictedRoles.includes(role.name));
+        
+        // If in edit mode and user has Owner role, include it in the list
+        const currentUser = this.currentUser();
+        if (this.isEditMode() && currentUser && currentUser.roles) {
+          const userHasOwner = currentUser.roles.includes('Owner');
+          if (userHasOwner && !filteredRoles.some(r => r.name === 'Owner')) {
+            const ownerRole = allRoles.find(r => r.name === 'Owner');
+            if (ownerRole) {
+              filteredRoles = [...filteredRoles, ownerRole];
+            }
+          }
+        }
+        
+        this.availableRoles.set(filteredRoles);
+        this.loadingRoles.set(false);
+        
+        // If in edit mode and user data is already loaded, populate form again to set the role
+        if (this.isEditMode() && currentUser) {
+          this.populateFormWithUserData(currentUser);
+        }
+      },
+      error: () => {
+        this.loadingRoles.set(false);
+      }
+    });
   }
 
   private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -149,7 +223,8 @@ export class TenantUserFormComponent implements OnInit {
       password: formValue.password!,
       confirmPassword: formValue.confirmPassword!,
       phoneNumber: formValue.phoneNumber || undefined,
-      isActive: formValue.isActive
+      isActive: formValue.isActive,
+      roles: this.userForm.get('roles')?.value ? [this.userForm.get('roles')?.value] : []
     };
 
     this.tenantUserRepository.createUserInTenant(tenantId, createRequest).subscribe({
@@ -168,11 +243,21 @@ export class TenantUserFormComponent implements OnInit {
     const userId = this.userId();
     if (!tenantId || !userId) return;
 
+    // Use getRawValue() to get the value even if the field is disabled
+    const rolesControl = this.userForm.get('roles');
+    const roleValue = rolesControl?.disabled ? rolesControl.value : (rolesControl?.value || '');
+    const currentUser = this.currentUser();
+    // If field is disabled (user has Owner/SysAdmin/Support), preserve current roles
+    const rolesToSend = rolesControl?.disabled && currentUser?.roles 
+      ? currentUser.roles 
+      : (roleValue ? [roleValue] : []);
+
     const updateRequest: UpdateUserRequest = {
       id: userId,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
-      phoneNumber: formValue.phoneNumber || undefined
+      phoneNumber: formValue.phoneNumber || undefined,
+      roles: rolesToSend
     };
 
     this.tenantUserRepository.updateUserInTenant(tenantId, userId, updateRequest).subscribe({

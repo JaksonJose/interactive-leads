@@ -20,6 +20,7 @@ import { KeyFilterModule } from 'primeng/keyfilter';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
 import { MessageModule } from 'primeng/message';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { PanelModule } from 'primeng/panel';
 import { PasswordModule } from 'primeng/password';
@@ -65,6 +66,7 @@ export const PRIME_NG_MODULES = [
     MenuModule,
     MenubarModule,
     MessageModule,
+    MultiSelectModule,
     OverlayBadgeModule,
     PanelModule,
     PasswordModule,

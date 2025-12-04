@@ -22,6 +22,9 @@ export interface User {
 
   /** Indicates whether the user account is active. */
   isActive: boolean;
+
+  /** The user's roles. */
+  roles?: string[];
 }
 
 /**
@@ -48,6 +51,23 @@ export interface CreateUserRequest {
 
   /** Indicates whether the user account should be active. */
   isActive: boolean;
+
+  /** The roles to assign to the user. */
+  roles?: string[];
+}
+
+/**
+ * Represents a role in the system.
+ */
+export interface Role {
+  /** The unique identifier for the role. */
+  id: string;
+
+  /** The role name. */
+  name: string;
+
+  /** The role description. */
+  description?: string;
 }
 
 /**
@@ -65,5 +85,8 @@ export interface UpdateUserRequest {
 
   /** The user's phone number. */
   phoneNumber?: string;
+
+  /** The roles to assign to the user. */
+  roles?: string[];
 }
 

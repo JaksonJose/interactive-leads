@@ -163,6 +163,53 @@
         </div>
       }
 
+      <!-- Roles Selection -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="roles" class="p-label">
+            {{ 'userManagement.roles' | translate }} *
+          </label>
+          @if (loadingRoles()) {
+            <p-skeleton height="2.5rem"></p-skeleton>
+          } @else {
+            <p-select
+              id="roles"
+              formControlName="roles"
+              [options]="availableRoles()"
+              optionLabel="name"
+              optionValue="name"
+              [placeholder]="availableRoles().length > 0 ? ('userManagement.selectRole' | translate) : ('userManagement.noRolesAvailable' | translate)"
+              [disabled]="availableRoles().length === 0 || userForm.get('roles')?.disabled"
+              styleClass="w-full"
+              [class.p-invalid]="isFieldInvalid('roles')">
+              <ng-template let-role pTemplate="item">
+                <div class="flex flex-column gap-1 py-2">
+                  <span class="font-semibold">{{ role.name }}</span>
+                  @if (role.description) {
+                    <small class="text-muted">{{ role.description }}</small>
+                  }
+                </div>
+              </ng-template>
+            </p-select>
+          }
+          @if (isFieldInvalid('roles')) {
+            <div class="p-error mt-1">
+              {{ getFieldError('roles') }}
+            </div>
+          }
+          @if (!loadingRoles() && availableRoles().length === 0) {
+            <small class="p-text-secondary mt-1">
+              <i class="pi pi-info-circle"></i> {{ 'userManagement.noRolesAvailable' | translate }}
+            </small>
+          }
+          @if (isEditMode() && userForm.get('roles')?.disabled) {
+            <small class="p-text-secondary mt-1">
+              <i class="pi pi-info-circle"></i> {{ 'userManagement.roleCannotBeChanged' | translate }}
+            </small>
+          }
+        </div>
+      </div>
+
       @if (!isEditMode()) {
         <div class="form-row">
           <!-- Is Active -->
