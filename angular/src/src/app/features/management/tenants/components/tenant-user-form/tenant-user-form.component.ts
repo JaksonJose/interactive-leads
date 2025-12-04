@@ -99,9 +99,6 @@ export class TenantUserFormComponent implements OnInit {
   }
 
   private populateFormWithUserData(user: User): void {
-    // Get the first role (since users have only one role due to hierarchical permissions)
-    // Owner can be displayed but not changed
-    const restrictedRoles = ['SysAdmin', 'Support'];
     const userRoles = user.roles || [];
     const userRole = userRoles[0] || '';
     
