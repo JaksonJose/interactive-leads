@@ -1,0 +1,149 @@
+<div class="tenant-user-details-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>{{ 'userManagement.userDetails' | translate }}</h1>
+      <p class="subtitle">{{ 'userManagement.viewUserInformation' | translate }}</p>
+    </div>
+    
+    <div class="header-actions">
+      <p-button 
+        [label]="'userManagement.backToList' | translate"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        (onClick)="backToList()">
+      </p-button>
+      
+      @if (hasPermission(['Permission.CrossTenantUsers.Update'])) {
+        <p-button 
+          [label]="'userManagement.editUser' | translate"
+          icon="pi pi-pencil"
+          severity="info"
+          (onClick)="editUser()">
+        </p-button>
+      }
+    </div>
+  </div>
+
+  <!-- Messages -->
+  @for (message of messages(); track message.content) {
+    <p-message
+      [severity]="message.severity"
+      [closable]="true"
+      (onClose)="messages.set([])">
+      {{ message.content | translate }}
+    </p-message>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="skeleton-card">
+        <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+        <p-skeleton height="1.5rem" class="mb-4"></p-skeleton>
+        <p-skeleton height="10rem"></p-skeleton>
+      </div>
+    </div>
+  }
+
+  <!-- User Details -->
+  @if (!loading() && user(); as currentUser) {
+    <div class="details-container">
+    <div class="details-grid">
+      <!-- Personal Information Card -->
+      <div class="detail-card">
+        <div class="card-header">
+          <h3>{{ 'userManagement.personalInformation' | translate }}</h3>
+        </div>
+        
+        <div class="card-content">
+          <div class="detail-row">
+            <div class="detail-label">{{ 'userManagement.firstName' | translate }}</div>
+            <div class="detail-value">{{ currentUser.firstName }}</div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'userManagement.lastName' | translate }}</div>
+            <div class="detail-value">{{ currentUser.lastName }}</div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'userManagement.email' | translate }}</div>
+            <div class="detail-value">
+              <a [href]="'mailto:' + currentUser.email">{{ currentUser.email }}</a>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'userManagement.userName' | translate }}</div>
+            <div class="detail-value">{{ currentUser.userName }}</div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'userManagement.phoneNumber' | translate }}</div>
+            <div class="detail-value">{{ currentUser.phoneNumber || '-' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status and Roles Card -->
+      <div class="detail-card">
+        <div class="card-header">
+          <h3>{{ 'userManagement.statusAndRoles' | translate }}</h3>
+          <p-tag [severity]="getUserStatusSeverity(currentUser)">
+            {{ getUserStatusDescription(currentUser) | translate }}
+          </p-tag>
+        </div>
+        
+        <div class="card-content">
+          <div class="detail-row">
+            <div class="detail-label">{{ 'userManagement.status' | translate }}</div>
+            <div class="detail-value">
+              <p-tag [severity]="getUserStatusSeverity(currentUser)">
+                {{ getUserStatusDescription(currentUser) | translate }}
+              </p-tag>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'userManagement.roles' | translate }}</div>
+            <div class="detail-value">
+              @if (currentUser.roles && currentUser.roles.length > 0) {
+                <div class="roles-container d-flex flex-wrap gap-1">
+                  @for (role of currentUser.roles; track role) {
+                    <p-tag [value]="role" severity="info" [rounded]="true"></p-tag>
+                  }
+                </div>
+              } @else {
+                <span class="text-muted">-</span>
+              }
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-label">{{ 'tenantManagement.tenantName' | translate }}</div>
+            <div class="detail-value">{{ tenant()?.name || '-' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (!loading() && !user()) {
+    <div class="error-container">
+      <div class="error-state">
+        <i class="pi pi-exclamation-triangle" style="font-size: 4rem; color: #dc3545;"></i>
+        <h3>{{ 'userManagement.userNotFound' | translate }}</h3>
+        <p>{{ 'userManagement.userNotFoundMessage' | translate }}</p>
+        <p-button 
+          [label]="'userManagement.backToList' | translate"
+          icon="pi pi-arrow-left"
+          severity="info"
+          (onClick)="backToList()">
+        </p-button>
+      </div>
+    </div>
+  }
+</div>

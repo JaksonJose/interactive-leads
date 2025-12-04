@@ -5,6 +5,7 @@ import { TenantFormComponent } from './components/tenant-form/tenant-form.compon
 import { TenantDetailsComponent } from './components/tenant-details/tenant-details.component';
 import { TenantUsersListComponent } from './components/tenant-users-list/tenant-users-list.component';
 import { TenantUserFormComponent } from './components/tenant-user-form/tenant-user-form.component';
+import { TenantUserDetailsComponent } from './components/tenant-user-details/tenant-user-details.component';
 
 export const tenantRoutes: Routes = [
   {
@@ -45,6 +46,12 @@ export const tenantRoutes: Routes = [
         component: TenantUserFormComponent,
         data: { permissions: ['Permission.CrossTenantUsers.Create'] },
         title: 'Create User'
+      },
+      {
+        path: ':tenantId/users/:userId',
+        component: TenantUserDetailsComponent,
+        data: { permissions: ['Permission.CrossTenantUsers.Read'] },
+        title: 'User Details'
       },
       {
         path: ':tenantId/users/:userId/edit',

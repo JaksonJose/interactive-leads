@@ -167,6 +167,14 @@
     "selectRole": "Selecione a função",
     "noRolesAvailable": "Nenhuma função disponível",
     "roleCannotBeChanged": "Esta função não pode ser alterada",
+    "userDetails": "Detalhes do Usuário",
+    "viewUserInformation": "Visualize as informações do usuário",
+    "userIdRequired": "ID do usuário é obrigatório",
+    "errorLoadingUserDetails": "Erro ao carregar detalhes do usuário",
+    "personalInformation": "Informações Pessoais",
+    "statusAndRoles": "Status e Funções",
+    "userNotFound": "Usuário não encontrado",
+    "userNotFoundMessage": "O usuário solicitado não foi encontrado ou você não tem permissão para visualizá-lo.",
     "statusLabels": {
       "active": "Ativo",
       "inactive": "Inativo"

@@ -166,7 +166,15 @@
     "selectRoles": "Select roles",
     "selectRole": "Select role",
     "noRolesAvailable": "No roles available",
-    "roleCannotBeChanged": "This role cannot be changed"
+    "roleCannotBeChanged": "This role cannot be changed",
+    "userDetails": "User Details",
+    "viewUserInformation": "View user information",
+    "userIdRequired": "User ID is required",
+    "errorLoadingUserDetails": "Error loading user details",
+    "personalInformation": "Personal Information",
+    "statusAndRoles": "Status and Roles",
+    "userNotFound": "User not found",
+    "userNotFoundMessage": "The requested user was not found or you do not have permission to view it.",
     "statusLabels": {
       "active": "Active",
       "inactive": "Inactive"

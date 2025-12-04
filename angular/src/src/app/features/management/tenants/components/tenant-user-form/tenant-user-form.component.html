@@ -179,7 +179,7 @@
               optionLabel="name"
               optionValue="name"
               [placeholder]="availableRoles().length > 0 ? ('userManagement.selectRole' | translate) : ('userManagement.noRolesAvailable' | translate)"
-              [disabled]="availableRoles().length === 0 || userForm.get('roles')?.disabled"
+              [disabled]="availableRoles().length === 0 || (userForm.get('roles')?.disabled ?? false)"
               styleClass="w-full"
               [class.p-invalid]="isFieldInvalid('roles')">
               <ng-template let-role pTemplate="item">
