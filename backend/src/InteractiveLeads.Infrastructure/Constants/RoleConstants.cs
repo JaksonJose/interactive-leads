@@ -42,21 +42,6 @@ namespace InteractiveLeads.Infrastructure.Constants
         /// </summary>
         public const string Agent = nameof(Agent);
 
-        // Legacy roles for backward compatibility
-        /// <summary>
-        /// Role name for tenant administrators with elevated permissions.
-        /// @deprecated Use Owner or Manager instead.
-        /// </summary>
-        [Obsolete("Use Owner or Manager instead")]
-        public const string Admin = nameof(Admin);
-
-        /// <summary>
-        /// Role name for basic users with standard permissions.
-        /// @deprecated Use Agent instead.
-        /// </summary>
-        [Obsolete("Use Agent instead")]
-        public const string Basic = nameof(Basic);
-
         /// <summary>
         /// Gets the list of cross-tenant roles that can access multiple tenants.
         /// </summary>
@@ -75,17 +60,12 @@ namespace InteractiveLeads.Infrastructure.Constants
         /// <summary>
         /// Gets the list of all available roles in the system.
         /// </summary>
-        public static IReadOnlyList<string> AllRoles { get; } = new ReadOnlyCollection<string>([SysAdmin, Support, Owner, Manager, Agent, Admin, Basic]);
+        public static IReadOnlyList<string> AllRoles { get; } = new ReadOnlyCollection<string>([SysAdmin, Support, Owner, Manager, Agent]);
 
         /// <summary>
         /// Gets the list of default roles created for each tenant.
         /// </summary>
         public static IReadOnlyList<string> DefaultTenantRoles { get; } = new ReadOnlyCollection<string>([Owner, Manager, Agent]);
-
-        /// <summary>
-        /// Gets the list of legacy roles for backward compatibility.
-        /// </summary>
-        public static IReadOnlyList<string> LegacyRoles { get; } = new ReadOnlyCollection<string>([Admin, Basic]);
 
         /// <summary>
         /// Determines whether the specified role name is a cross-tenant role.
@@ -109,18 +89,11 @@ namespace InteractiveLeads.Infrastructure.Constants
         public static bool IsTenantRole(string roleName) => TenantRoles.Contains(roleName);
 
         /// <summary>
-        /// Determines whether the specified role name is a legacy role.
-        /// </summary>
-        /// <param name="roleName">The role name to check.</param>
-        /// <returns>True if the role is a legacy role, otherwise false.</returns>
-        public static bool IsLegacyRole(string roleName) => LegacyRoles.Contains(roleName);
-
-        /// <summary>
         /// Determines whether the specified role name is a default role.
         /// </summary>
         /// <param name="roleName">The role name to check.</param>
         /// <returns>True if the role is a default role, otherwise false.</returns>
-        public static bool IsDefaultRole(string roleName) => DefaultTenantRoles.Contains(roleName) || LegacyRoles.Contains(roleName);
+        public static bool IsDefaultRole(string roleName) => DefaultTenantRoles.Contains(roleName);
 
         /// <summary>
         /// Gets the role hierarchy level for permission inheritance.
@@ -135,8 +108,6 @@ namespace InteractiveLeads.Infrastructure.Constants
             Owner => 3,
             Manager => 2,
             Agent => 1,
-            Admin => 2, // Legacy - same as Manager
-            Basic => 1, // Legacy - same as Agent
             _ => 0
         };
 

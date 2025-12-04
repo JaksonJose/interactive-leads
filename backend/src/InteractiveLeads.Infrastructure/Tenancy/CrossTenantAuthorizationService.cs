@@ -60,11 +60,7 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             
             // Tenant-specific roles can only access their own tenant
             if (RoleConstants.TenantRoles.Any(role => userRoles.Contains(role)))
-                return user.TenantId == tenantId;
-            
-            // Legacy roles - check individual roles for backward compatibility
-            if (userRoles.Contains(RoleConstants.Admin) || userRoles.Contains(RoleConstants.Basic))
-                return user.TenantId == tenantId;
+                return user.TenantId == tenantId;           
             
             // Default: users can only access their own tenant
             return user.TenantId == tenantId;
@@ -102,13 +98,6 @@ namespace InteractiveLeads.Infrastructure.Tenancy
             if (RoleConstants.TenantRoles.Any(role => userRoles.Contains(role)))
             {
                 // Check if user has the specific permission
-                var userClaims = await _userManager.GetClaimsAsync(user);
-                return userClaims.Any(c => c.Type == ClaimConstants.Permission && c.Value == permission);
-            }
-            
-            // Legacy roles - check individual permissions
-            if (userRoles.Contains(RoleConstants.Admin) || userRoles.Contains(RoleConstants.Basic))
-            {
                 var userClaims = await _userManager.GetClaimsAsync(user);
                 return userClaims.Any(c => c.Type == ClaimConstants.Permission && c.Value == permission);
             }
@@ -155,14 +144,7 @@ namespace InteractiveLeads.Infrastructure.Tenancy
                 // For cross-tenant users, we would need to implement pagination
                 // from the tenant service. For now, return the special marker.
                 return (new[] { "*" }, false);
-            }
-            
-            // Tenant-specific roles can only access their own tenant
-            if (RoleConstants.TenantRoles.Any(role => userRoles.Contains(role)) ||
-                userRoles.Contains(RoleConstants.Admin) || userRoles.Contains(RoleConstants.Basic))
-            {
-                return (new[] { user.TenantId }, false);
-            }
+            }            
             
             // Default: users can only access their own tenant
             return (new[] { user.TenantId }, false);

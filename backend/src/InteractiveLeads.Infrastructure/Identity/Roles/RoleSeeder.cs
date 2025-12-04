@@ -49,10 +49,6 @@ namespace InteractiveLeads.Infrastructure.Identity.Roles
                 await SeedRoleAsync(RoleConstants.Manager, "Tenant Manager", "User management within tenant", InteractivePermissions.Manager, createdRoles, cancellationToken);
                 await SeedRoleAsync(RoleConstants.Agent, "Tenant Agent", "Basic operations within tenant", InteractivePermissions.Agent, createdRoles, cancellationToken);
 
-                // Seed legacy roles for backward compatibility
-                await SeedRoleAsync(RoleConstants.Admin, "Tenant Administrator", "Legacy admin role - use Owner instead", InteractivePermissions.Admin, createdRoles, cancellationToken);
-                await SeedRoleAsync(RoleConstants.Basic, "Basic User", "Legacy basic role - use Agent instead", InteractivePermissions.Basic, createdRoles, cancellationToken);
-
                 response.AddSuccessMessage($"Successfully seeded {createdRoles.Count} roles: {string.Join(", ", createdRoles)}", "roles.seeded_successfully");
             }
             catch (Exception ex)

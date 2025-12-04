@@ -60,10 +60,10 @@ namespace InteractiveLeads.Infrastructure.Identity.Users
         {
             var userInDb = await GetUserAsync(userId);
 
-            if (await _userManager.IsInRoleAsync(userInDb, RoleConstants.Admin)
-                && request.UserRoles.Any(ur => !ur.IsAssigned && ur.Name == RoleConstants.Admin))
+            if (await _userManager.IsInRoleAsync(userInDb, RoleConstants.SysAdmin)
+                && request.UserRoles.Any(ur => !ur.IsAssigned && ur.Name == RoleConstants.SysAdmin))
             {
-                var adminUsersCount = (await _userManager.GetUsersInRoleAsync(RoleConstants.Admin)).Count;
+                var adminUsersCount = (await _userManager.GetUsersInRoleAsync(RoleConstants.SysAdmin)).Count;
                 if (userInDb.Email == TenancyConstants.Root.Email)
                 {
                     if (_tenantContextAccessor.MultiTenantContext.TenantInfo?.Id == TenancyConstants.Root.Id)

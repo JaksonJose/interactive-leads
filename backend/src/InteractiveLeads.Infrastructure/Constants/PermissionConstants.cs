@@ -338,8 +338,6 @@ namespace InteractiveLeads.Infrastructure.Constants
             RoleConstants.Owner => Owner,
             RoleConstants.Manager => Manager,
             RoleConstants.Agent => Agent,
-            RoleConstants.Admin => Admin, // Legacy
-            RoleConstants.Basic => Basic, // Legacy
             _ => new ReadOnlyCollection<InteractivePermission>(Array.Empty<InteractivePermission>())
         };
     }
